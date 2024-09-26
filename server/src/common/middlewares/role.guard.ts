@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import * as jwt from 'jsonwebtoken';
 import { Observable } from 'rxjs';
-import { config } from '../configs/config';
+import { config } from '../config/app.config';
 
 @Injectable()
 export class RoleGuard implements CanActivate {

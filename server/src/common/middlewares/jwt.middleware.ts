@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { NestMiddleware } from '@nestjs/common';
-import { config } from '../configs/config';
+import { config } from '../config/app.config';
 
 export class JwtMiddleware implements NestMiddleware {
   use(req: Request & { decoded: any }, res: Response, next: NextFunction) {
