@@ -1,10 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
-export type UserDocument = User & Document;
+// export type UserDocument = User & Document;
 
 @Schema({ collection: 'Users', versionKey: false })
 export class User extends Document {
+  @Prop({
+    type: String, // Define the type of _id as String for UUID
+    default: uuidv4, // Set UUID as the default value for _id
+  })
+  _id: string;
+
   @Prop({ required: true })
   first_name: string;
 
@@ -38,7 +45,7 @@ export class User extends Document {
   @Prop({ required: true })
   location: string;
 
-  @Prop({ default: null })
+  @Prop({ default: '' })
   occupation: string;
 
   @Prop({ default: [], type: [String] })
@@ -59,10 +66,10 @@ export class User extends Document {
   @Prop({ default: null })
   best_score: number;
 
-  @Prop({ default: null })
+  @Prop({ default: '' })
   clubs: string;
 
-  @Prop({ default: null })
+  @Prop({ default: '' })
   introduction: string;
 
   @Prop({ default: true })

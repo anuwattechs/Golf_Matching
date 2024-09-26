@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { NestMiddleware } from '@nestjs/common';
-import { config } from '../config/app.config';
+// import { config } from '../config/app.config';
+import configuration from 'src/config/configuration';
 
 export class JwtMiddleware implements NestMiddleware {
   use(req: Request & { decoded: any }, res: Response, next: NextFunction) {
@@ -11,13 +12,14 @@ export class JwtMiddleware implements NestMiddleware {
       if (!token) {
         return res.status(401).json({
           status: 'error',
+          statusCode: 401,
           message: 'No token provided',
           data: [],
         });
       }
 
       // Verify and decode the JWT token
-      const decoded = jwt.verify(token, config.JWT_SECRET, {
+      const decoded = jwt.verify(token, configuration().jwtSecret, {
         algorithms: ['HS256'],
       });
 
@@ -29,6 +31,7 @@ export class JwtMiddleware implements NestMiddleware {
     } catch (error) {
       return res.status(401).json({
         status: 'error',
+        statusCode: 401,
         message: 'Invalid token',
         data: [],
       });

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CacheModule } from '@nestjs/cache-manager';
+// import { CacheModule } from '@nestjs/cache-manager';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './services/users/users.module';
@@ -19,8 +19,8 @@ import configuration from './config/configuration';
       isGlobal: true,
       load: [configuration],
     }),
+    // CacheModule.register({ isGlobal: true }),
     MongooseModule.forRoot(configuration().mongoUri),
-    CacheModule.register({ isGlobal: true }),
     UsersModule,
   ],
   controllers: [AppController],
@@ -30,7 +30,15 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JwtMiddleware)
-      .exclude('/users/login', '/users/register')
+      .exclude(
+        '/users/login',
+        '/users/register',
+        '/users/register/indentity-verify',
+        '/users/register/confirm-indentity-verify',
+        '/users/forgot-password/indentity-verify',
+        '/users/forgot-password/confirm-indentity-verify',
+        '/users/forgot-password/reset',
+      )
       .forRoutes({
         path: '/users*',
         method: RequestMethod.ALL,

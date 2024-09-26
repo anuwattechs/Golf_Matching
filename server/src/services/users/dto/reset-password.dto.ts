@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsString, IsMongoId } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class ResetPasswordDto {
-  @IsMongoId()
+  @IsUUID()
   @IsNotEmpty()
-  forgot_pass_id: string;
+  transaction_id: string;
 
   @IsString()
   @IsNotEmpty()
