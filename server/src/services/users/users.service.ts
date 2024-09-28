@@ -145,7 +145,7 @@ export class UsersService {
       return {
         status: 'success',
         statusCode: 201,
-        message: 'Indentity verified successfully',
+        message: 'Identity verified successfully',
         data: [],
       };
     } catch (error) {
@@ -295,9 +295,6 @@ export class UsersService {
         name: `${userRegistered.first_name} ${userRegistered.last_name}`,
         email: userRegistered.email,
         phone_number: userRegistered.phone_number,
-        // role: userRegistered.role,
-        // iat: now.getTime(),
-        // exp: now.getTime() + 1000 * 60 * 60 * 24 * 30,
       };
       const token = jwt.sign(payload, configuration().jwtSecret, {
         expiresIn: '1000d',

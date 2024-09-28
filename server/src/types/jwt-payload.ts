@@ -3,7 +3,6 @@ export type TJwtPayload = {
   name?: string;
   email: string;
   phone_number?: string;
-  // role: string | string[];
   iat?: number;
   exp?: number;
 };
