@@ -1,12 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { CreateUserDto } from "../users/dto/create-user.dto";
-import { UsersService } from "../users/users.service";
-import { User } from "src/schemas";
-import * as speakeasy from "speakeasy";
-import { SocialInterface } from "src/shared/interfaces";
-import { NullableType } from "src/shared/types/nullable.type";
-import { LoginResponseDto } from "../auth-google/dto/login-response.dto";
-import { AuthProvidersEnum } from "src/shared/enums";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UsersService } from '../users/users.service';
+import { User } from 'src/schemas';
+import * as speakeasy from 'speakeasy';
+import { SocialInterface } from 'src/shared/interfaces';
+import { NullableType } from 'src/shared/types/nullable.type';
+import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
+import { AuthProvidersEnum } from 'src/shared/enums';
 
 @Injectable()
 export class AuthService {
@@ -15,14 +15,14 @@ export class AuthService {
   async register(createUserDto: CreateUserDto): Promise<void> {
     const otp = speakeasy.totp({
       secret: process.env.OTP_SECRET,
-      encoding: "base32",
+      encoding: 'base32',
     });
     console.log(otp);
   }
 
   async validateSocialLogin(
     authProvider: AuthProvidersEnum,
-    socialData: SocialInterface
+    socialData: SocialInterface,
   ): Promise<LoginResponseDto> {
     let user: NullableType<User> = null;
     const socialEmail = socialData?.email?.toLowerCase();
@@ -43,7 +43,7 @@ export class AuthService {
       user,
       userByEmail,
       socialData,
-      authProvider
+      authProvider,
     );
 
     return this.generateToken(newUser);
@@ -51,16 +51,16 @@ export class AuthService {
 
   private async checkEmail(
     socialEmail: string,
-    authProvider: AuthProvidersEnum
+    authProvider: AuthProvidersEnum,
   ): Promise<NullableType<User>> {
     if (!socialEmail) return null; // กรณีไม่มีอีเมลให้ข้ามไป
     const userByEmail = await this.usersService.findByEmail(
-      socialEmail.toLowerCase()
+      socialEmail.toLowerCase(),
     );
     if (userByEmail && userByEmail.provider !== authProvider) {
       throw new HttpException(
         `Email ${socialEmail} is already registered with another method. Please use ${this.mapProvider(userByEmail?.provider)} to login.`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -71,7 +71,7 @@ export class AuthService {
     user: NullableType<User>,
     userByEmail: NullableType<User>,
     socialData: SocialInterface,
-    authProvider: AuthProvidersEnum
+    authProvider: AuthProvidersEnum,
   ): Promise<User> {
     // ถ้าพบผู้ใช้เดิม อัปเดตข้อมูลแล้วบันทึก
     if (user) {
@@ -88,18 +88,18 @@ export class AuthService {
 
     // สร้างผู้ใช้ใหม่ถ้าไม่พบผู้ใช้เดิม
     return this.usersService.create({
-      email: socialData.email?.toLowerCase() || "",
-      firstName: socialData.firstName || "",
-      lastName: socialData.lastName || "",
+      email: socialData.email?.toLowerCase() || '',
+      firstName: socialData.firstName || '',
+      lastName: socialData.lastName || '',
       provider: authProvider,
-      socialId: socialData.id || "",
+      socialId: socialData.id || '',
     });
   }
 
   private generateToken(user: User): LoginResponseDto {
     return {
-      token: "",
-      refreshToken: "",
+      token: '',
+      refreshToken: '',
       tokenExpires: 0,
     };
   }
@@ -107,13 +107,13 @@ export class AuthService {
   private mapProvider(provider: AuthProvidersEnum): string {
     switch (provider) {
       case AuthProvidersEnum.GOOGLE:
-        return "google";
+        return 'google';
       case AuthProvidersEnum.FACEBOOK:
-        return "facebook";
+        return 'facebook';
       case AuthProvidersEnum.APPLE:
-        return "apple";
+        return 'apple';
       default:
-        return "local";
+        return 'local';
     }
   }
 }

@@ -1,14 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import { Model } from "mongoose";
-import { InjectModel } from "@nestjs/mongoose";
-import { CreateUserDto } from "../dto/create-user.dto";
-import { User } from "src/schemas";
-import { AuthProvidersEnum } from "src/shared/enums";
+import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { User } from 'src/schemas';
+import { AuthProvidersEnum } from 'src/shared/enums';
 
 @Injectable()
 export class UserRepository {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>
+    @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
   // Method for creating a new user
