@@ -7,6 +7,8 @@ import { AuthModule } from "./app/modules/auth/auth.module";
 import { UsersModule } from "./app/modules/users/users.module";
 import { AuthGoogleModule } from "./app/modules/auth-google/auth-google.module";
 import { AuthFacebookModule } from "./app/modules/auth-facebook/auth-facebook.module";
+import { AuthAppleController } from "./app/modules/auth-apple/auth-apple.controller";
+import { AuthAppleModule } from "./app/modules/auth-apple/auth-apple.module";
 import googleConfig from "./app/modules/auth-google/config/google.config";
 import facebookConfig from "./app/modules/auth-facebook/config/facebook.config";
 
@@ -26,6 +28,8 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     infrastructureDatabaseModule,
     AuthGoogleModule,
     AuthFacebookModule,
+    AuthAppleModule,
   ],
+  controllers: [AuthAppleController],
 })
 export class AppModule {}

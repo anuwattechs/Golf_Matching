@@ -1,8 +1,14 @@
 {
     "cSpell.words": [
         "actived",
+        "commitlint",
+        "conventionalcommits",
         "Forgor",
         "Indentity",
+        "infile",
+        "nestjs",
+        "Signin",
+        "typeorm",
         "uuidv"
     ]
 }

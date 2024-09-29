@@ -39,9 +39,9 @@ export class AuthFacebookService {
         "/me",
         "get",
         { fields: "id,last_name,email,first_name" },
-        (response) => {
-          if (response.error) {
-            return reject(response.error);
+        (response: any) => {
+          if (response?.error) {
+            return reject(response?.error);
           }
           resolve(response);
         }
