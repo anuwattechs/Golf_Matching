@@ -4,7 +4,7 @@ import { AuthProvidersEnum } from 'src/shared/enums';
 import { Exclude } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 
-@Schema({ timestamps: true })
+@Schema({ collection: 'Users', timestamps: true })
 export class User extends Document {
   @Prop({
     type: String, // Define the type of _id as String for UUID
@@ -12,7 +12,19 @@ export class User extends Document {
   })
   _id: string;
 
-  @Prop({ unique: true, nullable: true, type: String })
+  @Prop({ required: true, type: String })
+  firstName: string;
+
+  @Prop({ required: true, type: String })
+  lastName: string;
+
+  @Prop({ default: null })
+  nickName: string;
+
+  @Prop({ default: null })
+  dateOfBirth: string;
+
+  @Prop({ unique: true, required: true, type: String }) //! Email, Phone, Social
   email: string | null;
 
   @Prop({ nullable: true, select: false })
@@ -32,41 +44,50 @@ export class User extends Document {
   @Prop({ nullable: true, index: true, type: String })
   socialId: string | null;
 
+  @Prop({ required: true })
+  gender: string;
+
+  @Prop({ required: true })
+  country: string;
+
+  @Prop({ required: true })
+  location: string;
+
+  @Prop({ default: '' })
+  occupation: string;
+
+  @Prop({ default: [], type: [String] })
+  lifestyle: string[];
+
+  @Prop({ default: null }) //! Year 4 digits
+  startedGolf: number;
+
+  @Prop({ default: null })
+  avgScore: number;
+
+  @Prop({ default: null })
+  favoriteCourse: string;
+
+  @Prop({ default: null })
+  holesInOne: number;
+
+  @Prop({ default: null })
+  bestScore: number;
+
+  @Prop({ default: '' })
+  clubs: string;
+
+  @Prop({ default: '' })
+  introduction: string;
+
+  @Prop({ default: true })
+  isInvited: boolean;
+
   @Prop({ default: false })
-  isVerified: boolean;
+  isActivated: boolean;
 
-  @Prop({ type: String })
-  otp: string; // สำหรับ OTP
-
-  @Prop({ type: Date })
-  otpExpired: Date;
-
-  @Prop({ default: false })
-  otpSent: boolean;
-
-  @Prop({ nullable: true, type: String })
-  firstName: string | null;
-
-  @Prop({ nullable: true, type: String })
-  lastName: string | null;
-
-  @Prop({
-    default: Date.now,
-  })
-  lastLogin: Date;
-
-  @Prop({
-    default: Date.now,
-  })
-  createdAt: Date;
-
-  @Prop({
-    default: Date.now,
-  })
-  updatedAt: Date;
-
-  @Prop({ nullable: true })
-  deletedAt: Date | null;
+  @Prop({ default: null })
+  activatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
