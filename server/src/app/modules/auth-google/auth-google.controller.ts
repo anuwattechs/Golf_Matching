@@ -57,20 +57,15 @@ export class AuthGoogleController {
   ) {
     try {
       const socialData = req.user as SocialInterface;
-      const loginResponse = await this.authService.validateSocialLogin(
+      return this.authService.validateSocialLogin(
         AuthProvidersEnum.GOOGLE,
         socialData,
       );
-      const frontEndUrl = this.configService.get<string>('app.frontendDomain', {
-        infer: true,
-      });
-      res?.redirect(
-        `${frontEndUrl}/dashboard?loginResponse=${JSON.stringify(loginResponse)}`,
-      );
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         {
-          message: 'Invalid token',
+          message: `Invalid token`,
         },
         401,
       );

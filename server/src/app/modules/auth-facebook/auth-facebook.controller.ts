@@ -51,10 +51,18 @@ export class AuthFacebookController {
   @UseGuards(FacebookAuthGuard)
   @ResponseMessage('User logged in successfully')
   async facebookAuthRedirect(@Request() req: any) {
-    const socialData = req.user;
-    return this.authService.validateSocialLogin(
-      AuthProvidersEnum.FACEBOOK,
-      socialData,
-    );
+    try {
+      return this.authService.validateSocialLogin(
+        AuthProvidersEnum.FACEBOOK,
+        req.user,
+      );
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: 'Invalid token',
+        },
+        401,
+      );
+    }
   }
 }
