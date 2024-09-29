@@ -3,10 +3,11 @@ import { AuthGoogleService } from './auth-google.service';
 import { AuthModule } from '../auth/auth.module';
 import { AuthGoogleController } from './auth-google.controller';
 import { ConfigModule } from '@nestjs/config';
+import { GoogleStrategy } from './strategy/google.strategy';
 
 @Module({
   imports: [ConfigModule, AuthModule],
-  providers: [AuthGoogleService],
+  providers: [AuthGoogleService, GoogleStrategy],
   controllers: [AuthGoogleController],
   exports: [AuthGoogleService],
 })
