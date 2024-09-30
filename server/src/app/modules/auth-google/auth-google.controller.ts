@@ -58,13 +58,11 @@ export class AuthGoogleController {
   ) {
     try {
       const socialData = req.user as SocialInterface;
-      res.redirect(`http://google.com`);
-      // return this.authService.validateSocialLogin(
-      //   AuthProvidersEnum.GOOGLE,
-      //   socialData,
-      // );
+      return this.authService.validateSocialLogin(
+        AuthProvidersEnum.GOOGLE,
+        socialData,
+      );
     } catch (error) {
-      console.log(error);
       throw new HttpException(
         {
           message: `Invalid token`,
