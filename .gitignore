@@ -50,3 +50,7 @@ build/config\.gypi
 
 .npmrc
 pnpm-lock.yaml
+<<<<<<< HEAD
+=======
+.env
+>>>>>>> 957c490 (Updated)
