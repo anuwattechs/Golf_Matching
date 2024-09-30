@@ -6,12 +6,17 @@ import { databaseConfig } from './core/database/config';
 import { AuthModule } from './app/modules/auth/auth.module';
 import { UsersModule } from './app/modules/users/users.module';
 import { AuthGoogleModule } from './app/modules/auth-google/auth-google.module';
+<<<<<<< HEAD
 import { AuthFacebookModule } from './app/modules/auth-facebook/auth-facebook.module';
 import { AuthAppleController } from './app/modules/auth-apple/auth-apple.controller';
 import { AuthAppleModule } from './app/modules/auth-apple/auth-apple.module';
 import googleConfig from './app/modules/auth-google/config/google.config';
 import facebookConfig from './app/modules/auth-facebook/config/facebook.config';
 import appConfig from './app/config/app.config';
+=======
+import { AuthAppleModule } from './app/modules/auth-apple/auth-apple.module';
+import { AuthFacebookModule } from './app/modules/auth-facebook/auth-facebook.module';
+>>>>>>> 586cf96 (Created auth social)
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -28,8 +33,13 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     }),
     infrastructureDatabaseModule,
     AuthGoogleModule,
+<<<<<<< HEAD
     AuthFacebookModule,
     AuthAppleModule,
+=======
+    AuthAppleModule,
+    AuthFacebookModule,
+>>>>>>> 586cf96 (Created auth social)
   ],
   controllers: [AuthAppleController],
 })

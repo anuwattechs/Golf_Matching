@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
@@ -47,3 +48,9 @@ export class AuthGoogleService {
     };
   }
 }
+=======
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class AuthGoogleService {}
+>>>>>>> 586cf96 (Created auth social)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Controller, HttpException } from "@nestjs/common";
 import { AuthService } from "../auth/auth.service";
 import { AuthAppleService } from "./auth-apple.service";
@@ -36,4 +37,12 @@ export class AuthAppleController {
       );
     }
   }
+=======
+import { Controller } from '@nestjs/common';
+import { AuthAppleService } from './auth-apple.service';
+
+@Controller('auth-apple')
+export class AuthAppleController {
+  constructor(private readonly authAppleService: AuthAppleService) {}
+>>>>>>> 586cf96 (Created auth social)
 }
