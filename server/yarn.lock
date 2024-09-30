@@ -346,7 +346,7 @@
 
 "@commitlint/config-conventional@^19.5.0":
   version "19.5.0"
-  resolved "https://registry.npmjs.org/@commitlint/config-conventional/-/config-conventional-19.5.0.tgz"
+  resolved "https://registry.yarnpkg.com/@commitlint/config-conventional/-/config-conventional-19.5.0.tgz#f838cdaed0e0e223cdc2e865f055d474a49fe18c"
   integrity sha512-OBhdtJyHNPryZKg0fFpZNOBM1ZDbntMvqMuSmpfyP86XSfwzGw4CaoYRG4RutUPg0BTK07VMRIkNJT6wi2zthg==
   dependencies:
     "@commitlint/types" "^19.5.0"
