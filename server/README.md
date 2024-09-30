@@ -1,55 +1,215 @@
+# GO LINK GOLF MICROSERVICE
+
+## Overview
+
+This is a backend application built with [Node.js](https://nodejs.org/), [TypeScript](https://www.typescriptlang.org/), and [NestJS](https://nestjs.com/). The backend handles features such as authentication, user management, logging, and database interactions.
+
+## Table of Contents
+
+- [GO LINK GOLF MICROSERVICE](#go-link-golf-microservice)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Project Structure](#project-structure)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Steps](#steps)
+  - [Running the Application](#running-the-application)
+  - [Testing](#testing)
+  - [Build for Production](#build-for-production)
+
+## Project Structure
+
+```bash
 /project-root
 │
 ├── /src
 │   ├── /app
-│   │   ├── /common              # เก็บโมดูลที่ใช้ร่วมกัน เช่น utilities, services หรือสิ่งที่แชร์ได้
-│   │   │   └── /decorators      # เก็บ decorators ที่เราสร้างขึ้นมาเอง เพื่อใช้งานเฉพาะในแอป
-│   │   │   └── /filters         # เก็บ exception filters สำหรับการจัดการข้อผิดพลาด
-│   │   │   └── /pipes           # เก็บ pipes สำหรับการ validate หรือ transform ข้อมูล
-│   │   │   └── /guards          # เก็บ guards สำหรับการตรวจสอบสิทธิ์หรือการป้องกันการเข้าถึงข้อมูล
-│   │   │   └── /interceptors    # เก็บ interceptors สำหรับการดักจับ request หรือ response
-│   │   └── /config              # เก็บไฟล์ config สำหรับการตั้งค่า เช่น config ของฐานข้อมูล หรือ environment variables
-│   │   └── /modules             # เก็บโมดูลของฟีเจอร์ทั้งหมด
-│   │       ├── /auth            # ตัวอย่าง: โมดูลที่จัดการระบบ Authentication (การยืนยันตัวตน)
-│   │       │   ├── auth.controller.ts  # ควบคุม request และ response ของระบบ auth
-│   │       │   ├── auth.service.ts     # จัดการ business logic ของระบบ auth
-│   │       │   ├── auth.module.ts      # ประกาศและตั้งค่าโมดูล auth
-│   │       │   └── dto                # เก็บ Data Transfer Object (DTO) สำหรับโมดูลนี้
-│   │       ├── /user                  # ตัวอย่าง: โมดูล User สำหรับจัดการข้อมูลผู้ใช้
-│   │       │   ├── user.controller.ts  # ควบคุมการทำงานที่เกี่ยวข้องกับ user
-│   │       │   ├── user.service.ts     # จัดการ business logic ของ user
-│   │       │   ├── user.module.ts      # ตั้งค่าโมดูล user
-│   │       │   └── dto                 # เก็บ DTO สำหรับโมดูล user
-│   │       ├── /other-modules          # โมดูลฟีเจอร์อื่น ๆ
+│   │   ├── /common              # Shared modules like utilities, services, or reusable components
+│   │   │   ├── /decorators      # Custom decorators for the application
+│   │   │   ├── /filters         # Exception filters for error handling
+│   │   │   ├── /pipes           # Pipes for data validation or transformation
+│   │   │   ├── /guards          # Guards for authorization or access control
+│   │   │   └── /interceptors    # Interceptors for handling requests/responses
+│   │   ├── /config              # Configuration files for settings like database config or environment variables
+│   │   └── /modules             # Feature-specific modules
+│   │       ├── /auth            # Authentication module
+│   │       │   ├── auth.controller.ts  # Handles requests and responses for authentication
+│   │       │   ├── auth.service.ts     # Manages business logic for authentication
+│   │       │   ├── auth.module.ts      # Module declaration and setup for authentication
+│   │       │   └── dto                # Data Transfer Objects for authentication
+│   │       ├── /user                  # User module for user management
+│   │       │   ├── user.controller.ts  # Manages user-related requests
+│   │       │   ├── user.service.ts     # Business logic for user management
+│   │       │   ├── user.module.ts      # User module setup
+│   │       │   └── dto                 # Data Transfer Objects for user
+│   │       ├── /other-modules          # Other feature modules
 │   │
-│   ├── /core                    # โมดูลหลักของระบบ เช่น การเชื่อมต่อฐานข้อมูล, การจัดการล็อก
-│   │   ├── /database            # การตั้งค่าและเชื่อมต่อฐานข้อมูล
-│   │   │   └── database.module.ts  # โมดูลสำหรับจัดการ database
-│   │   └── /logging             # เก็บบริการการจัดการล็อก (logging)
-│   │   └── /http                # เก็บการจัดการ interceptors, error handling ที่เกี่ยวข้องกับ HTTP
+│   ├── /core                    # Core system modules like database connection and logging
+│   │   ├── /database            # Database configuration and connection
+│   │   │   └── database.module.ts  # Module for database management
+│   │   ├── /logging             # Logging service
+│   │   └── /http                # HTTP-related interceptors and error handling
 │   │
-│   ├── /shared                  # เก็บทรัพยากรที่แชร์กันได้ระหว่างโมดูลต่าง ๆ เช่น models, interfaces
-│   │   └── /interfaces          # เก็บ interfaces ที่ใช้ทั่วทั้งแอป
-│   │   └── /constants           # เก็บค่าคงที่ที่ใช้ในระบบ
-│   │   └── /enums               # เก็บ enum สำหรับค่าแบบเลือกที่กำหนดได้ในโค้ด
-│   │   └── /validators          # เก็บ validators ที่ใช้ validate ข้อมูล
+│   ├── /shared                  # Shared resources across modules like models, interfaces
+│   │   ├── /interfaces          # Global interfaces used throughout the application
+│   │   ├── /constants           # Constants used in the application
+│   │   ├── /enums               # Enumerations for selectable values in code
+│   │   └── /validators          # Validators for data validation
 │   │
-│   ├── main.ts                  # จุดเริ่มต้นของแอป (bootstrap)
-│   └── app.module.ts            # Root module ของแอป
+│   ├── main.ts                  # Application entry point (bootstrap)
+│   └── app.module.ts            # Root module of the application
 │
-├── /test                        # เก็บไฟล์การทดสอบทั้ง unit test และ integration test
-│   ├── /e2e                     # เก็บ end-to-end tests (การทดสอบที่ครอบคลุมการทำงานทั้งระบบ)
-│   ├── /unit                    # เก็บ unit tests (การทดสอบเฉพาะฟังก์ชันหรือโมดูล)
-│   ├── jest-e2e.json            # การตั้งค่า Jest สำหรับ e2e test
-│   ├── jest-unit.json           # การตั้งค่า Jest สำหรับ unit test
+├── /test                        # Test files for unit and integration testing
+│   ├── /e2e                     # End-to-end tests covering full system functionality
+│   ├── /unit                    # Unit tests for specific functions or modules
+│   ├── jest-e2e.json            # Jest configuration for end-to-end testing
+│   ├── jest-unit.json           # Jest configuration for unit testing
 │
-├── /scripts                     # เก็บสคริปต์สำหรับการติดตั้ง การ build และการ deploy
+├── /scripts                     # Scripts for installation, build, and deployment
 │
-├── /config                      # เก็บไฟล์ config ระดับ global (ไฟล์ dotenv, env files)
+├── /config                      # Global configuration files (dotenv, env files)
 │   ├── config.ts
-│   ├── env.development          # Environment variables สำหรับ dev environment
-│   ├── env.production           # Environment variables สำหรับ production environment
+│   ├── env.development          # Environment variables for development
+│   ├── env.production           # Environment variables for production
 │
-├── package.json                 # ข้อมูลแพ็กเกจ npm และการตั้งค่าโปรเจ็กต์
-├── tsconfig.json                # การตั้งค่า TypeScript
-└── README.md                    # เอกสารอธิบายโปรเจ็กต์
+├── package.json                 # npm package information and project configuration
+├── tsconfig.json                # TypeScript configuration
+└── README.md                    # Project documentation
+```
+
+## Installation
+
+### Prerequisites
+
+Ensure you have the following installed:
+
+- **Node.js** (v14+)
+- **npm** (v6+)
+- **MongoDB** (either locally installed or use a service like [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
+
+### Steps
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repository-url>
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd <project-directory>
+   ```
+
+3. Install the dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Set up environment variables:
+
+   - Copy the `.env.example` file to `.env`:
+
+     ```bash
+     cp .env.example .env
+     ```
+
+   - Open the `.env` file and update the values as needed:
+
+     ```bash
+     # Example .env configuration
+
+     NODE_ENV=development
+     APP_PORT=3000
+     APP_NAME="NestJS API"
+     API_PREFIX=api
+     APP_FALLBACK_LANGUAGE=en
+     APP_HEADER_LANGUAGE=x-custom-lang
+     FRONTEND_DOMAIN=http://localhost:3000
+     BACKEND_DOMAIN=http://localhost:3000
+
+     # MongoDB Configuration
+     DATABASE_URL=mongodb://localhost:27017/golink_golf_db
+
+     # File Storage Configuration
+     FILE_DRIVER=local
+     ACCESS_KEY_ID=
+     SECRET_ACCESS_KEY=
+     AWS_S3_REGION=
+     AWS_DEFAULT_S3_BUCKET=
+
+     # Email Configuration
+     MAIL_HOST=maildev
+     MAIL_PORT=1025
+     MAIL_USER=
+     MAIL_PASSWORD=
+     MAIL_IGNORE_TLS=true
+     MAIL_SECURE=false
+     MAIL_REQUIRE_TLS=false
+     MAIL_DEFAULT_EMAIL=noreply@example.com
+     MAIL_DEFAULT_NAME=Api
+     MAIL_CLIENT_PORT=1080
+
+     # Authentication Configuration
+     AUTH_JWT_SECRET=secret
+     AUTH_JWT_TOKEN_EXPIRES_IN=15m
+     AUTH_REFRESH_SECRET=secret_for_refresh
+     AUTH_REFRESH_TOKEN_EXPIRES_IN=3650d
+     AUTH_FORGOT_SECRET=secret_for_forgot
+     AUTH_FORGOT_TOKEN_EXPIRES_IN=30m
+     AUTH_CONFIRM_EMAIL_SECRET=secret_for_confirm_email
+     AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN=1d
+
+     # Social Media API Configuration
+     FACEBOOK_APP_ID=
+     FACEBOOK_APP_SECRET=
+     GOOGLE_CLIENT_ID=
+     GOOGLE_CLIENT_SECRET=
+     GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
+     APPLE_APP_AUDIENCE=[]
+
+     TWITTER_CONSUMER_KEY=
+     TWITTER_CONSUMER_SECRET=
+
+     # Worker Configuration
+     WORKER_HOST=redis://redis:6379/1
+     ```
+
+5. Set up the database:
+
+   - Ensure your MongoDB server is running. If using a local instance, start the MongoDB service.
+   - If using MongoDB Atlas, make sure your cluster is set up, and update the `DATABASE_URL` accordingly.
+   - Run any initial setup scripts or seed data if applicable (you can create a script for this in the `scripts/` directory).
+
+## Running the Application
+
+To run the application locally:
+
+```bash
+npm run start:dev
+```
+
+This will start the server on `http://localhost:3000` (or your specified port).
+
+## Testing
+
+Run unit and end-to-end tests:
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+```
+
+## Build for Production
+
+To build the application for production:
+
+```bash
+npm run build
+```
+
+This will compile the TypeScript files into JavaScript in the `dist/` directory, ready for production deployment.

@@ -20,27 +20,61 @@ This is a backend application built with [Node.js](https://nodejs.org/), [TypeSc
 ## Project Structure
 
 ```bash
-.
-├── core/                  # Core utilities, logging, and database modules
-│   ├── database/          # Database configuration and modules
-│   ├── logging/           # Logging service
-│   └── http/              # HTTP interceptors and error handling
-├── modules/               # Feature-specific modules
-│   ├── auth/              # Authentication module
-│   ├── user/              # User management module
-│   └── other-modules/     # Other feature modules (future expansion)
-├── shared/                # Shared resources (interfaces, enums, validators)
-├── test/                  # Test-related files
-│   ├── unit/              # Unit tests
-│   └── e2e/               # End-to-end tests
-├── scripts/               # Build, deploy, and other automation scripts
-├── config/                # Application configuration files
-├── main.ts                # Application entry point (bootstrap)
-├── app.module.ts          # Root module
-├── package.json           # Project dependencies and scripts
-├── tsconfig.json          # TypeScript configuration
-└── README.md              # Project documentation
-
+/project-root
+│
+├── /src
+│   ├── /app
+│   │   ├── /common              # Shared modules like utilities, services, or reusable components
+│   │   │   ├── /decorators      # Custom decorators for the application
+│   │   │   ├── /filters         # Exception filters for error handling
+│   │   │   ├── /pipes           # Pipes for data validation or transformation
+│   │   │   ├── /guards          # Guards for authorization or access control
+│   │   │   └── /interceptors    # Interceptors for handling requests/responses
+│   │   ├── /config              # Configuration files for settings like database config or environment variables
+│   │   └── /modules             # Feature-specific modules
+│   │       ├── /auth            # Authentication module
+│   │       │   ├── auth.controller.ts  # Handles requests and responses for authentication
+│   │       │   ├── auth.service.ts     # Manages business logic for authentication
+│   │       │   ├── auth.module.ts      # Module declaration and setup for authentication
+│   │       │   └── dto                # Data Transfer Objects for authentication
+│   │       ├── /user                  # User module for user management
+│   │       │   ├── user.controller.ts  # Manages user-related requests
+│   │       │   ├── user.service.ts     # Business logic for user management
+│   │       │   ├── user.module.ts      # User module setup
+│   │       │   └── dto                 # Data Transfer Objects for user
+│   │       ├── /other-modules          # Other feature modules
+│   │
+│   ├── /core                    # Core system modules like database connection and logging
+│   │   ├── /database            # Database configuration and connection
+│   │   │   └── database.module.ts  # Module for database management
+│   │   ├── /logging             # Logging service
+│   │   └── /http                # HTTP-related interceptors and error handling
+│   │
+│   ├── /shared                  # Shared resources across modules like models, interfaces
+│   │   ├── /interfaces          # Global interfaces used throughout the application
+│   │   ├── /constants           # Constants used in the application
+│   │   ├── /enums               # Enumerations for selectable values in code
+│   │   └── /validators          # Validators for data validation
+│   │
+│   ├── main.ts                  # Application entry point (bootstrap)
+│   └── app.module.ts            # Root module of the application
+│
+├── /test                        # Test files for unit and integration testing
+│   ├── /e2e                     # End-to-end tests covering full system functionality
+│   ├── /unit                    # Unit tests for specific functions or modules
+│   ├── jest-e2e.json            # Jest configuration for end-to-end testing
+│   ├── jest-unit.json           # Jest configuration for unit testing
+│
+├── /scripts                     # Scripts for installation, build, and deployment
+│
+├── /config                      # Global configuration files (dotenv, env files)
+│   ├── config.ts
+│   ├── env.development          # Environment variables for development
+│   ├── env.production           # Environment variables for production
+│
+├── package.json                 # npm package information and project configuration
+├── tsconfig.json                # TypeScript configuration
+└── README.md                    # Project documentation
 ```
 
 ## Installation
