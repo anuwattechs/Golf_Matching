@@ -27,6 +27,7 @@ export class AuthGoogleController {
     try {
       const socialData =
         await this.authGoogleService.getProfileByToken(loginDto);
+      console.log(socialData);
       return this.authService.validateSocialLogin(
         AuthProvidersEnum.GOOGLE,
         socialData,
@@ -57,10 +58,11 @@ export class AuthGoogleController {
   ) {
     try {
       const socialData = req.user as SocialInterface;
-      return this.authService.validateSocialLogin(
-        AuthProvidersEnum.GOOGLE,
-        socialData,
-      );
+      res.redirect(`http://google.com`);
+      // return this.authService.validateSocialLogin(
+      //   AuthProvidersEnum.GOOGLE,
+      //   socialData,
+      // );
     } catch (error) {
       console.log(error);
       throw new HttpException(
