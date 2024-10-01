@@ -8,17 +8,17 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import { Reflector } from '@nestjs/core';
 import { RESPONSE_MESSAGE_METADATA } from '../decorator/response-message.decorator';
 
 export type Response<T> = {
   status: boolean;
   statusCode: number;
-  path: string;
+  // path: string;
   message: string;
   data: T;
-  timestamp: string;
+  // timestamp: string;
 };
 
 @Injectable()
@@ -40,7 +40,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
   errorHandler(exception: HttpException, context: ExecutionContext) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
-    const request = ctx.getRequest();
+    // const request = ctx.getRequest();
 
     const status =
       exception instanceof HttpException
@@ -50,17 +50,17 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     response.status(status).json({
       status: false,
       statusCode: status,
-      path: request.url,
+      // path: request.url,
       message: exception.message,
       data: null,
-      timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
+      // timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
     });
   }
 
   responseHandler(res: T, context: ExecutionContext) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
-    const request = ctx.getRequest();
+    // const request = ctx.getRequest();
     const statusCode = response.statusCode;
     const message =
       this.reflector.get<string>(
@@ -70,11 +70,11 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
 
     return {
       status: true,
-      path: request.url,
+      // path: request.url,
       message: message,
       statusCode,
       data: res,
-      timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
+      // timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
     };
   }
 }

@@ -1,11 +1,11 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import { AuthProvidersEnum } from "src/shared/enums";
-import { Exclude } from "class-transformer";
-import { v4 as uuidv4 } from "uuid";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { AuthProvidersEnum } from 'src/shared/enums';
+import { Exclude } from 'class-transformer';
+import { v4 as uuidv4 } from 'uuid';
 
-@Schema({ collection: "Users", timestamps: true })
-export class User extends Document {
+@Schema({ collection: 'Members', timestamps: true })
+export class Member extends Document {
   @Prop({
     type: String, // Define the type of _id as String for UUID
     default: uuidv4, // Set UUID as the default value for _id
@@ -53,7 +53,7 @@ export class User extends Document {
   @Prop({ required: true })
   location: string;
 
-  @Prop({ default: "" })
+  @Prop({ default: '' })
   occupation: string;
 
   @Prop({ default: [], type: [String] })
@@ -74,10 +74,10 @@ export class User extends Document {
   @Prop({ default: null })
   bestScore: number;
 
-  @Prop({ default: "" })
+  @Prop({ default: '' })
   clubs: string;
 
-  @Prop({ default: "" })
+  @Prop({ default: '' })
   introduction: string;
 
   @Prop({ default: true })
@@ -105,11 +105,11 @@ export class User extends Document {
   // deletedAt: Date | null;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const MemberSchema = SchemaFactory.createForClass(Member);
 
-UserSchema.pre("save", function (next) {
-  const user = this as User;
-  if (!user.isModified("password")) return next();
+MemberSchema.pre('save', function (next) {
+  const user = this as Member;
+  if (!user.isModified('password')) return next();
   user.previousPassword = user.password;
   next();
 });

@@ -1,13 +1,13 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
-import { AuthProvidersEnum } from "src/shared/enums";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import { AuthProvidersEnum } from 'src/shared/enums';
 
 // export type IdentityRegistrationDocument = IdentityRegistration & Document;
 
 // @Schema({ collection: 'IdentityRegistration', versionKey: false })
-@Schema({ collection: "IdentityRegistration", timestamps: true })
-export class IdentityRegistration extends Document {
+@Schema({ collection: 'VerificationRegistration', timestamps: true })
+export class VerificationRegistration extends Document {
   @Prop({
     type: String, // Define the type of _id as String for UUID
     default: uuidv4, // Set UUID as the default value for _id
@@ -36,5 +36,6 @@ export class IdentityRegistration extends Document {
   //   updatedAt: Date;
 }
 
-export const IdentityRegistrationSchema =
-  SchemaFactory.createForClass(IdentityRegistration);
+export const VerificationRegistrationSchema = SchemaFactory.createForClass(
+  VerificationRegistration,
+);
