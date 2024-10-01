@@ -1,5 +1,6 @@
+<<<<<<< HEAD
 import { Controller, HttpException, HttpStatus, Request } from '@nestjs/common';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../auth2/auth.service';
 import { Body, Post, Get } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthFacebookService } from './auth-facebook.service';
@@ -65,4 +66,12 @@ export class AuthFacebookController {
       );
     }
   }
+=======
+import { Controller } from '@nestjs/common';
+import { AuthFacebookService } from './auth-facebook.service';
+
+@Controller('auth-facebook')
+export class AuthFacebookController {
+  constructor(private readonly authFacebookService: AuthFacebookService) {}
+>>>>>>> 586cf96 (Created auth social)
 }

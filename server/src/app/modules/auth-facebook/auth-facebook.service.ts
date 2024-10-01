@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Injectable } from "@nestjs/common";
 import { Facebook } from "fb";
 import { ConfigService } from "@nestjs/config";
@@ -58,3 +59,9 @@ export class AuthFacebookService {
     };
   }
 }
+=======
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class AuthFacebookService {}
+>>>>>>> 586cf96 (Created auth social)

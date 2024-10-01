@@ -3,12 +3,12 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-} from "@nestjs/common";
-import { User } from "src/schemas";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { AuthProvidersEnum } from "src/shared/enums";
-import { UserRepository } from "./repository/user.repository";
-import { NullableType } from "src/shared/types/nullable.type";
+} from '@nestjs/common';
+import { User } from 'src/schemas';
+import { CreateUserDto } from './dto/create-user.dto';
+import { AuthProvidersEnum } from 'src/shared/enums';
+import { UserRepository } from './repository/user.repository';
+import { NullableType } from 'src/shared/types/nullable.type';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +20,7 @@ export class UsersService {
     if (user) {
       throw new HttpException(
         `User with email ${email} already exists`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
     try {
@@ -31,7 +31,7 @@ export class UsersService {
     }
   }
 
-  findByEmail(email: User["email"]): Promise<NullableType<User>> {
+  findByEmail(email: User['email']): Promise<NullableType<User>> {
     return this.userRepository.findByEmail(email);
   }
 
@@ -39,8 +39,8 @@ export class UsersService {
     socialId,
     provider,
   }: {
-    socialId: User["socialId"];
-    provider: User["provider"];
+    socialId: User['socialId'];
+    provider: User['provider'];
   }): Promise<NullableType<User>> {
     return this.userRepository.findBySocialIdAndProvider({
       socialId,
@@ -52,7 +52,7 @@ export class UsersService {
     return await this.userRepository.findAll();
   }
 
-  async update(id: User["id"], payload: Partial<User>): Promise<User | null> {
+  async update(id: User['id'], payload: Partial<User>): Promise<User | null> {
     const clonedPayload = { ...payload, updatedAt: new Date() };
 
     return await this.userRepository.update(id, clonedPayload);
