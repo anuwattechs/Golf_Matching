@@ -4,8 +4,13 @@ import { AuthProvidersEnum } from 'src/shared/enums';
 import { Exclude } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 
+<<<<<<< HEAD:server/src/schemas/users.schema.ts
 @Schema({ collection: 'Users', timestamps: true })
 export class User extends Document {
+=======
+@Schema({ collection: 'Members', timestamps: true })
+export class Member extends Document {
+>>>>>>> b398a21 (Updated /auth*):server/src/schemas/members.schema.ts
   @Prop({
     type: String, // Define the type of _id as String for UUID
     default: uuidv4, // Set UUID as the default value for _id
@@ -105,10 +110,15 @@ export class User extends Document {
   // deletedAt: Date | null;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const MemberSchema = SchemaFactory.createForClass(Member);
 
+<<<<<<< HEAD:server/src/schemas/users.schema.ts
 UserSchema.pre('save', function (next) {
   const user = this as User;
+=======
+MemberSchema.pre('save', function (next) {
+  const user = this as Member;
+>>>>>>> b398a21 (Updated /auth*):server/src/schemas/members.schema.ts
   if (!user.isModified('password')) return next();
   user.previousPassword = user.password;
   next();

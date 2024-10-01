@@ -5,7 +5,7 @@ import { Post, Body, Request, Response } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
 import { AuthProvidersEnum } from 'src/shared/enums';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../auth2/auth.service';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { GoogleOAuthGuard } from './guard/google-oauth.guard';
 import { SocialInterface } from 'src/shared/interfaces';

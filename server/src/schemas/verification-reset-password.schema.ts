@@ -1,13 +1,11 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
-import { AuthProvidersEnum } from "src/shared/enums";
-
-// export type IdentityResetPasswordDocument = IdentityResetPassword & Document;
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import { AuthProvidersEnum } from 'src/shared/enums';
 
 // @Schema({ collection: 'IdentityResetPassword', versionKey: false })
-@Schema({ collection: "IdentityResetPassword", timestamps: true })
-export class IdentityResetPassword extends Document {
+@Schema({ collection: 'VerificationResetPassword', timestamps: true })
+export class VerificationResetPassword extends Document {
   @Prop({
     type: String, // Define the type of _id as String for UUID
     default: uuidv4, // Set UUID as the default value for _id
@@ -39,6 +37,6 @@ export class IdentityResetPassword extends Document {
   //   updatedAt: Date;
 }
 
-export const IdentityResetPasswordPasswordSchema = SchemaFactory.createForClass(
-  IdentityResetPassword
+export const VerificationResetPasswordSchema = SchemaFactory.createForClass(
+  VerificationResetPassword,
 );
