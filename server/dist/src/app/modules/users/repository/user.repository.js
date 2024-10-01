@@ -23,6 +23,7 @@ let UserRepository = class UserRepository {
     }
     async create(data) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         const createdUser = new this.userModel({
             ...data,
             createdAt: new Date(),
@@ -34,21 +35,28 @@ let UserRepository = class UserRepository {
         return this.userModel.findById(id).exec();
 =======
         const currentDate = new Date();
+=======
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
         const createdUser = new this.userModel({
             ...data,
-            createdAt: currentDate,
-            updatedAt: currentDate,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         });
-        return await createdUser.save();
+        return createdUser.save();
     }
     async findById(id) {
+<<<<<<< HEAD
         return await this.userModel.findById(id).exec();
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+        return this.userModel.findById(id).exec();
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
     }
     async remove(id) {
         await this.userModel.findByIdAndDelete(id).exec();
     }
     async findByEmail(email) {
+<<<<<<< HEAD
 <<<<<<< HEAD
         return this.userModel.findOne({ email }).exec();
     }
@@ -59,13 +67,15 @@ let UserRepository = class UserRepository {
         return this.userModel.find().exec();
 =======
         return await this.userModel.findOne({ email }).exec();
+=======
+        return this.userModel.findOne({ email }).exec();
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
     }
     async findBySocialIdAndProvider({ socialId, provider, }) {
-        return await this.userModel.findOne({
-            where: { socialId, provider },
-        });
+        return this.userModel.findOne({ socialId, provider }).exec();
     }
     async findAll() {
+<<<<<<< HEAD
         return await this.userModel.find().exec();
     }
     async update(id, data) {
@@ -73,6 +83,9 @@ let UserRepository = class UserRepository {
             .findByIdAndUpdate(id, data, { new: true })
             .exec();
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+        return this.userModel.find().exec();
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
     }
 };
 exports.UserRepository = UserRepository;

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 export declare class AuthService {
@@ -28,4 +29,12 @@ export declare class AuthService {
     identityResetPasswordConfirm(input: ConfirmOtpResetPasswordDto): Promise<TServiceResponse>;
     resetPassword(input: ResetPasswordDto): Promise<TServiceResponse>;
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UsersService } from '../users/users.service';
+export declare class AuthService {
+    private usersService;
+    constructor(usersService: UsersService);
+    register(createUserDto: CreateUserDto): Promise<void>;
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
 }

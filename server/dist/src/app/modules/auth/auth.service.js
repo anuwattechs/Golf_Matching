@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 <<<<<<< HEAD
+<<<<<<< HEAD
 const users_service_1 = require("../users/users.service");
 const speakeasy = require("speakeasy");
 let AuthService = class AuthService {
@@ -28,13 +29,15 @@ let AuthService = class AuthService {
 const bcrypt = require("bcrypt");
 const models_1 = require("../../../schemas/models");
 const utils_1 = require("../../../shared/utils/utils");
+=======
+const users_service_1 = require("../users/users.service");
+const speakeasy = require("speakeasy");
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
 let AuthService = class AuthService {
-    constructor(utils, memberModel, verificationRegistrationModel, verificationResetPasswordModel) {
-        this.utils = utils;
-        this.memberModel = memberModel;
-        this.verificationRegistrationModel = verificationRegistrationModel;
-        this.verificationResetPasswordModel = verificationResetPasswordModel;
+    constructor(usersService) {
+        this.usersService = usersService;
     }
+<<<<<<< HEAD
     async createVerificationRegister(input) {
         try {
             const userRegistered = await this.memberModel.findAllByEmailOrPhone(input.email);
@@ -437,11 +440,20 @@ let AuthService = class AuthService {
             };
         }
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+    async register(createUserDto) {
+        const otp = speakeasy.totp({
+            secret: process.env.OTP_SECRET,
+            encoding: 'base32',
+        });
+        console.log(otp);
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
+<<<<<<< HEAD
 <<<<<<< HEAD
     __metadata("design:paramtypes", [users_service_1.UsersService])
 =======
@@ -450,5 +462,8 @@ exports.AuthService = AuthService = __decorate([
         models_1.VerificationRegistrationModel,
         models_1.VerificationResetPasswordModel])
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+    __metadata("design:paramtypes", [users_service_1.UsersService])
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

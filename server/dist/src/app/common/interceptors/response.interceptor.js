@@ -14,9 +14,13 @@ const common_1 = require("@nestjs/common");
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 <<<<<<< HEAD
+<<<<<<< HEAD
 const date_fns_1 = require("date-fns");
 =======
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+const date_fns_1 = require("date-fns");
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
 const core_1 = require("@nestjs/core");
 const response_message_decorator_1 = require("../decorator/response-message.decorator");
 let ResponseInterceptor = class ResponseInterceptor {
@@ -30,9 +34,13 @@ let ResponseInterceptor = class ResponseInterceptor {
         const ctx = context.switchToHttp();
         const response = ctx.getResponse();
 <<<<<<< HEAD
+<<<<<<< HEAD
         const request = ctx.getRequest();
 =======
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+        const request = ctx.getRequest();
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
         const status = exception instanceof common_1.HttpException
             ? exception.getStatus()
             : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -40,38 +48,54 @@ let ResponseInterceptor = class ResponseInterceptor {
             status: false,
             statusCode: status,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
             path: request.url,
             message: exception.message,
             data: null,
             timestamp: (0, date_fns_1.format)(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
+<<<<<<< HEAD
 =======
             message: exception.message,
             data: null,
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
         });
     }
     responseHandler(res, context) {
         const ctx = context.switchToHttp();
         const response = ctx.getResponse();
 <<<<<<< HEAD
+<<<<<<< HEAD
         const request = ctx.getRequest();
 =======
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+        const request = ctx.getRequest();
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
         const statusCode = response.statusCode;
         const message = this.reflector.get(response_message_decorator_1.RESPONSE_MESSAGE_METADATA, context.getHandler()) || 'success';
         return {
             status: true,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
             path: request.url,
             message: message,
             statusCode,
             data: res,
             timestamp: (0, date_fns_1.format)(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
+<<<<<<< HEAD
 =======
             message: message,
             statusCode,
             data: res,
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
         };
     }
 };

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 <<<<<<< HEAD
+<<<<<<< HEAD
 const enums_1 = require("../../../shared/enums");
 const user_repository_1 = require("./repository/user.repository");
 let UsersService = class UsersService {
@@ -36,25 +37,32 @@ let UsersService = class UsersService {
         }
     }
 =======
+=======
+const enums_1 = require("../../../shared/enums");
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
 const user_repository_1 = require("./repository/user.repository");
 let UsersService = class UsersService {
-    constructor(userRepository) {
-        this.userRepository = userRepository;
+    constructor(usersRepository) {
+        this.usersRepository = usersRepository;
     }
     async create(createUserDto) {
         const { email } = createUserDto;
-        const user = await this.findByEmail(email);
+        const user = await this.usersRepository?.findByEmail(email);
         if (user) {
-            throw new common_1.HttpException(`User with email ${email} already exists`, common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException('User already exists', common_1.HttpStatus.BAD_REQUEST);
         }
         try {
-            const clonedPayload = { ...createUserDto };
-            return await this.userRepository.create(clonedPayload);
+            const clonedPayload = {
+                ...createUserDto,
+                provider: enums_1.AuthProvidersEnum?.GOOGLE,
+            };
+            return await this.usersRepository?.create(clonedPayload);
         }
         catch (error) {
-            throw new common_1.HttpException(error, common_1.HttpStatus.BAD_REQUEST);
+            throw new Error(error);
         }
     }
+<<<<<<< HEAD
     findByEmail(email) {
         return this.userRepository.findByEmail(email);
     }
@@ -72,6 +80,8 @@ let UsersService = class UsersService {
         return await this.userRepository.update(id, clonedPayload);
     }
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

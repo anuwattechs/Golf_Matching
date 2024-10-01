@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
 <<<<<<< HEAD
+<<<<<<< HEAD
 const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const users_module_1 = require("../users/users.module");
@@ -18,11 +19,17 @@ const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const schemas_1 = require("../../../schemas");
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+const auth_service_1 = require("./auth.service");
+const auth_controller_1 = require("./auth.controller");
+const users_module_1 = require("../users/users.module");
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
+<<<<<<< HEAD
 <<<<<<< HEAD
         imports: [users_module_1.UsersModule],
         providers: [auth_service_1.AuthService],
@@ -47,6 +54,11 @@ exports.AuthModule = AuthModule = __decorate([
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService],
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+        imports: [users_module_1.UsersModule],
+        providers: [auth_service_1.AuthService],
+        controllers: [auth_controller_1.AuthController],
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

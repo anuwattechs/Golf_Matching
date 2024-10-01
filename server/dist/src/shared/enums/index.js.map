@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 {"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../src/shared/enums/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,wDAAsC"}
 =======
 {"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../src/shared/enums/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,wDAAsC;AACtC,gDAA8B"}
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../src/shared/enums/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,wDAAsC"}
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")

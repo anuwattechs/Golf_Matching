@@ -23,6 +23,7 @@ let UsersController = class UsersController {
         this.usersService = usersService;
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     async findAll() {
         try {
@@ -33,6 +34,8 @@ let UsersController = class UsersController {
         }
     }
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
     async create(createUserDto) {
         try {
             return await this.usersService.create(createUserDto);
@@ -45,6 +48,7 @@ let UsersController = class UsersController {
 exports.UsersController = UsersController;
 __decorate([
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     (0, common_1.Get)(),
     __metadata("design:type", Function),
@@ -53,6 +57,8 @@ __decorate([
 ], UsersController.prototype, "findAll", null);
 __decorate([
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
     (0, common_2.Post)(),
     (0, response_message_decorator_1.ResponseMessage)('User created successfully'),
     __param(0, (0, common_2.Body)()),

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { DatabaseConfig } from 'src/core/database/config';
 import { AppConfig } from './app-config.type';
 export type AllConfigType = {
@@ -17,4 +18,11 @@ export type AllConfigType = {
     facebook: FacebookConfig;
     apple: AppleConfig;
 >>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
+=======
+import { DatabaseConfig } from 'src/core/database/config';
+import { AppConfig } from './app-config.type';
+export type AllConfigType = {
+    app: AppConfig;
+    database: DatabaseConfig;
+>>>>>>> 744d629 (Revert "Refactor enum and schema imports")
 };
