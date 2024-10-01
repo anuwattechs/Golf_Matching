@@ -87,7 +87,22 @@ export class User extends Document {
   isActivated: boolean;
 
   @Prop({ default: null })
-  activatedAt: Date;
+  activedAt: Date;
+
+  // @Prop({ nullable: true, type: String })
+  // phone: string | null;
+
+  // @Prop({ default: Date.now })
+  // lastLogin: Date;
+
+  // @Prop({default: Date.now})
+  // createdAt: Date;
+
+  // @Prop({default: Date.now})
+  // updatedAt: Date;m
+
+  // @Prop({ nullable: true })
+  // deletedAt: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
