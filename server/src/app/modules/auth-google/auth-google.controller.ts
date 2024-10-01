@@ -4,12 +4,12 @@ import { Post, Body, Request, Response } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
 import { AuthProvidersEnum } from 'src/shared/enums';
-import { AuthService } from '../auth2/auth.service';
-import { LoginResponseDto } from './dto/login-response.dto';
+import { AuthService } from '../auth/auth.service';
 import { GoogleOAuthGuard } from './guard/google-oauth.guard';
 import { SocialInterface } from 'src/shared/interfaces';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
+import { LoginResponseType } from 'src/shared/types';
 
 @Controller({
   path: 'auth/google',
@@ -23,7 +23,7 @@ export class AuthGoogleController {
 
   @Post('login')
   @ResponseMessage('User logged in successfully')
-  async login(@Body() loginDto: AuthGoogleLoginDto): Promise<LoginResponseDto> {
+  async login(@Body() loginDto: AuthGoogleLoginDto): Promise<LoginResponseType> {
     try {
       const socialData =
         await this.authGoogleService.getProfileByToken(loginDto);

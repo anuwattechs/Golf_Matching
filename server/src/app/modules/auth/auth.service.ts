@@ -1,5 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { ResponseType } from 'src/shared/types';
+import { LoginResponseType, NullableType} from 'src/shared/types';
+import { SocialInterface} from 'src/shared/interfaces';
 import * as bcrypt from 'bcrypt';
 import { VerificationRegisterDto, VerifyOptDto, RegisterDto , LoginDto} from './dto';
 import {
@@ -9,6 +10,10 @@ import {
 } from 'src/schemas/models';
 import { Utils } from 'src/shared/utils/utils';
 import { JwtService } from '@nestjs/jwt';
+import {AuthProvidersEnum} from 'src/shared/enums'
+import {JwtPayloadType} from './strategy/jwt-payload.type'
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from 'src/app/config/config.type';
 
 @Injectable()
 export class AuthService {
@@ -18,11 +23,64 @@ export class AuthService {
     private readonly verificationRegistrationModel: VerificationRegistrationModel,
     private readonly verificationResetPasswordModel: VerificationResetPasswordModel,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService<AllConfigType>
   ) {}
+
+  private generateToken(payload: JwtPayloadType){
+    return this.jwtService.sign(payload);
+  }
+
+  private convertTimeStringToMs(timeString: string) {
+    const unit = timeString.at(-1);
+    const value = Number(timeString.slice(0, -1));
+    if (isNaN(value)) return 0;
+    return unit == 'h' ? value * 3.6e6 : unit == 'd' ? value * 24*3.6e6 : 0;
+  }
+
+  async validateSocialLogin(
+    authProvider: AuthProvidersEnum,
+    socialData: SocialInterface
+  ): Promise<LoginResponseType> {
+    try {
+
+      const userRegistered = await this.memberModel.findAllByEmailOrPhone(socialData?.email?.toLowerCase())
+      if (userRegistered.length > 0) throw new HttpException('User registered', HttpStatus.BAD_REQUEST);
+
+      const created = await this.memberModel.createBySocial({
+        socialId: socialData.id,
+        firstName: socialData.firstName,
+        lastName: socialData.lastName,
+        email: socialData?.email?.toLowerCase(),
+        provider: authProvider
+      });
+
+      const accessToken = this.generateToken({
+        userId: created._id,
+        email: socialData?.email?.toLowerCase(),
+        firstName: socialData?.firstName,
+        lastName: socialData?.lastName,
+      })
+
+
+      const jwtExpiresIn = this.configService.get<string>("auth.jwtExpiresIn", {
+        infer: true,
+      });
+
+      return {
+        accessToken,
+        refreshToken: this.configService.get<string>("auth.refreshSecret", {
+          infer: true,
+        }),
+        accessTokenExpiresIn: this.convertTimeStringToMs(jwtExpiresIn),
+      }
+    } catch (error) {
+      throw new HttpException(error.message(), HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
 
   async createVerificationRegister(
     input: VerificationRegisterDto,
-  ): Promise<ResponseType<any[]>> {
+  ): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
       const userRegistered = await this.memberModel.findAllByEmailOrPhone(
@@ -59,12 +117,13 @@ export class AuthService {
 
       //! Send verification code to user (OTP via Email or Phone)
 
-      return {
-        status: true,
-        statusCode: HttpStatus.CREATED,
-        message: 'Verification code sent successfully',
-        data: [{ verify_code: verifyCode }],
-      };
+      return null;
+      // return {
+      //   status: true,
+      //   statusCode: HttpStatus.CREATED,
+      //   message: 'Verification code sent successfully',
+      //   data: [{ verify_code: verifyCode }],
+      // };
     } catch (error) {
       //  return {
       //    status: 'error',
@@ -76,7 +135,7 @@ export class AuthService {
     }
   }
 
-  async verifyRegister(input: VerifyOptDto): Promise<ResponseType<any[]>> {
+  async verifyRegister(input: VerifyOptDto): Promise<NullableType<unknown>> {
     try {
       //! Check if user identity verified
       const userRegistered =
@@ -98,18 +157,19 @@ export class AuthService {
         input.email.toLowerCase(),
       );
 
-      return {
-        status: true,
-        statusCode: HttpStatus.CREATED,
-        message: 'Indentity verified successfully',
-        data: [],
-      };
+      return null;
+      // return {
+      //   status: true,
+      //   statusCode: HttpStatus.CREATED,
+      //   message: 'Indentity verified successfully',
+      //   data: [],
+      // };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async register(input: RegisterDto): Promise<ResponseType<any[]>> {
+  async register(input: RegisterDto): Promise<NullableType<unknown>> {
     try {
       //! Check if user identity verified
       const userIdentityVerified =
@@ -140,12 +200,13 @@ export class AuthService {
         password: hashedPassword,
       });
 
-      return {
-        status: true,
-        statusCode: HttpStatus.CREATED,
-        message: 'User registered successfully',
-        data: [],
-      };
+      return null;
+      // return {
+      //   status: true,
+      //   statusCode: HttpStatus.CREATED,
+      //   message: 'User registered successfully',
+      //   data: [],
+      // };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

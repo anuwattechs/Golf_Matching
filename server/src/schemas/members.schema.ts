@@ -41,16 +41,19 @@ export class Member extends Document {
   @Prop({ default: AuthProvidersEnum.EMAIL })
   provider: AuthProvidersEnum;
 
-  @Prop({ nullable: true, index: true, type: String })
+  @Prop({ nullable: true, type: String })
   socialId: string | null;
 
-  @Prop({ required: true })
+  @Prop({ default: null})
+  // @Prop({ required: true })
   gender: string;
 
-  @Prop({ required: true })
+  @Prop({ default: null})
+  // @Prop({ required: true })
   country: string;
 
-  @Prop({ required: true })
+  @Prop({ default: null})
+  // @Prop({ required: true })
   location: string;
 
   @Prop({ default: '' })

@@ -1,4 +1,4 @@
-import { GenderEnum } from 'src/shared/enums';
+import { GenderEnum , AuthProvidersEnum} from 'src/shared/enums';
 
 export class CreateMemberDto {
   firstName: string;
@@ -18,4 +18,12 @@ export class CreateMemberDto {
   holesInOne: number;
   bestScore: number;
   clubs: string;
+}
+
+export class CreateMemberBySocialDto {
+  firstName: string;
+  lastName: string;
+  email: string;
+  socialId: string;
+  provider: AuthProvidersEnum;
 }

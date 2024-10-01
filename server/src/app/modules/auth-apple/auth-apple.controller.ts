@@ -1,11 +1,11 @@
 import { Controller, HttpException } from '@nestjs/common';
-import { AuthService } from '../auth2/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { AuthAppleService } from './auth-apple.service';
 import { Post } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { Body } from '@nestjs/common';
 import { AuthAppleLoginDto } from './dto/auth-apple-login.dto';
-import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
+import { LoginResponseType } from 'src/shared/types';
 import { AuthProvidersEnum } from 'src/shared/enums';
 
 @Controller({
@@ -19,7 +19,7 @@ export class AuthAppleController {
 
   @Post('login')
   @ResponseMessage('User logged in successfully')
-  async login(@Body() loginDto: AuthAppleLoginDto): Promise<LoginResponseDto> {
+  async login(@Body() loginDto: AuthAppleLoginDto): Promise<LoginResponseType> {
     try {
       const socialData =
         await this.authFacebookService.getProfileByToken(loginDto);

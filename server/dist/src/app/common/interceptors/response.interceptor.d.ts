@@ -4,10 +4,8 @@ import { Reflector } from '@nestjs/core';
 export type Response<T> = {
     status: boolean;
     statusCode: number;
-    path: string;
     message: string;
     data: T;
-    timestamp: string;
 };
 export declare class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     private reflector;
@@ -16,10 +14,8 @@ export declare class ResponseInterceptor<T> implements NestInterceptor<T, Respon
     errorHandler(exception: HttpException, context: ExecutionContext): void;
     responseHandler(res: T, context: ExecutionContext): {
         status: boolean;
-        path: any;
         message: string;
         statusCode: any;
         data: T;
-        timestamp: string;
     };
 }

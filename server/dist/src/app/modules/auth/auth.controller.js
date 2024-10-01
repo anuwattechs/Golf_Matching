@@ -15,30 +15,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
-const create_user_dto_1 = require("../users/dto/create-user.dto");
 const response_message_decorator_1 = require("../../common/decorator/response-message.decorator");
+const dto_1 = require("./dto");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async register(createUserDto) {
+    async createVerificationRegister(body) {
         try {
-            return await this.authService.register(createUserDto);
+            return await this.authService.createVerificationRegister(body);
         }
         catch (error) {
-            throw new Error(error);
+            throw new common_1.HttpException({
+                message: error.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };
 exports.AuthController = AuthController;
 __decorate([
-    (0, common_1.Post)('register'),
-    (0, response_message_decorator_1.ResponseMessage)('User created successfully'),
+    (0, common_1.Post)('verification-register'),
+    (0, response_message_decorator_1.ResponseMessage)(''),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
+    __metadata("design:paramtypes", [dto_1.VerificationRegisterDto]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "register", null);
+], AuthController.prototype, "createVerificationRegister", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

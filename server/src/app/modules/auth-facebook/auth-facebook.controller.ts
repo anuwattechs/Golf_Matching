@@ -1,5 +1,5 @@
 import { Controller, HttpException, HttpStatus, Request } from '@nestjs/common';
-import { AuthService } from '../auth2/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { Body, Post, Get } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthFacebookService } from './auth-facebook.service';
@@ -8,6 +8,7 @@ import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
 import { AuthProvidersEnum } from 'src/shared/enums';
 import { UseGuards } from '@nestjs/common';
 import { FacebookAuthGuard } from './guard/facebook.guard';
+import {LoginResponseType} from 'src/shared/types'
 
 @Controller({
   path: 'auth/facebook',
@@ -22,10 +23,9 @@ export class AuthFacebookController {
   @ResponseMessage('User logged in successfully')
   async login(
     @Body() loginDto: AuthFacebookLoginDto,
-  ): Promise<LoginResponseDto> {
+  ): Promise<LoginResponseType> {
     try {
-      const socialData =
-        await this.authFacebookService.getProfileByToken(loginDto);
+      const socialData = await this.authFacebookService.getProfileByToken(loginDto);
       return this.authService.validateSocialLogin(
         AuthProvidersEnum.FACEBOOK,
         socialData,

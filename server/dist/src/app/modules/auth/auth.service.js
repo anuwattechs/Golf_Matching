@@ -11,23 +11,134 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
-const users_service_1 = require("../users/users.service");
-const speakeasy = require("speakeasy");
+const bcrypt = require("bcrypt");
+const models_1 = require("../../../schemas/models");
+const utils_1 = require("../../../shared/utils/utils");
+const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let AuthService = class AuthService {
-    constructor(usersService) {
-        this.usersService = usersService;
+    constructor(utils, memberModel, verificationRegistrationModel, verificationResetPasswordModel, jwtService, configService) {
+        this.utils = utils;
+        this.memberModel = memberModel;
+        this.verificationRegistrationModel = verificationRegistrationModel;
+        this.verificationResetPasswordModel = verificationResetPasswordModel;
+        this.jwtService = jwtService;
+        this.configService = configService;
     }
-    async register(createUserDto) {
-        const otp = speakeasy.totp({
-            secret: process.env.OTP_SECRET,
-            encoding: 'base32',
-        });
-        console.log(otp);
+    generateToken(payload) {
+        return this.jwtService.sign(payload);
+    }
+    convertTimeStringToMs(timeString) {
+        const unit = timeString.at(-1);
+        const value = Number(timeString.slice(0, -1));
+        if (isNaN(value))
+            return 0;
+        return unit == 'h' ? value * 3.6e6 : unit == 'd' ? value * 24 * 3.6e6 : 0;
+    }
+    async validateSocialLogin(authProvider, socialData) {
+        try {
+            const userRegistered = await this.memberModel.findAllByEmailOrPhone(socialData?.email?.toLowerCase());
+            if (userRegistered.length > 0)
+                throw new common_1.HttpException('User registered', common_1.HttpStatus.BAD_REQUEST);
+            const created = await this.memberModel.createBySocial({
+                socialId: socialData.id,
+                firstName: socialData.firstName,
+                lastName: socialData.lastName,
+                email: socialData?.email?.toLowerCase(),
+                provider: authProvider
+            });
+            const accessToken = this.generateToken({
+                userId: created._id,
+                email: socialData?.email?.toLowerCase(),
+                firstName: socialData?.firstName,
+                lastName: socialData?.lastName,
+            });
+            const jwtExpiresIn = this.configService.get("auth.jwtExpiresIn", {
+                infer: true,
+            });
+            return {
+                accessToken,
+                refreshToken: this.configService.get("auth.refreshSecret", {
+                    infer: true,
+                }),
+                accessTokenExpiresIn: this.convertTimeStringToMs(jwtExpiresIn),
+            };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message(), common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async createVerificationRegister(input) {
+        try {
+            const userRegistered = await this.memberModel.findAllByEmailOrPhone(input.email);
+            if (userRegistered.length > 0)
+                throw new common_1.HttpException('User already registered', common_1.HttpStatus.BAD_REQUEST);
+            const user = await this.verificationRegistrationModel.findOneByEmailOrPhone(input.email.toLowerCase());
+            const verifyCode = this.utils.generateRandomNumber(6);
+            if (!user) {
+                await this.verificationRegistrationModel.create({
+                    email: input.email.toLowerCase(),
+                    provider: input.provider,
+                    verifyCode,
+                });
+            }
+            else {
+                await this.verificationRegistrationModel.updateOne({
+                    email: input.email.toLowerCase(),
+                    verifyCode,
+                    isVerified: false,
+                    sentCount: user.sentCount + 1,
+                });
+            }
+            return null;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async verifyRegister(input) {
+        try {
+            const userRegistered = await this.verificationRegistrationModel.findOneByEmailOrPhone(input.email.toLowerCase());
+            if (!userRegistered)
+                throw new common_1.HttpException('User not registered', common_1.HttpStatus.BAD_REQUEST);
+            if (userRegistered.verifyCode !== input.verifyCode)
+                throw new common_1.HttpException('Invalid verification code', common_1.HttpStatus.BAD_REQUEST);
+            await this.verificationRegistrationModel.verify(input.email.toLowerCase());
+            return null;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async register(input) {
+        try {
+            const userIdentityVerified = await this.verificationRegistrationModel.findOneByEmailOrPhone(input.email.toLowerCase(), true);
+            if (!userIdentityVerified)
+                throw new common_1.HttpException('User not verified', common_1.HttpStatus.BAD_REQUEST);
+            const userRegistered = await this.memberModel.findAllByEmailOrPhone(input.email.toLowerCase());
+            if (userRegistered.length > 0)
+                throw new common_1.HttpException('User already registered', common_1.HttpStatus.BAD_REQUEST);
+            const hashedPassword = await bcrypt.hash(input.password, 10);
+            await this.memberModel.create({
+                ...input,
+                email: input.email.toLowerCase(),
+                password: hashedPassword,
+            });
+            return null;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __metadata("design:paramtypes", [utils_1.Utils,
+        models_1.MemberModel,
+        models_1.VerificationRegistrationModel,
+        models_1.VerificationResetPasswordModel,
+        jwt_1.JwtService,
+        config_1.ConfigService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

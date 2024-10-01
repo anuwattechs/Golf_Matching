@@ -13,7 +13,9 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_config_service_1 = require("./core/database/mongoose-config.service");
 const config_2 = require("./core/database/config");
 const auth_module_1 = require("./app/modules/auth/auth.module");
-const users_module_1 = require("./app/modules/users/users.module");
+const google_config_1 = require("./app/modules/auth-google/config/google.config");
+const facebook_config_1 = require("./app/modules/auth-facebook/config/facebook.config");
+const app_config_1 = require("./app/config/app.config");
 const infrastructureDatabaseModule = mongoose_1.MongooseModule.forRootAsync({
     useClass: mongoose_config_service_1.MongooseConfigService,
 });
@@ -23,14 +25,13 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            auth_module_1.AuthModule,
-            users_module_1.UsersModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [config_2.databaseConfig],
+                load: [config_2.databaseConfig, google_config_1.default, facebook_config_1.default, app_config_1.default],
                 envFilePath: ['.env'],
             }),
             infrastructureDatabaseModule,
+            auth_module_1.AuthModule,
         ],
     })
 ], AppModule);

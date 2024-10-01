@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Member } from '..';
 import { Model } from 'mongoose';
-import { CreateMemberDto } from './dto';
+import { CreateMemberDto , CreateMemberBySocialDto} from './dto';
 
 @Injectable()
 export class MemberModel {
@@ -17,6 +17,10 @@ export class MemberModel {
   }
 
   create(input: CreateMemberDto): Promise<Member> {
+    return this.member.create(input);
+  }
+
+  createBySocial(input: CreateMemberBySocialDto): Promise<Member> {
     return this.member.create(input);
   }
 }
