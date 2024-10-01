@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Controller, Get, HttpException, UseGuards } from '@nestjs/common';
 import { AuthGoogleService } from './auth-google.service';
 import { Post, Body, Request, Response } from '@nestjs/common';
@@ -72,12 +71,4 @@ export class AuthGoogleController {
       );
     }
   }
-=======
-import { Controller } from '@nestjs/common';
-import { AuthGoogleService } from './auth-google.service';
-
-@Controller('auth-google')
-export class AuthGoogleController {
-  constructor(private readonly authGoogleService: AuthGoogleService) {}
->>>>>>> 586cf96 (Created auth social)
 }
