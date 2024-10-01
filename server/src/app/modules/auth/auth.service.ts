@@ -1,21 +1,23 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ResponseType } from 'src/shared/types';
 import * as bcrypt from 'bcrypt';
-import { VerificationRegisterDto, VerifyOptDto, RegisterDto } from './dto';
+import { VerificationRegisterDto, VerifyOptDto, RegisterDto , LoginDto} from './dto';
 import {
   MemberModel,
   VerificationRegistrationModel,
   VerificationResetPasswordModel,
 } from 'src/schemas/models';
 import { Utils } from 'src/shared/utils/utils';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private utils: Utils,
-    private memberModel: MemberModel,
-    private verificationRegistrationModel: VerificationRegistrationModel,
-    private verificationResetPasswordModel: VerificationResetPasswordModel,
+    private readonly utils: Utils,
+    private readonly memberModel: MemberModel,
+    private readonly verificationRegistrationModel: VerificationRegistrationModel,
+    private readonly verificationResetPasswordModel: VerificationResetPasswordModel,
+    private readonly jwtService: JwtService,
   ) {}
 
   async createVerificationRegister(
@@ -149,79 +151,20 @@ export class AuthService {
     }
   }
 
-  async updateProfile(
-    input: UpdatePersonalInfoDto,
-    decoded: TJwtPayload,
-  ): Promise<TServiceResponse> {
+  /*
+  async login(input: LoginDto): Promise<ResponseType<any[]>> {
     try {
       //! Check if user registered
-      const userRegistered = await this.userModel.findOne({
-        _id: decoded.user_id,
-      });
+      const userRegistered = await this.memberModel.findOneByEmailOrPhone(input.email.toLowerCase());
 
-      if (!userRegistered)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'User not registered',
-          data: [],
-        };
-
-      const updated = await this.userModel.updateOne(
-        { _id: decoded.user_id },
-        {
-          $set: {
-            ...input,
-          },
-        },
-      );
-
-      return {
-        status: 'success',
-        statusCode: 201,
-        message: 'User updated successfully',
-        data: [updated],
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
-    }
-  }
-
-  async login(input: LoginDto): Promise<TServiceResponse> {
-    try {
-      //! Check if user registered
-      const userRegistered = await this.userModel.findOne({
-        $or: [
-          { email: input.username.toLowerCase() },
-          // { phone_number: input.username.toLowerCase() },
-        ],
-      });
-
-      if (!userRegistered)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'User not registered',
-          data: [],
-        };
+      if (!userRegistered) throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
 
       const isMatched = await bcrypt.compare(
         input.password,
         userRegistered.password,
       );
 
-      if (!isMatched)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'Invalid password',
-          data: [],
-        };
+      if (!isMatched) throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
 
       const now = new Date();
       const payload: TJwtPayload = {
@@ -264,6 +207,49 @@ export class AuthService {
             nick_name: userRegistered.nick_name,
           },
         ],
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        statusCode: 500,
+        message: error.message,
+        data: [],
+      };
+    }
+  }
+
+  async updateProfile(
+    input: UpdatePersonalInfoDto,
+    decoded: TJwtPayload,
+  ): Promise<TServiceResponse> {
+    try {
+      //! Check if user registered
+      const userRegistered = await this.userModel.findOne({
+        _id: decoded.user_id,
+      });
+
+      if (!userRegistered)
+        return {
+          status: 'error',
+          statusCode: 400,
+          message: 'User not registered',
+          data: [],
+        };
+
+      const updated = await this.userModel.updateOne(
+        { _id: decoded.user_id },
+        {
+          $set: {
+            ...input,
+          },
+        },
+      );
+
+      return {
+        status: 'success',
+        statusCode: 201,
+        message: 'User updated successfully',
+        data: [updated],
       };
     } catch (error) {
       return {
@@ -590,4 +576,5 @@ export class AuthService {
       };
     }
   }
+    */
 }

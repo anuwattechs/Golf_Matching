@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 import { IsOptional, IsString } from 'class-validator';
 import { FacebookConfig } from './facebook-config.type';
-import { validateConfig } from '../../../../shared/validators/validate-config';
+import { validateConfig } from 'src/shared/validators/validate-config';
 
 class EnvironmentVariablesValidator {
   @IsString()
