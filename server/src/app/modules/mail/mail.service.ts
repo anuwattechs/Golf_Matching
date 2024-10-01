@@ -20,7 +20,9 @@ export class MailService {
         infer: true,
       }),
     });
-    this.sourceEmail = 'mailer@golinkgolf.com'; // Could also be moved to config if needed
+    this.sourceEmail = configService.get<string>('mail.sourceEmail', {
+      infer: true,
+    });
   }
 
   async sendVerifyCode(
