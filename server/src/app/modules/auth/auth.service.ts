@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
@@ -9,6 +10,8 @@ import { NullableType } from 'src/shared/types/nullable.type';
 import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
 import { AuthProvidersEnum } from 'src/shared/enums';
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ResponseType } from 'src/shared/types';
 import * as bcrypt from 'bcrypt';
@@ -19,7 +22,10 @@ import {
   VerificationResetPasswordModel,
 } from 'src/schemas/models';
 import { Utils } from 'src/shared/utils/utils';
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 
 @Injectable()
 export class AuthService {
@@ -30,6 +36,7 @@ export class AuthService {
     private verificationResetPasswordModel: VerificationResetPasswordModel,
   ) {}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   async register(createUserDto: CreateUserDto): Promise<void> {
     const otp = speakeasy.totp({
@@ -81,6 +88,8 @@ export class AuthService {
         `Email ${socialEmail} is already registered with another method. Please use ${this.mapProvider(userByEmail?.provider)} to login.`,
         HttpStatus.BAD_REQUEST,
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
   async createVerificationRegister(
     input: VerificationRegisterDto,
   ): Promise<ResponseType<any[]>> {
@@ -88,7 +97,10 @@ export class AuthService {
       //! Check if user registered
       const userRegistered = await this.memberModel.findAllByEmailOrPhone(
         input.email,
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
       );
 
       if (userRegistered.length > 0)
@@ -97,6 +109,7 @@ export class AuthService {
           HttpStatus.BAD_REQUEST,
         );
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   private async handleUserCreationOrUpdate(
     user: NullableType<User>,
@@ -109,6 +122,8 @@ export class AuthService {
       if (socialData.email && !userByEmail) {
         user.email = socialData.email.toLowerCase();
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
       //! Check if user exists
       const user =
         await this.verificationRegistrationModel.findOneByEmailOrPhone(
@@ -129,11 +144,15 @@ export class AuthService {
           isVerified: false,
           sentCount: user.sentCount + 1,
         });
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
       }
 
       //! Send verification code to user (OTP via Email or Phone)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     // สร้างผู้ใช้ใหม่ถ้าไม่พบผู้ใช้เดิม
     return this.usersService.create({
@@ -214,6 +233,58 @@ export class AuthService {
     }
   }
 
+=======
+      return {
+        status: true,
+        statusCode: HttpStatus.CREATED,
+        message: 'Verification code sent successfully',
+        data: [{ verify_code: verifyCode }],
+      };
+    } catch (error) {
+      //  return {
+      //    status: 'error',
+      //    statusCode: 500,
+      //    message: error.message,
+      //    data: [],
+      //  };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async verifyRegister(input: VerifyOptDto): Promise<ResponseType<any[]>> {
+    try {
+      //! Check if user identity verified
+      const userRegistered =
+        await this.verificationRegistrationModel.findOneByEmailOrPhone(
+          input.email.toLowerCase(),
+        );
+
+      if (!userRegistered)
+        throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
+
+      if (userRegistered.verifyCode !== input.verifyCode)
+        throw new HttpException(
+          'Invalid verification code',
+          HttpStatus.BAD_REQUEST,
+        );
+
+      //! Check if user exists
+      await this.verificationRegistrationModel.verify(
+        input.email.toLowerCase(),
+      );
+
+      return {
+        status: true,
+        statusCode: HttpStatus.CREATED,
+        message: 'Indentity verified successfully',
+        data: [],
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
   async register(input: RegisterDto): Promise<ResponseType<any[]>> {
     try {
       //! Check if user identity verified
@@ -253,7 +324,10 @@ export class AuthService {
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
     }
   }
 

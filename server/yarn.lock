@@ -929,10 +929,14 @@
 "@nestjs/mapped-types@*":
   version "2.0.5"
 <<<<<<< HEAD
+<<<<<<< HEAD
   resolved "https://registry.yarnpkg.com/@nestjs/mapped-types/-/mapped-types-2.0.5.tgz#485d6b44e19779c98d04e52bd1d2bcc7001df0ea"
 =======
   resolved "https://registry.npmjs.org/@nestjs/mapped-types/-/mapped-types-2.0.5.tgz"
 >>>>>>> b398a21 (Updated /auth*)
+=======
+  resolved "https://registry.npmjs.org/@nestjs/mapped-types/-/mapped-types-2.0.5.tgz"
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
   integrity sha512-bSJv4pd6EY99NX9CjBIyn4TVDoSit82DUZlL4I3bqNfy5Gt+gXTa86i3I/i0iIV9P4hntcGM5GyO+FhZAhxtyg==
 
 "@nestjs/mongoose@^10.0.10":
@@ -1292,10 +1296,14 @@
     "@types/send" "*"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@types/express@^4.17.17":
 =======
 "@types/express@*", "@types/express@^4.17.17":
 >>>>>>> b398a21 (Updated /auth*)
+=======
+"@types/express@*", "@types/express@^4.17.17":
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/@types/express/-/express-4.17.21.tgz#c26d4a151e60efe0084b23dc3369ebc631ed192d"
   integrity sha512-ejlPM315qwLpaQlQDTjPdsUFSc6ZsP4AN6AlWnogPjQ7CVi7PYF3YVz+CY3jE2pwYf7E/7HlDAN0rV2GxTG0HQ==
@@ -1944,7 +1952,10 @@ are-we-there-yet@^2.0.0:
     delegates "^1.0.0"
     readable-stream "^3.6.0"
 
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 arg@^4.1.0:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/arg/-/arg-4.1.3.tgz#269fc7ad5b8e42cb63c896d5666017261c144089"
@@ -2106,7 +2117,10 @@ bcrypt@^5.1.1:
     "@mapbox/node-pre-gyp" "^1.0.11"
     node-addon-api "^5.0.0"
 
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 before-after-hook@^2.2.0:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/before-after-hook/-/before-after-hook-2.2.3.tgz#c51e809c81a4e354084422b9b26bad88249c517c"
@@ -2497,8 +2511,11 @@ color-name@~1.1.4:
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 combined-stream@^1.0.8:
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 color-support@^1.1.2:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-support/-/color-support-1.1.3.tgz#93834379a1cc9a0c61f82f52f0d04322251bd5a2"
@@ -3648,7 +3665,10 @@ function-bind@^1.1.2:
   integrity sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 gauge@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/gauge/-/gauge-3.0.2.tgz#03bf4441c044383908bcfa0656ad91803259b395"
@@ -4011,8 +4031,11 @@ http2-wrapper@^2.1.10:
     resolve-alpn "^1.2.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 https-proxy-agent@^7.0.3, https-proxy-agent@^7.0.5:
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 https-proxy-agent@^5.0.0:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-5.0.1.tgz#c59ef224a04fe8b754f3db0063a25ea30d0005d6"
@@ -5486,7 +5509,10 @@ nopt@^5.0.0:
   dependencies:
     abbrev "1"
 
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 normalize-package-data@^6.0.0:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/normalize-package-data/-/normalize-package-data-6.0.2.tgz#a7bc22167fe24025412bcff0a9651eb768b03506"
@@ -5521,7 +5547,10 @@ npm-run-path@^5.1.0:
     path-key "^4.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 npmlog@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-5.0.1.tgz#f06678e80e29419ad67ab964e0fa69959c1eb8b0"

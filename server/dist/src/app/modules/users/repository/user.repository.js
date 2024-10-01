@@ -22,6 +22,7 @@ let UserRepository = class UserRepository {
         this.userModel = userModel;
     }
     async create(data) {
+<<<<<<< HEAD
         const createdUser = new this.userModel({
             ...data,
             createdAt: new Date(),
@@ -31,11 +32,24 @@ let UserRepository = class UserRepository {
     }
     async findById(id) {
         return this.userModel.findById(id).exec();
+=======
+        const currentDate = new Date();
+        const createdUser = new this.userModel({
+            ...data,
+            createdAt: currentDate,
+            updatedAt: currentDate,
+        });
+        return await createdUser.save();
+    }
+    async findById(id) {
+        return await this.userModel.findById(id).exec();
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
     }
     async remove(id) {
         await this.userModel.findByIdAndDelete(id).exec();
     }
     async findByEmail(email) {
+<<<<<<< HEAD
         return this.userModel.findOne({ email }).exec();
     }
     async findBySocialIdAndProvider({ socialId, provider, }) {
@@ -43,6 +57,22 @@ let UserRepository = class UserRepository {
     }
     async findAll() {
         return this.userModel.find().exec();
+=======
+        return await this.userModel.findOne({ email }).exec();
+    }
+    async findBySocialIdAndProvider({ socialId, provider, }) {
+        return await this.userModel.findOne({
+            where: { socialId, provider },
+        });
+    }
+    async findAll() {
+        return await this.userModel.find().exec();
+    }
+    async update(id, data) {
+        return await this.userModel
+            .findByIdAndUpdate(id, data, { new: true })
+            .exec();
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
     }
 };
 exports.UserRepository = UserRepository;

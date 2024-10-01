@@ -36,6 +36,7 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     AuthFacebookModule,
     AuthAppleModule,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     AuthAppleModule,
     AuthFacebookModule,
@@ -43,6 +44,9 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
 =======
     AuthModule,
 >>>>>>> b398a21 (Updated /auth*)
+=======
+    AuthModule,
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
   ],
   controllers: [AuthAppleController],
 })

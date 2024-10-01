@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Controller, HttpException } from "@nestjs/common";
 import { AuthService } from "../auth/auth.service";
 import { AuthAppleService } from "./auth-apple.service";
@@ -10,6 +11,8 @@ import { AuthAppleLoginDto } from "./dto/auth-apple-login.dto";
 import { LoginResponseDto } from "../auth-google/dto/login-response.dto";
 import { AuthProvidersEnum } from "src/shared/enums";
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 import { Controller, HttpException } from '@nestjs/common';
 import { AuthService } from '../auth2/auth.service';
 import { AuthAppleService } from './auth-apple.service';
@@ -19,7 +22,10 @@ import { Body } from '@nestjs/common';
 import { AuthAppleLoginDto } from './dto/auth-apple-login.dto';
 import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
 import { AuthProvidersEnum } from 'src/shared/enums';
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 
 @Controller({
   path: 'auth/apple',

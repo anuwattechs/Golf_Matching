@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
+<<<<<<< HEAD
 const enums_1 = require("../../../shared/enums");
 const user_repository_1 = require("./repository/user.repository");
 let UsersService = class UsersService {
@@ -34,6 +35,43 @@ let UsersService = class UsersService {
             throw new Error(error);
         }
     }
+=======
+const user_repository_1 = require("./repository/user.repository");
+let UsersService = class UsersService {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+    }
+    async create(createUserDto) {
+        const { email } = createUserDto;
+        const user = await this.findByEmail(email);
+        if (user) {
+            throw new common_1.HttpException(`User with email ${email} already exists`, common_1.HttpStatus.BAD_REQUEST);
+        }
+        try {
+            const clonedPayload = { ...createUserDto };
+            return await this.userRepository.create(clonedPayload);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error, common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
+    findByEmail(email) {
+        return this.userRepository.findByEmail(email);
+    }
+    findBySocialIdAndProvider({ socialId, provider, }) {
+        return this.userRepository.findBySocialIdAndProvider({
+            socialId,
+            provider,
+        });
+    }
+    async findAll() {
+        return await this.userRepository.findAll();
+    }
+    async update(id, payload) {
+        const clonedPayload = { ...payload, updatedAt: new Date() };
+        return await this.userRepository.update(id, clonedPayload);
+    }
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

@@ -1,17 +1,23 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Module } from "@nestjs/common";
 import { AuthAppleService } from "./auth-apple.service";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "../auth/auth.module";
 import { AuthAppleController } from "./auth-apple.controller";
 =======
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 import { Module } from '@nestjs/common';
 import { AuthAppleService } from './auth-apple.service';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '../auth2/auth.module';
 import { AuthAppleController } from './auth-apple.controller';
+<<<<<<< HEAD
 >>>>>>> b398a21 (Updated /auth*)
+=======
+>>>>>>> a768db95c667773a296a2e5a7ac9eee2a815d013
 
 @Module({
   imports: [ConfigModule, AuthModule],
