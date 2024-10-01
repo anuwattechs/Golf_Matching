@@ -100,7 +100,7 @@ export class User extends Document {
 
   // @Prop({default: Date.now})
   // updatedAt: Date;m
-m.
+
   // @Prop({ nullable: true })
   // deletedAt: Date | null;
 }
