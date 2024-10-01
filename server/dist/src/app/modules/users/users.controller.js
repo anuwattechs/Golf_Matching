@@ -22,6 +22,14 @@ let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
+    async findAll() {
+        try {
+            return await this.usersService.findAll();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error, common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
     async create(createUserDto) {
         try {
             return await this.usersService.create(createUserDto);
@@ -32,6 +40,12 @@ let UsersController = class UsersController {
     }
 };
 exports.UsersController = UsersController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "findAll", null);
 __decorate([
     (0, common_2.Post)(),
     (0, response_message_decorator_1.ResponseMessage)('User created successfully'),

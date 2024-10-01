@@ -22,27 +22,35 @@ let UserRepository = class UserRepository {
         this.userModel = userModel;
     }
     async create(data) {
+        const currentDate = new Date();
         const createdUser = new this.userModel({
             ...data,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: currentDate,
+            updatedAt: currentDate,
         });
-        return createdUser.save();
+        return await createdUser.save();
     }
     async findById(id) {
-        return this.userModel.findById(id).exec();
+        return await this.userModel.findById(id).exec();
     }
     async remove(id) {
         await this.userModel.findByIdAndDelete(id).exec();
     }
     async findByEmail(email) {
-        return this.userModel.findOne({ email }).exec();
+        return await this.userModel.findOne({ email }).exec();
     }
     async findBySocialIdAndProvider({ socialId, provider, }) {
-        return this.userModel.findOne({ socialId, provider }).exec();
+        return await this.userModel.findOne({
+            where: { socialId, provider },
+        });
     }
     async findAll() {
-        return this.userModel.find().exec();
+        return await this.userModel.find().exec();
+    }
+    async update(id, data) {
+        return await this.userModel
+            .findByIdAndUpdate(id, data, { new: true })
+            .exec();
     }
 };
 exports.UserRepository = UserRepository;
