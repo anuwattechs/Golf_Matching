@@ -1,12 +1,34 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersModule } from '../users/users.module';
+import {
+  Member,
+  MemberSchema,
+  VerificationRegistration,
+  VerificationRegistrationSchema,
+  VerificationResetPassword,
+  VerificationResetPasswordSchema,
+} from 'src/schemas';
 
 @Module({
-  imports: [UsersModule],
-  providers: [AuthService],
+  imports: [
+    MongooseModule.forFeature([
+      {
+        name: Member.name,
+        schema: MemberSchema,
+      },
+      {
+        name: VerificationRegistration.name,
+        schema: VerificationRegistrationSchema,
+      },
+      {
+        name: VerificationResetPassword.name,
+        schema: VerificationResetPasswordSchema,
+      },
+    ]),
+  ],
   controllers: [AuthController],
-  exports: [AuthService],
+  providers: [AuthService],
 })
 export class AuthModule {}
