@@ -4,9 +4,10 @@ import { AuthModule } from '../auth/auth.module';
 import { AuthGoogleController } from './auth-google.controller';
 import { ConfigModule } from '@nestjs/config';
 import { MailModule } from '../mail/mail.module';
+import { SmsModule } from '../sms/sms.module';
 
 @Module({
-  imports: [ConfigModule, AuthModule, MailModule],
+  imports: [ConfigModule, AuthModule, MailModule, SmsModule],
   providers: [AuthGoogleService],
   controllers: [AuthGoogleController],
   exports: [AuthGoogleService],

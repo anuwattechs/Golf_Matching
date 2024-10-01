@@ -7,6 +7,7 @@ import { AuthProvidersEnum } from 'src/shared/enums';
 import { AuthService } from '../auth/auth.service';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { MailService } from '../mail/mail.service';
+import { SmsService } from '../sms/sms.service';
 
 @Controller({
   path: 'auth/google',
@@ -15,7 +16,7 @@ export class AuthGoogleController {
   constructor(
     private readonly authGoogleService: AuthGoogleService,
     private readonly authService: AuthService,
-    private readonly mailService: MailService,
+    private readonly smsService: SmsService,
   ) {}
 
   @Post('login')
@@ -24,9 +25,10 @@ export class AuthGoogleController {
     try {
       const socialData =
         await this.authGoogleService.getProfileByToken(loginDto);
-      this.mailService?.sendVerifyCode(socialData.email, {
-        code: '1212312121-demo1234',
-      });
+      this.smsService?.send(
+        '+66962793451',
+        'Your verification code is: 1212312121-demo1234',
+      );
       return this.authService.validateSocialLogin(
         AuthProvidersEnum.GOOGLE,
         socialData,
