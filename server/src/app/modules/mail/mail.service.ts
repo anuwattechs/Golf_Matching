@@ -25,6 +25,19 @@ export class MailService {
     });
   }
 
+  /**
+   * Sends a verification code to the specified email address using AWS SES.
+   *
+   * @async
+   * @function sendVerifyCode
+   * @param {string} email - The email address to send the verification code to.
+   * @param {Object} data - The object containing the verification code.
+   * @param {string} data.code - The verification code to send.
+   * @returns {Promise<boolean>} A promise that resolves to a boolean indicating success (true) or failure (false).
+   *
+   * @throws Will log an error message if the email fails to send.
+   */
+
   async sendVerifyCode(
     email: string,
     data: { code: string },
