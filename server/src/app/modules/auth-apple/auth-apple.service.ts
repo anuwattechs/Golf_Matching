@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { AllConfigType } from "src/app/config/config.type";
@@ -26,3 +27,9 @@ export class AuthAppleService {
     };
   }
 }
+=======
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class AuthAppleService {}
+>>>>>>> 586cf96 (Created auth social)
