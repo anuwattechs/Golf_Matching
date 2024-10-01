@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class Utils {
+export class UtilsService {
   generateRandomNumber(length: number = 6): string {
     let result = '';
     const characters = '0123456789';

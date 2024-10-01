@@ -8,7 +8,7 @@ import {
   VerificationRegistrationModel,
   VerificationResetPasswordModel,
 } from 'src/schemas/models';
-import { Utils } from 'src/shared/utils/utils';
+import { UtilsService } from 'src/shared/utils/utils.service';
 import { JwtService } from '@nestjs/jwt';
 import {AuthProvidersEnum} from 'src/shared/enums'
 import {JwtPayloadType} from './strategy/jwt-payload.type'
@@ -18,7 +18,7 @@ import { AllConfigType } from 'src/app/config/config.type';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly utils: Utils,
+    private readonly utilsService: UtilsService,
     private readonly memberModel: MemberModel,
     private readonly verificationRegistrationModel: VerificationRegistrationModel,
     private readonly verificationResetPasswordModel: VerificationResetPasswordModel,
@@ -99,7 +99,7 @@ export class AuthService {
           input.email.toLowerCase(),
         );
 
-      const verifyCode = this.utils.generateRandomNumber(6);
+      const verifyCode = this.utilsService.generateRandomNumber(6);
       if (!user) {
         await this.verificationRegistrationModel.create({
           email: input.email.toLowerCase(),

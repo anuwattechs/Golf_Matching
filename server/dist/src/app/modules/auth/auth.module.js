@@ -8,15 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
 const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
-const schemas_1 = require("../../../schemas");
 const jwt_strategy_1 = require("./strategy/jwt.strategy");
 const config_1 = require("@nestjs/config");
 const config_2 = require("@nestjs/config");
+const utils_module_1 = require("../../../shared/utils/utils.module");
+const models_module_1 = require("../../../schemas/models/models.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -24,20 +24,8 @@ exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_2.ConfigModule,
-            mongoose_1.MongooseModule.forFeature([
-                {
-                    name: schemas_1.Member.name,
-                    schema: schemas_1.MemberSchema,
-                },
-                {
-                    name: schemas_1.VerificationRegistration.name,
-                    schema: schemas_1.VerificationRegistrationSchema,
-                },
-                {
-                    name: schemas_1.VerificationResetPassword.name,
-                    schema: schemas_1.VerificationResetPasswordSchema,
-                },
-            ]),
+            utils_module_1.UtilsModule,
+            models_module_1.ModelsModule,
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
             jwt_1.JwtModule.register({
                 secret: new config_1.ConfigService().get('auth.jwtSecret', {

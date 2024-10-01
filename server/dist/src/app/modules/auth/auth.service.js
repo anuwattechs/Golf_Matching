@@ -13,12 +13,12 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const bcrypt = require("bcrypt");
 const models_1 = require("../../../schemas/models");
-const utils_1 = require("../../../shared/utils/utils");
+const utils_service_1 = require("../../../shared/utils/utils.service");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
 let AuthService = class AuthService {
-    constructor(utils, memberModel, verificationRegistrationModel, verificationResetPasswordModel, jwtService, configService) {
-        this.utils = utils;
+    constructor(utilsService, memberModel, verificationRegistrationModel, verificationResetPasswordModel, jwtService, configService) {
+        this.utilsService = utilsService;
         this.memberModel = memberModel;
         this.verificationRegistrationModel = verificationRegistrationModel;
         this.verificationResetPasswordModel = verificationResetPasswordModel;
@@ -74,7 +74,7 @@ let AuthService = class AuthService {
             if (userRegistered.length > 0)
                 throw new common_1.HttpException('User already registered', common_1.HttpStatus.BAD_REQUEST);
             const user = await this.verificationRegistrationModel.findOneByEmailOrPhone(input.email.toLowerCase());
-            const verifyCode = this.utils.generateRandomNumber(6);
+            const verifyCode = this.utilsService.generateRandomNumber(6);
             if (!user) {
                 await this.verificationRegistrationModel.create({
                     email: input.email.toLowerCase(),
@@ -134,7 +134,7 @@ let AuthService = class AuthService {
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [utils_1.Utils,
+    __metadata("design:paramtypes", [utils_service_1.UtilsService,
         models_1.MemberModel,
         models_1.VerificationRegistrationModel,
         models_1.VerificationResetPasswordModel,
