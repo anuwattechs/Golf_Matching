@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { Post, Body } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from 'src/schemas';
+import { Member as User } from 'src/schemas';
 
 @Controller('users')
 export class UsersController {
