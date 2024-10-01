@@ -99,8 +99,8 @@ export class User extends Document {
   // createdAt: Date;
 
   // @Prop({default: Date.now})
-  // updatedAt: Date;
-
+  // updatedAt: Date;m
+m.
   // @Prop({ nullable: true })
   // deletedAt: Date | null;
 }

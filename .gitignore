@@ -54,3 +54,6 @@ pnpm-lock.yaml
 
 *.zip
 *.test.json
+*.cmd
+*.test.js
+.env

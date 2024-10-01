@@ -6,8 +6,12 @@ import { databaseConfig } from './core/database/config';
 import { AuthModule } from './app/modules/auth/auth.module';
 import { UsersModule } from './app/modules/users/users.module';
 import { AuthGoogleModule } from './app/modules/auth-google/auth-google.module';
-import { AuthAppleModule } from './app/modules/auth-apple/auth-apple.module';
 import { AuthFacebookModule } from './app/modules/auth-facebook/auth-facebook.module';
+import { AuthAppleController } from './app/modules/auth-apple/auth-apple.controller';
+import { AuthAppleModule } from './app/modules/auth-apple/auth-apple.module';
+import googleConfig from './app/modules/auth-google/config/google.config';
+import facebookConfig from './app/modules/auth-facebook/config/facebook.config';
+import appConfig from './app/config/app.config';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -19,13 +23,14 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     UsersModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig],
+      load: [databaseConfig, googleConfig, facebookConfig, appConfig],
       envFilePath: ['.env'],
     }),
     infrastructureDatabaseModule,
     AuthGoogleModule,
-    AuthAppleModule,
     AuthFacebookModule,
+    AuthAppleModule,
   ],
+  controllers: [AuthAppleController],
 })
 export class AppModule {}

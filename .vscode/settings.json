@@ -1,6 +1,14 @@
 {
-    "nuxt.isNuxtApp": false,
     "cSpell.words": [
-        "typeorm"
+        "actived",
+        "commitlint",
+        "conventionalcommits",
+        "Forgor",
+        "Indentity",
+        "infile",
+        "nestjs",
+        "Signin",
+        "typeorm",
+        "uuidv"
     ]
 }
