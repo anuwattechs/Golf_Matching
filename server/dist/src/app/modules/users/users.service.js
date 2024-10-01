@@ -11,40 +11,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
+const enums_1 = require("../../../shared/enums");
 const user_repository_1 = require("./repository/user.repository");
 let UsersService = class UsersService {
-    constructor(userRepository) {
-        this.userRepository = userRepository;
+    constructor(usersRepository) {
+        this.usersRepository = usersRepository;
     }
     async create(createUserDto) {
         const { email } = createUserDto;
-        const user = await this.findByEmail(email);
+        const user = await this.usersRepository?.findByEmail(email);
         if (user) {
-            throw new common_1.HttpException(`User with email ${email} already exists`, common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException('User already exists', common_1.HttpStatus.BAD_REQUEST);
         }
         try {
-            const clonedPayload = { ...createUserDto };
-            return await this.userRepository.create(clonedPayload);
+            const clonedPayload = {
+                ...createUserDto,
+                provider: enums_1.AuthProvidersEnum?.GOOGLE,
+            };
+            return await this.usersRepository?.create(clonedPayload);
         }
         catch (error) {
-            throw new common_1.HttpException(error, common_1.HttpStatus.BAD_REQUEST);
+            throw new Error(error);
         }
-    }
-    findByEmail(email) {
-        return this.userRepository.findByEmail(email);
-    }
-    findBySocialIdAndProvider({ socialId, provider, }) {
-        return this.userRepository.findBySocialIdAndProvider({
-            socialId,
-            provider,
-        });
-    }
-    async findAll() {
-        return await this.userRepository.findAll();
-    }
-    async update(id, payload) {
-        const clonedPayload = { ...payload, updatedAt: new Date() };
-        return await this.userRepository.update(id, clonedPayload);
     }
 };
 exports.UsersService = UsersService;

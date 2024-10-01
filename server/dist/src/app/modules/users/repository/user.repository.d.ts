@@ -1,9 +1,9 @@
-import { Model } from "mongoose";
-import { CreateUserDto } from "../dto/create-user.dto";
-import { User } from "src/schemas";
-import { AuthProvidersEnum } from "src/shared/enums";
+import { Model } from 'mongoose';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { User } from 'src/schemas';
+import { AuthProvidersEnum } from 'src/shared/enums';
 export declare class UserRepository {
-    private readonly userModel;
+    private userModel;
     constructor(userModel: Model<User>);
     create(data: CreateUserDto): Promise<User>;
     findById(id: string): Promise<User | null>;
@@ -14,5 +14,4 @@ export declare class UserRepository {
         provider: AuthProvidersEnum;
     }): Promise<User | null>;
     findAll(): Promise<User[]>;
-    update(id: string, data: Partial<User>): Promise<User | null>;
 }

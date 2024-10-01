@@ -4,6 +4,5 @@ import { User } from 'src/schemas';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
-    findAll(): Promise<User[]>;
     create(createUserDto: CreateUserDto): Promise<User>;
 }

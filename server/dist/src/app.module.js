@@ -12,15 +12,8 @@ const config_1 = require("@nestjs/config");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_config_service_1 = require("./core/database/mongoose-config.service");
 const config_2 = require("./core/database/config");
-const users_module_1 = require("./app/modules/users/users.module");
-const auth_google_module_1 = require("./app/modules/auth-google/auth-google.module");
-const auth_facebook_module_1 = require("./app/modules/auth-facebook/auth-facebook.module");
-const auth_apple_controller_1 = require("./app/modules/auth-apple/auth-apple.controller");
-const auth_apple_module_1 = require("./app/modules/auth-apple/auth-apple.module");
 const auth_module_1 = require("./app/modules/auth/auth.module");
-const google_config_1 = require("./app/modules/auth-google/config/google.config");
-const facebook_config_1 = require("./app/modules/auth-facebook/config/facebook.config");
-const app_config_1 = require("./app/config/app.config");
+const users_module_1 = require("./app/modules/users/users.module");
 const infrastructureDatabaseModule = mongoose_1.MongooseModule.forRootAsync({
     useClass: mongoose_config_service_1.MongooseConfigService,
 });
@@ -30,19 +23,15 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            auth_module_1.AuthModule,
             users_module_1.UsersModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [config_2.databaseConfig, google_config_1.default, facebook_config_1.default, app_config_1.default],
+                load: [config_2.databaseConfig],
                 envFilePath: ['.env'],
             }),
             infrastructureDatabaseModule,
-            auth_google_module_1.AuthGoogleModule,
-            auth_facebook_module_1.AuthFacebookModule,
-            auth_apple_module_1.AuthAppleModule,
-            auth_module_1.AuthModule,
         ],
-        controllers: [auth_apple_controller_1.AuthAppleController],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
