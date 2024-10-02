@@ -1,38 +1,54 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TwilioService } from 'nestjs-twilio';
+import { Infobip, AuthType } from '@infobip-api/sdk';
 import { AllConfigType } from 'src/app/config/config.type';
 
 @Injectable()
 export class SmsService {
   private readonly logger = new Logger(SmsService.name);
   private readonly from: string;
+  private readonly infobip: Infobip;
 
-  constructor(
-    private readonly twilioService: TwilioService,
-    private readonly configService: ConfigService<AllConfigType>,
-  ) {
-    this.from = configService.get<string>('sms.fromNumber', {
+  constructor(private readonly configService: ConfigService<AllConfigType>) {
+    // Retrieve 'from' number and Infobip configuration from environment
+    this.from = this.configService.get<string>('sms.fromNumber', {
       infer: true,
+    });
+    const baseUrl = this.configService.get<string>('infobip.baseUrl', {
+      infer: true,
+    });
+    const apiKey = this.configService.get<string>('infobip.apiKey', {
+      infer: true,
+    });
+
+    // Initialize Infobip client with dynamic configuration
+    this.infobip = new Infobip({
+      baseUrl,
+      apiKey,
+      authType: AuthType.ApiKey,
     });
   }
 
-  /**
-   * This TypeScript function sends an SMS message using the Twilio service to a specified recipient.
-   * @param {string} to - The `to` parameter in the `send` function represents the phone number of the
-   * recipient to whom the SMS will be sent.
-   * @param {string} body - The `body` parameter in the `send` function represents the content or
-   * message that you want to send in the SMS. It is the actual text that will be delivered to the
-   * recipient's phone number specified in the `to` parameter.
-   * @returns The `send` function is returning a Promise that resolves to the result of creating a
-   * message using the Twilio client.
-   */
-  async send(to: string, body: string) {
-    this.logger.log(`Sending SMS to ${to}`);
-    return this.twilioService.client.messages.create({
-      body,
-      from: this.from,
-      to,
-    });
+  async sendSms(to: string, message: string): Promise<void> {
+    try {
+      // Use dynamic 'from' and 'to' numbers with the provided message
+      await this.infobip.channels.whatsapp.send({
+        type: 'text',
+        from: this.from, // Dynamic sender number
+        to,
+        content: {
+          text: message,
+        },
+      });
+
+      this.logger.log(`SMS sent successfully to ${to}`);
+    } catch (error) {
+      // Improved error handling with more details
+      this.logger.error(
+        `Error sending SMS to ${to}: ${error.message}`,
+        error.stack,
+      );
+      throw new Error(`Failed to send SMS: ${error.message}`);
+    }
   }
 }

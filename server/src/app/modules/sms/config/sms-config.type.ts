@@ -1,5 +1,5 @@
 export type SMSConfig = {
-  accountSid: string;
+  baseUrl: string;
   authToken: string;
   fromNumber: string;
 };

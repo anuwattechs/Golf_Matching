@@ -6,21 +6,21 @@ import { SMSConfig } from './sms-config.type';
 
 class EnvironmentVariablesValidator {
   @IsString()
-  TWILIO_ACCOUNT_SID!: string;
+  INFOBIP_BASE_URL!: string;
 
   @IsString()
-  TWILIO_AUTH_TOKEN!: string;
+  INFOBIP_API_KEY!: string;
 
   @IsString()
-  TWILIO_PHONE_NUMBER!: string;
+  INFOBIP_FROM!: string;
 }
 
 export default registerAs<SMSConfig>('sms', () => {
   validateConfig(process.env, EnvironmentVariablesValidator);
 
   return {
-    accountSid: process.env.TWILIO_ACCOUNT_SID,
-    authToken: process.env.TWILIO_AUTH_TOKEN,
-    fromNumber: process.env.TWILIO_PHONE_NUMBER,
+    baseUrl: process.env.INFOBIP_BASE_URL,
+    authToken: process.env.INFOBIP_API_KEY,
+    fromNumber: process.env.INFOBIP_FROM,
   };
 });
