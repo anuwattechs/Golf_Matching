@@ -11,4 +11,6 @@ export type AllConfigType = {
     google: GoogleConfig;
     facebook: FacebookConfig;
     apple: AppleConfig;
+    mail: MailConfig;
+    sms: SMSConfig;
 };
