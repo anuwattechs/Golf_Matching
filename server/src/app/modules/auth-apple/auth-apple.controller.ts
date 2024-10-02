@@ -1,9 +1,14 @@
-import { Controller, HttpException } from '@nestjs/common';
+import {
+  Body,
+  Post,
+  Controller,
+  HttpException,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { AuthAppleService } from './auth-apple.service';
-import { Post } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
-import { Body } from '@nestjs/common';
 import { AuthAppleLoginDto } from './dto/auth-apple-login.dto';
 import { LoginResponseType } from 'src/shared/types';
 import { AuthProvidersEnum } from 'src/shared/enums';
@@ -18,6 +23,7 @@ export class AuthAppleController {
   ) {}
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ResponseMessage('User logged in successfully')
   async login(
     @Body() loginDto: AuthAppleLoginDto,

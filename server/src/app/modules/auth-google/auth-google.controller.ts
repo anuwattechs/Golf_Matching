@@ -1,14 +1,24 @@
-import { Controller, Get, HttpException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  // Get,
+  HttpException,
+  HttpCode,
+  HttpStatus,
+  // UseGuards,
+  Post,
+  Body,
+  // Request,
+  // Response,
+} from '@nestjs/common';
 import { AuthGoogleService } from './auth-google.service';
-import { Post, Body, Request, Response } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
 import { AuthProvidersEnum } from 'src/shared/enums';
 import { AuthService } from '../auth/auth.service';
-import { GoogleOAuthGuard } from './guard/google-oauth.guard';
-import { SocialInterface } from 'src/shared/interfaces';
-import { ConfigService } from '@nestjs/config';
-import { AllConfigType } from 'src/app/config/config.type';
+// import { GoogleOAuthGuard } from './guard/google-oauth.guard';
+// import { SocialInterface } from 'src/shared/interfaces';
+// import { ConfigService } from '@nestjs/config';
+// import { AllConfigType } from 'src/app/config/config.type';
 import { LoginResponseType } from 'src/shared/types';
 
 @Controller({
@@ -18,17 +28,15 @@ export class AuthGoogleController {
   constructor(
     private readonly authGoogleService: AuthGoogleService,
     private readonly authService: AuthService,
-    private configService: ConfigService<AllConfigType>,
+    // private configService: ConfigService<AllConfigType>,
   ) {}
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ResponseMessage('User logged in successfully')
-  async login(
-    @Body() loginDto: AuthGoogleLoginDto,
-  ): Promise<LoginResponseType[]> {
+  async login(@Body() body: AuthGoogleLoginDto): Promise<LoginResponseType[]> {
     try {
-      const socialData =
-        await this.authGoogleService.getProfileByToken(loginDto);
+      const socialData = await this.authGoogleService.getProfileByToken(body);
       return this.authService.validateSocialLogin(
         AuthProvidersEnum.GOOGLE,
         socialData,
@@ -43,6 +51,7 @@ export class AuthGoogleController {
     }
   }
 
+  /*
   @Get()
   @UseGuards(GoogleOAuthGuard)
   async googleAuth(@Request() _: unknown) {}
@@ -73,4 +82,5 @@ export class AuthGoogleController {
       );
     }
   }
+    */
 }

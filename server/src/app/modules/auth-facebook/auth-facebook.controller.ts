@@ -1,13 +1,21 @@
-import { Controller, HttpException, HttpStatus, Request } from '@nestjs/common';
+import {
+  Controller,
+  HttpException,
+  HttpCode,
+  HttpStatus,
+  // Request,
+  Body,
+  Post,
+  // Get,
+  // UseGuards,
+} from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
-import { Body, Post, Get } from '@nestjs/common';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthFacebookService } from './auth-facebook.service';
 import { AuthFacebookLoginDto } from './dto/auth-facebook-login.dto';
-import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
+// import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
 import { AuthProvidersEnum } from 'src/shared/enums';
-import { UseGuards } from '@nestjs/common';
-import { FacebookAuthGuard } from './guard/facebook.guard';
+// import { FacebookAuthGuard } from './guard/facebook.guard';
 import { LoginResponseType } from 'src/shared/types';
 
 @Controller({
@@ -20,6 +28,7 @@ export class AuthFacebookController {
   ) {}
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ResponseMessage('User logged in successfully')
   async login(
     @Body() loginDto: AuthFacebookLoginDto,
@@ -41,6 +50,7 @@ export class AuthFacebookController {
     }
   }
 
+  /*
   @Get()
   @UseGuards(FacebookAuthGuard)
   @ResponseMessage('User logged in successfully')
@@ -66,4 +76,5 @@ export class AuthFacebookController {
       );
     }
   }
+    */
 }

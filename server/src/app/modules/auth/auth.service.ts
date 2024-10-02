@@ -57,19 +57,29 @@ export class AuthService {
       const userRegistered = await this.memberModel.findAllByEmailOrPhone(
         socialData?.email?.toLowerCase(),
       );
-      if (userRegistered.length > 0)
+      if (
+        userRegistered.length > 0 &&
+        userRegistered?.[0]?.provider !== authProvider
+      )
         throw new HttpException('User registered', HttpStatus.BAD_REQUEST);
 
-      const created = await this.memberModel.createBySocial({
-        socialId: socialData.id,
-        firstName: socialData.firstName,
-        lastName: socialData.lastName,
-        email: socialData?.email?.toLowerCase(),
-        provider: authProvider,
-      });
+      let memberId: string = userRegistered?.[0]?._id;
+      if (userRegistered.length === 0) {
+        const created = await this.memberModel.createBySocial({
+          socialId: socialData.id,
+          firstName: socialData.firstName,
+          lastName: socialData.lastName,
+          email: socialData?.email?.toLowerCase(),
+          provider: authProvider,
+        });
+
+        memberId = created._id;
+      }
+
+      await this.memberModel.active(socialData.email, true);
 
       const accessToken = this.generateToken({
-        memberId: created._id,
+        memberId,
         email: socialData?.email?.toLowerCase(),
         firstName: socialData?.firstName,
         lastName: socialData?.lastName,
