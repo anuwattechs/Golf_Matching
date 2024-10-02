@@ -16,15 +16,13 @@ const models_1 = require("../../../schemas/models");
 const utils_service_1 = require("../../../shared/utils/utils.service");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
-const mail_service_1 = require("../mail/mail.service");
 let AuthService = class AuthService {
-    constructor(utilsService, memberModel, verificationRegistrationModel, verificationResetPasswordModel, jwtService, mailService, configService) {
+    constructor(utilsService, memberModel, verificationRegistrationModel, verificationResetPasswordModel, jwtService, configService) {
         this.utilsService = utilsService;
         this.memberModel = memberModel;
         this.verificationRegistrationModel = verificationRegistrationModel;
         this.verificationResetPasswordModel = verificationResetPasswordModel;
         this.jwtService = jwtService;
-        this.mailService = mailService;
         this.configService = configService;
     }
     generateToken(payload) {
@@ -146,9 +144,6 @@ let AuthService = class AuthService {
                 lastName: userRegistered.lastName,
             });
             await this.memberModel.active(userRegistered.email, true);
-            await this.mailService.sendVerifyCode('anuwat57766@gmail.com', {
-                code: this.utilsService.generateRandomNumber(6),
-            });
             return [
                 {
                     accessToken,
@@ -192,7 +187,6 @@ exports.AuthService = AuthService = __decorate([
         models_1.VerificationRegistrationModel,
         models_1.VerificationResetPasswordModel,
         jwt_1.JwtService,
-        mail_service_1.MailService,
         config_1.ConfigService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

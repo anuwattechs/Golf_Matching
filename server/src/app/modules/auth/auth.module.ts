@@ -8,11 +8,10 @@ import { ConfigModule } from '@nestjs/config';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { ModelsModule } from 'src/schemas/models/models.module';
 import { AnonymousStrategy } from './strategy/anonymous.strategy';
-import { MailModule } from '../mail/mail.module';
+import { SmsModule } from '../sms/sms.module';
 
 @Module({
   imports: [
-    MailModule,
     ConfigModule,
     UtilsModule,
     ModelsModule,
@@ -21,6 +20,7 @@ import { MailModule } from '../mail/mail.module';
       secret: '' + process.env.AUTH_JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
+    SmsModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, AnonymousStrategy],

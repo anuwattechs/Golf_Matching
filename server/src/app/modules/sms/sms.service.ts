@@ -1,49 +1,61 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Infobip, AuthType } from '@infobip-api/sdk';
+import axios from 'axios';
 import { AllConfigType } from 'src/app/config/config.type';
 
 @Injectable()
 export class SmsService {
   private readonly logger = new Logger(SmsService.name);
-  private readonly from: string;
-  private readonly infobip: Infobip;
+  private infobipApiKey: string;
+  private infobipBaseUrl: string;
+  private infobipFrom: string;
 
-  constructor(private readonly configService: ConfigService<AllConfigType>) {
-    // Retrieve 'from' number and Infobip configuration from environment
-    this.from = this.configService.get<string>('sms.fromNumber', {
+  constructor(configService: ConfigService<AllConfigType>) {
+    this.infobipBaseUrl = configService.get<string>('sms.baseUrl', {
       infer: true,
     });
-    const baseUrl = this.configService.get<string>('infobip.baseUrl', {
+    this.infobipApiKey = configService.get<string>('sms.authToken', {
       infer: true,
     });
-    const apiKey = this.configService.get<string>('infobip.apiKey', {
+    this.infobipFrom = configService.get<string>('sms.fromNumber', {
       infer: true,
-    });
-
-    // Initialize Infobip client with dynamic configuration
-    this.infobip = new Infobip({
-      baseUrl,
-      apiKey,
-      authType: AuthType.ApiKey,
     });
   }
 
-  async sendSms(to: string, message: string): Promise<void> {
-    try {
-      // Use dynamic 'from' and 'to' numbers with the provided message
-      await this.infobip.channels.whatsapp.send({
-        type: 'text',
-        from: this.from, // Dynamic sender number
-        to,
-        content: {
+  async sendSms(to: string, message: string): Promise<boolean> {
+    const url = `${this.infobipBaseUrl}/sms/2/text/advanced`;
+    const headers = {
+      Authorization: `App ${this.infobipApiKey}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    const data = {
+      messages: [
+        {
+          destinations: [{ to }],
+          from: this.infobipFrom,
           text: message,
         },
-      });
+      ],
+    };
 
-      this.logger.log(`SMS sent successfully to ${to}`);
+    try {
+      const response = await axios.post(url, data, { headers });
+      if (response.status === 200) {
+        return true;
+      } else {
+        throw new HttpException(
+          'Failed to send SMS',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     } catch (error) {
-      // Improved error handling with more details
       this.logger.error(
         `Error sending SMS to ${to}: ${error.message}`,
         error.stack,
