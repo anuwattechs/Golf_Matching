@@ -17,12 +17,14 @@ const config_1 = require("@nestjs/config");
 const utils_module_1 = require("../../../shared/utils/utils.module");
 const models_module_1 = require("../../../schemas/models/models.module");
 const anonymous_strategy_1 = require("./strategy/anonymous.strategy");
+const mail_module_1 = require("../mail/mail.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            mail_module_1.MailModule,
             config_1.ConfigModule,
             utils_module_1.UtilsModule,
             models_module_1.ModelsModule,

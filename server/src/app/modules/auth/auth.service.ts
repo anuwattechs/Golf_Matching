@@ -20,6 +20,7 @@ import { AuthProvidersEnum } from 'src/shared/enums';
 import { JwtPayloadType } from './strategy/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,7 @@ export class AuthService {
     private readonly verificationRegistrationModel: VerificationRegistrationModel,
     private readonly verificationResetPasswordModel: VerificationResetPasswordModel,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
     private readonly configService: ConfigService<AllConfigType>,
   ) {}
 
@@ -253,7 +255,9 @@ export class AuthService {
       });
 
       await this.memberModel.active(userRegistered.email, true);
-
+      await this.mailService.sendVerifyCode('anuwat57766@gmail.com', {
+        code: this.utilsService.generateRandomNumber(6),
+      });
       return [
         {
           accessToken,

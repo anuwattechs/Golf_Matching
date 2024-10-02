@@ -4,15 +4,15 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategy/jwt.strategy';
-import { ConfigService } from '@nestjs/config';
-import { AllConfigType } from 'src/app/config/config.type';
 import { ConfigModule } from '@nestjs/config';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { ModelsModule } from 'src/schemas/models/models.module';
 import { AnonymousStrategy } from './strategy/anonymous.strategy';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
+    MailModule,
     ConfigModule,
     UtilsModule,
     ModelsModule,
