@@ -57,3 +57,5 @@ pnpm-lock.yaml
 *.cmd
 *.test.js
 .env
+
+dist
