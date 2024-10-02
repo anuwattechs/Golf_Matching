@@ -17,6 +17,7 @@ import { AuthAppleModule } from './app/modules/auth-apple/auth-apple.module';
 // import { MailService } from './app/modules/mail/mail.service';
 import { MailModule } from './app/modules/mail/mail.module';
 import { SmsModule } from './app/modules/sms/sms.module';
+import { ProfileModule } from './app/modules/profile/profile.module';
 import googleConfig from './app/modules/auth-google/config/google.config';
 import facebookConfig from './app/modules/auth-facebook/config/facebook.config';
 import mailConfig from './app/modules/mail/config/mail.config';
@@ -48,6 +49,7 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     AuthAppleModule,
     MailModule,
     SmsModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}

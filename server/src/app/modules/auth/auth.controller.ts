@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Patch,
   Body,
   // HttpException,
@@ -21,6 +22,7 @@ import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { Request } from 'express';
 import { JwtPayloadType } from './strategy/jwt-payload.type';
 
+// @UseGuards(JwtAuthGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -54,7 +56,7 @@ export class AuthController {
   }
 
   @Patch('change-password')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ResponseMessage('Password changed successfully')
   async changePassword(
     @Body() body: ChangePasswordDto,
@@ -62,5 +64,13 @@ export class AuthController {
   ) /*: Promise<LoginResponseDto> */ {
     console.log('req.user', req.user);
     return await this.authService.changePassword(body, req.user);
+  }
+
+  @Get('test1')
+  @UseGuards(JwtAuthGuard)
+  @ResponseMessage('Test1')
+  async test1(@Req() req: Request) /*: Promise<LoginResponseDto> */ {
+    console.log('req.user', req.user);
+    return req.user;
   }
 }

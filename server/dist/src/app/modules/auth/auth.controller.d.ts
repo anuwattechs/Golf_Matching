@@ -12,4 +12,5 @@ export declare class AuthController {
     changePassword(body: ChangePasswordDto, req: Request & {
         user: JwtPayloadType;
     }): Promise<unknown>;
+    test1(req: Request): Promise<Express.User>;
 }
