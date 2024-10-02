@@ -16,6 +16,7 @@ const jwt_strategy_1 = require("./strategy/jwt.strategy");
 const config_1 = require("@nestjs/config");
 const utils_module_1 = require("../../../shared/utils/utils.module");
 const models_module_1 = require("../../../schemas/models/models.module");
+const anonymous_strategy_1 = require("./strategy/anonymous.strategy");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -32,7 +33,7 @@ exports.AuthModule = AuthModule = __decorate([
             }),
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
+        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, anonymous_strategy_1.AnonymousStrategy],
         exports: [auth_service_1.AuthService],
     })
 ], AuthModule);

@@ -53,14 +53,13 @@ export class AuthController {
     return await this.authService.login(body);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('change-password')
-  // @UseGuards(JwtAuthGuard)
   @ResponseMessage('Password changed successfully')
   async changePassword(
+    @Req() req: Request,
     @Body() body: ChangePasswordDto,
-    @Req() req: Request & { user: JwtPayloadType },
   ) /*: Promise<LoginResponseDto> */ {
-    console.log('req.user', req.user);
-    return await this.authService.changePassword(body, req.user);
+    return req;
   }
 }
