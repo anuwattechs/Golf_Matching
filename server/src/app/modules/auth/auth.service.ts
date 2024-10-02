@@ -7,6 +7,7 @@ import {
   VerifyOtpDto,
   RegisterDto,
   LoginDto,
+  ChangePasswordDto,
 } from './dto';
 import {
   MemberModel,
@@ -271,6 +272,50 @@ export class AuthService {
     }
   }
 
+  async changePassword(
+    input: ChangePasswordDto,
+    decoded: JwtPayloadType,
+  ): Promise<NullableType<unknown>> {
+    try {
+      //! Check Old password same as new password
+      if (input.oldPassword === input.newPassword)
+        throw new HttpException(
+          'Old password same as new password',
+          HttpStatus.BAD_REQUEST,
+        );
+
+      //! Check if user registered
+      const userRegistered = await this.memberModel.findOneByEmailOrPhone(
+        decoded.email,
+      );
+
+      if (!userRegistered)
+        throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
+
+      const isMatched = await bcrypt.compare(
+        input.oldPassword,
+        userRegistered.password,
+      );
+
+      if (!isMatched)
+        throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+
+      const hashedPassword = await bcrypt.hash(input.newPassword, 10);
+
+      await this.memberModel.updatePassword(userRegistered._id, hashedPassword);
+
+      return null;
+      // return {
+      //   status: 'success',
+      //   statusCode: 201,
+      //   message: 'Password changed successfully',
+      //   data: [],
+      // };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   /*
   async updateProfile(
     input: UpdatePersonalInfoDto,
@@ -304,78 +349,6 @@ export class AuthService {
         statusCode: 201,
         message: 'User updated successfully',
         data: [updated],
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
-    }
-  }
-
-  async changePassword(
-    input: ChangePasswordDto,
-    decoded: TJwtPayload,
-  ): Promise<TServiceResponse> {
-    try {
-      //! Check Old password same as new password
-      if (input.new_password === input.old_password)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'Old password same as new password',
-          data: [],
-        };
-
-      //! Check if user registered
-      const userRegistered = await this.userModel.findOne({
-        _id: decoded.user_id,
-      });
-
-      if (!userRegistered)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'User not registered',
-          data: [],
-        };
-
-      const isMatched = await bcrypt.compare(
-        input.old_password,
-        userRegistered.password,
-      );
-
-      if (!isMatched)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'Invalid password',
-          data: [],
-        };
-
-      const hashedPassword = await bcrypt.hash(input.new_password, 10);
-
-      const now = new Date();
-
-      await this.userModel.updateOne(
-        {
-          _id: userRegistered._id,
-        },
-        {
-          $set: {
-            password: hashedPassword,
-            updated_at: now,
-          },
-        },
-      );
-
-      return {
-        status: 'success',
-        statusCode: 201,
-        message: 'Password changed successfully',
-        data: [],
       };
     } catch (error) {
       return {

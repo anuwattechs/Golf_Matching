@@ -30,4 +30,8 @@ export class MemberModel {
       { $set: { isActived } },
     );
   }
+
+  updatePassword(userId: string, password: string) {
+    return this.member.updateOne({ _id: userId }, { $set: { password } });
+  }
 }

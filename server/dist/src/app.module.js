@@ -13,10 +13,17 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_config_service_1 = require("./core/database/mongoose-config.service");
 const config_2 = require("./core/database/config");
 const auth_module_1 = require("./app/modules/auth/auth.module");
-const google_config_1 = require("./app/modules/auth-google/config/google.config");
-const facebook_config_1 = require("./app/modules/auth-facebook/config/facebook.config");
 const auth_config_1 = require("./app/modules/auth/config/auth.config");
 const app_config_1 = require("./app/config/app.config");
+const auth_google_module_1 = require("./app/modules/auth-google/auth-google.module");
+const auth_facebook_module_1 = require("./app/modules/auth-facebook/auth-facebook.module");
+const auth_apple_module_1 = require("./app/modules/auth-apple/auth-apple.module");
+const mail_module_1 = require("./app/modules/mail/mail.module");
+const sms_module_1 = require("./app/modules/sms/sms.module");
+const google_config_1 = require("./app/modules/auth-google/config/google.config");
+const facebook_config_1 = require("./app/modules/auth-facebook/config/facebook.config");
+const mail_config_1 = require("./app/modules/mail/config/mail.config");
+const sms_config_1 = require("./app/modules/sms/config/sms.config");
 const infrastructureDatabaseModule = mongoose_1.MongooseModule.forRootAsync({
     useClass: mongoose_config_service_1.MongooseConfigService,
 });
@@ -28,11 +35,24 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [config_2.databaseConfig, auth_config_1.default, google_config_1.default, facebook_config_1.default, app_config_1.default],
+                load: [
+                    config_2.databaseConfig,
+                    app_config_1.default,
+                    auth_config_1.default,
+                    google_config_1.default,
+                    facebook_config_1.default,
+                    mail_config_1.default,
+                    sms_config_1.default,
+                ],
                 envFilePath: ['.env'],
             }),
             infrastructureDatabaseModule,
             auth_module_1.AuthModule,
+            auth_google_module_1.AuthGoogleModule,
+            auth_facebook_module_1.AuthFacebookModule,
+            auth_apple_module_1.AuthAppleModule,
+            mail_module_1.MailModule,
+            sms_module_1.SmsModule,
         ],
     })
 ], AppModule);

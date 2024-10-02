@@ -160,6 +160,24 @@ let AuthService = class AuthService {
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async changePassword(input, decoded) {
+        try {
+            if (input.oldPassword === input.newPassword)
+                throw new common_1.HttpException('Old password same as new password', common_1.HttpStatus.BAD_REQUEST);
+            const userRegistered = await this.memberModel.findOneByEmailOrPhone(decoded.email);
+            if (!userRegistered)
+                throw new common_1.HttpException('User not registered', common_1.HttpStatus.BAD_REQUEST);
+            const isMatched = await bcrypt.compare(input.oldPassword, userRegistered.password);
+            if (!isMatched)
+                throw new common_1.HttpException('Invalid password', common_1.HttpStatus.BAD_REQUEST);
+            const hashedPassword = await bcrypt.hash(input.newPassword, 10);
+            await this.memberModel.updatePassword(userRegistered._id, hashedPassword);
+            return null;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

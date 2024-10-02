@@ -10,14 +10,19 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(configService: ConfigService<AllConfigType>) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get<string>('auth.jwtSecret', { infer: true }),
-      expiresIn: configService.get<string>('auth.jwtExpiresIn', {
-        infer: true,
-      }),
+      // secretOrKey: configService.get<string>('auth.jwtSecret', { infer: true }),
+      // expiresIn: configService.get<string>('auth.jwtExpiresIn', {
+      //   infer: true,
+      // }),
+
+      secretOrKey: '' + process.env.AUTH_JWT_SECRET,
+      expiresIn: '1h',
     });
   }
 
   public validate(payload: JwtPayloadType) {
+    console.log('JwtStrategy.validate', payload);
+
     return {
       userId: payload.userId,
       email: payload.email,

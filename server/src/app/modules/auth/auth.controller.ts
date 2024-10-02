@@ -3,8 +3,10 @@ import {
   Post,
   Patch,
   Body,
-  HttpException,
-  HttpStatus,
+  // HttpException,
+  // HttpStatus,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
@@ -13,7 +15,11 @@ import {
   VerifyOtpDto,
   RegisterDto,
   LoginDto,
+  ChangePasswordDto,
 } from './dto';
+import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import { Request } from 'express';
+import { JwtPayloadType } from './strategy/jwt-payload.type';
 
 @Controller('auth')
 export class AuthController {
@@ -45,5 +51,16 @@ export class AuthController {
   @ResponseMessage('User logged in successfully')
   async login(@Body() body: LoginDto) /*: Promise<LoginResponseDto> */ {
     return await this.authService.login(body);
+  }
+
+  @Patch('change-password')
+  // @UseGuards(JwtAuthGuard)
+  @ResponseMessage('Password changed successfully')
+  async changePassword(
+    @Body() body: ChangePasswordDto,
+    @Req() req: Request & { user: JwtPayloadType },
+  ) /*: Promise<LoginResponseDto> */ {
+    console.log('req.user', req.user);
+    return await this.authService.changePassword(body, req.user);
   }
 }
