@@ -22,20 +22,13 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async createVerificationRegister(body) {
-        try {
-            return await this.authService.createVerificationRegister(body);
-        }
-        catch (error) {
-            throw new common_1.HttpException({
-                message: error.message,
-            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return await this.authService.createVerificationRegister(body);
     }
 };
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('verification-register'),
-    (0, response_message_decorator_1.ResponseMessage)(''),
+    (0, response_message_decorator_1.ResponseMessage)('Verification code sent successfully'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [dto_1.VerificationRegisterDto]),

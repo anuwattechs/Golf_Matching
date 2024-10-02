@@ -8,17 +8,18 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('verification-register')
-  @ResponseMessage('')
+  @ResponseMessage('Verification code sent successfully')
   async createVerificationRegister(@Body() body: VerificationRegisterDto)/*: Promise<LoginResponseDto> */{
-    try {
-      return await this.authService.createVerificationRegister(body);
-    } catch (error) {
-      throw new HttpException(
-        {
-          message: error.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return await this.authService.createVerificationRegister(body);
+    // try {
+    //   return await this.authService.createVerificationRegister(body);
+    // } catch (error) {
+    //   throw new HttpException(
+    //     {
+    //       message: error.message,
+    //     },
+    //     HttpStatus.INTERNAL_SERVER_ERROR,
+    //   );
+    // }
   }
 }
