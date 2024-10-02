@@ -18,8 +18,6 @@ const app_config_1 = require("./app/config/app.config");
 const auth_google_module_1 = require("./app/modules/auth-google/auth-google.module");
 const auth_facebook_module_1 = require("./app/modules/auth-facebook/auth-facebook.module");
 const auth_apple_module_1 = require("./app/modules/auth-apple/auth-apple.module");
-const mail_module_1 = require("./app/modules/mail/mail.module");
-const sms_module_1 = require("./app/modules/sms/sms.module");
 const google_config_1 = require("./app/modules/auth-google/config/google.config");
 const facebook_config_1 = require("./app/modules/auth-facebook/config/facebook.config");
 const mail_config_1 = require("./app/modules/mail/config/mail.config");
@@ -51,8 +49,6 @@ exports.AppModule = AppModule = __decorate([
             auth_google_module_1.AuthGoogleModule,
             auth_facebook_module_1.AuthFacebookModule,
             auth_apple_module_1.AuthAppleModule,
-            mail_module_1.MailModule,
-            sms_module_1.SmsModule,
         ],
     })
 ], AppModule);

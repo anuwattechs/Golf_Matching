@@ -46,8 +46,6 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     AuthGoogleModule,
     AuthFacebookModule,
     AuthAppleModule,
-    MailModule,
-    SmsModule,
   ],
 })
 export class AppModule {}
