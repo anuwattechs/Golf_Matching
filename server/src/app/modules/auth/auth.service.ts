@@ -300,7 +300,6 @@ export class AuthService {
       });
 
       await this.memberModel.active(userRegistered.email, true);
-
       return [
         {
           accessToken,
@@ -354,18 +353,9 @@ export class AuthService {
 
       if (!isMatched)
         throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
-
       const hashedPassword = await bcrypt.hash(input.newPassword, 10);
-
       await this.memberModel.updatePassword(userRegistered._id, hashedPassword);
-
       return null;
-      // return {
-      //   status: 'success',
-      //   statusCode: 201,
-      //   message: 'Password changed successfully',
-      //   data: [],
-      // };
     } catch (error) {
       throw new HttpException(
         {

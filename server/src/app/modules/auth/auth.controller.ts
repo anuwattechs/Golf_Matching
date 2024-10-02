@@ -1,7 +1,7 @@
 import {
   Controller,
   Post,
-  Get,
+  // Get,
   Patch,
   Body,
   // HttpException,
@@ -59,6 +59,7 @@ export class AuthController {
     return await this.authService.login(body);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('change-password')
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('Password changed successfully')
