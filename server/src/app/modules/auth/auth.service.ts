@@ -22,6 +22,7 @@ import { AuthProvidersEnum } from 'src/shared/enums';
 import { JwtPayloadType } from './strategy/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
+import { SmsService } from 'src/app/common/services/sms/sms.service';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +33,7 @@ export class AuthService {
     private readonly verificationResetPasswordModel: VerificationResetPasswordModel,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<AllConfigType>,
+    private readonly smsService: SmsService,
   ) {}
 
   private generateToken(payload: JwtPayloadType): string {
@@ -153,6 +155,14 @@ export class AuthService {
       }
 
       //! Send verification code to user (OTP via Email or Phone)
+      if (input.provider === AuthProvidersEnum.PHONE) {
+        // const resp1 = await this.smsService.sendSms(
+        //   input.email,
+        //   `Your verification code is ${verifyCode}`,
+        // );
+        // console.log('SMS Response: ', resp1);
+      } else if (input.provider === AuthProvidersEnum.EMAIL) {
+      }
 
       return [{ verifyCode }];
       // return {

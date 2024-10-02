@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 
 import { IsString } from 'class-validator';
-import { validateConfig } from '../../../../shared/validators/validate-config';
+import { validateConfig } from '../../../../../shared/validators/validate-config';
 import { SMSConfig } from './sms-config.type';
 
 class EnvironmentVariablesValidator {

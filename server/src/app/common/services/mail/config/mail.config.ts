@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 import { IsString } from 'class-validator';
 import { MailConfig } from './mail-config.type';
-import { validateConfig } from '../../../../shared/validators/validate-config';
+import { validateConfig } from '../../../../../shared/validators/validate-config';
 
 class EnvironmentVariablesValidator {
   @IsString()

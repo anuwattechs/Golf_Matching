@@ -4,8 +4,8 @@ import { AuthConfig } from '../modules/auth/config/auth-config.type';
 import { GoogleConfig } from '../modules/auth-google/config/google-config.type';
 import { FacebookConfig } from '../modules/auth-facebook/config/facebook-config.type';
 import { AppleConfig } from '../modules/auth-apple/config/apple-config.type';
-import { MailConfig } from '../modules/mail/config/mail-config.type';
-import { SMSConfig } from '../modules/sms/config/sms-config.type';
+import { MailConfig } from '../common/services/mail/config/mail-config.type';
+import { SMSConfig } from '../common/services/sms/config/sms-config.type';
 
 export type AllConfigType = {
   app: AppConfig;

@@ -7,7 +7,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { ModelsModule } from 'src/schemas/models/models.module';
-import { SmsModule } from '../sms/sms.module';
+import { SmsModule } from 'src/app/common/services/sms/sms.module';
 
 @Module({
   imports: [
