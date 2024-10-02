@@ -5,9 +5,11 @@ import * as bcrypt from 'bcrypt';
 import {
   VerificationRegisterDto,
   VerifyOtpDto,
+  VerifyOtpResetPasswordDto,
   RegisterDto,
   LoginDto,
   ChangePasswordDto,
+  ResetPasswordDto,
 } from './dto';
 import {
   MemberModel,
@@ -67,7 +69,7 @@ export class AuthService {
       });
 
       const accessToken = this.generateToken({
-        userId: created._id,
+        memberId: created._id,
         email: socialData?.email?.toLowerCase(),
         firstName: socialData?.firstName,
         lastName: socialData?.lastName,
@@ -281,7 +283,7 @@ export class AuthService {
         throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
 
       const accessToken = this.generateToken({
-        userId: userRegistered._id,
+        memberId: userRegistered._id,
         email: userRegistered.email,
         firstName: userRegistered.firstName,
         lastName: userRegistered.lastName,
@@ -367,292 +369,114 @@ export class AuthService {
     }
   }
 
-  /*
-  async updateProfile(
-    input: UpdatePersonalInfoDto,
-    decoded: TJwtPayload,
-  ): Promise<TServiceResponse> {
+  async createVerificationResetPassword(
+    input: VerificationRegisterDto,
+  ): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
-      const userRegistered = await this.userModel.findOne({
-        _id: decoded.user_id,
-      });
+      const userRegistered = await this.memberModel.findOneByEmailOrPhone(
+        input.email.toLowerCase(),
+      );
 
       if (!userRegistered)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'User not registered',
-          data: [],
-        };
+        throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
 
-      const updated = await this.userModel.updateOne(
-        { _id: decoded.user_id },
-        {
-          $set: {
-            ...input,
-          },
-        },
-      );
-
-      return {
-        status: 'success',
-        statusCode: 201,
-        message: 'User updated successfully',
-        data: [updated],
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
-    }
-  }
-
-  async changeInviteMode(
-    input: ChangeInviteModeDto,
-    decoded: TJwtPayload,
-  ): Promise<TServiceResponse> {
-    try {
-      // //! Check if user registered
-      // const userRegistered = await this.userModel.findOne({
-      //   _id: decoded.user_id,
-      // });
-
-      // if (!userRegistered)
-      //   return {
-      //     status: 'error',
-      //     statusCode: 400,
-      //     message: 'User not registered',
-      //     data: [],
-      //   };
-
-      const now = new Date();
-      await this.userModel.updateOne(
-        {
-          _id: decoded.user_id,
-        },
-        {
-          $set: {
-            is_invited: input.is_invited,
-            updated_at: now,
-          },
-        },
-      );
-
-      return {
-        status: 'success',
-        statusCode: 201,
-        message: 'Invite mode changed successfully',
-        data: [{ is_invited: input.is_invited }],
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
-    }
-  }
-
-  async findOneProsonalInfo(decoded: TJwtPayload): Promise<TServiceResponse> {
-    try {
-      // //! Check if user registered
-      // const userRegistered = await this.userModel.findOne({
-      //   _id: decoded.user_id,
-      // });
-
-      // if (!userRegistered)
-      //   return {
-      //     status: 'error',
-      //     statusCode: 400,
-      //     message: 'User not registered',
-      //     data: [],
-      //   };
-
-      const user = await this.userModel
-        .findOne({
-          _id: decoded.user_id,
-        })
-        .select(
-          '-_id -password -is_actived -actived_at -created_at -updated_at',
-        );
-
-      return {
-        status: 'success',
-        statusCode: 200,
-        message: 'User found successfully',
-        data: [user],
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
-    }
-  }
-
-  async createIndentityVerifyResetPassword(
-    input: IdentityVerifyDto,
-  ): Promise<TServiceResponse> {
-    try {
-      //! Check if user registered
-      const userRegistered = await this.userModel.findOne({
-        $or: [
-          { email: input.username.toLowerCase() },
-          { phone_number: input.username.toLowerCase() },
-        ],
+      const verifyCode = this.utilsService.generateRandomNumber(6);
+      const created = await this.verificationResetPasswordModel.create({
+        memberId: userRegistered._id,
+        email: input.email.toLowerCase(),
+        provider: input.provider,
+        verifyCode,
       });
-
-      if (!userRegistered)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'User not registered',
-          data: [],
-        };
-
-      const verifyCode = this.randomNumber();
-      const created = await this.identityVerificationForgorPasswordModel.create(
-        {
-          user_id: userRegistered._id,
-          username: input.username.toLowerCase(),
-          type: input.type,
-          verify_code: verifyCode,
-        },
-      );
 
       //! Send verification code to user (OTP via Email or Phone)
 
-      return {
-        status: 'success',
-        statusCode: 201,
-        message: 'Indentity verified successfully',
-        data: [
-          {
-            transaction_id: created._id,
-            verify_code: verifyCode,
-          },
-        ],
-      };
+      return [{ transactionId: created._id, verifyCode }];
     } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
     }
   }
 
-  async identityResetPasswordConfirm(
-    input: ConfirmOtpResetPasswordDto,
-  ): Promise<TServiceResponse> {
+  async verifyOtpResetPassword(
+    input: VerifyOtpResetPasswordDto,
+  ): Promise<NullableType<unknown>> {
     try {
       //! Check if user identity verified
-      const transaction =
-        await this.identityVerificationForgorPasswordModel.findOne({
-          _id: input.transaction_id,
-        });
-
-      if (!transaction)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'Transaction not found',
-          data: [],
-        };
-
-      if (transaction.verify_code !== input.verify_code)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'Invalid verification code',
-          data: [],
-        };
-
-      //! Check if user exists
-      const now = new Date();
-      await this.identityVerificationForgorPasswordModel.updateOne(
-        {
-          _id: input.transaction_id,
-        },
-        { $set: { is_verified: true, updated_at: now } },
+      const transaction = await this.verificationResetPasswordModel.findById(
+        input.transactionId,
       );
 
-      return {
-        status: 'success',
-        statusCode: 201,
-        message: 'Indentity verified successfully',
-        data: [{ transaction_id: input.transaction_id }],
-      };
+      if (!transaction)
+        throw new HttpException(
+          'Transaction not found',
+          HttpStatus.BAD_REQUEST,
+        );
+
+      if (transaction.verifyCode !== input.verifyCode)
+        throw new HttpException(
+          'Invalid verification code',
+          HttpStatus.BAD_REQUEST,
+        );
+
+      //! Check if user exists
+      await this.verificationResetPasswordModel.verify(input.transactionId);
+
+      return null;
     } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
     }
   }
 
-  async resetPassword(input: ResetPasswordDto): Promise<TServiceResponse> {
+  async resetPassword(input: ResetPasswordDto): Promise<NullableType<unknown>> {
     try {
       //! Check if user identity verified
-      const transaction =
-        await this.identityVerificationForgorPasswordModel.findOne({
-          _id: input.transaction_id,
-          is_verified: true,
-          reseted_at: null,
-        });
+      const transaction = await this.verificationResetPasswordModel.findById(
+        input.transactionId,
+        [true],
+      );
 
       if (!transaction)
-        return {
-          status: 'error',
-          statusCode: 400,
-          message: 'Transaction not found or not verified',
-          data: [],
-        };
+        throw new HttpException(
+          'Transaction not found or not verified',
+          HttpStatus.BAD_REQUEST,
+        );
 
       //! Check if user exists
-      const now = new Date();
-      await this.identityVerificationRegistrationModel.updateOne(
-        {
-          _id: input.transaction_id,
-        },
-        { $set: { reseted_at: now, updated_at: now } },
+      await this.verificationResetPasswordModel.resetAt(input.transactionId);
+
+      const hashedPassword = await bcrypt.hash(input.newPassword, 10);
+      await this.memberModel.updatePassword(
+        transaction.memberId,
+        hashedPassword,
       );
 
-      const hashedPassword = await bcrypt.hash(input.password, 10);
-      await this.userModel.updateOne(
-        { _id: transaction.user_id },
-        {
-          $set: {
-            password: hashedPassword,
-            updated_at: now,
-          },
-        },
-      );
-
-      return {
-        status: 'success',
-        statusCode: 201,
-        message: 'Password reseted successfully',
-        data: [],
-      };
+      return null;
     } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
     }
   }
-    */
 }

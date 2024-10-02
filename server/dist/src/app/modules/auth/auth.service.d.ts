@@ -1,6 +1,6 @@
 import { LoginResponseType, NullableType } from 'src/shared/types';
 import { SocialInterface } from 'src/shared/interfaces';
-import { VerificationRegisterDto, VerifyOtpDto, RegisterDto, LoginDto, ChangePasswordDto } from './dto';
+import { VerificationRegisterDto, VerifyOtpDto, VerifyOtpResetPasswordDto, RegisterDto, LoginDto, ChangePasswordDto, ResetPasswordDto } from './dto';
 import { MemberModel, VerificationRegistrationModel, VerificationResetPasswordModel } from 'src/schemas/models';
 import { UtilsService } from 'src/shared/utils/utils.service';
 import { JwtService } from '@nestjs/jwt';
@@ -25,4 +25,7 @@ export declare class AuthService {
     register(input: RegisterDto): Promise<NullableType<unknown>>;
     login(input: LoginDto): Promise<LoginResponseType[]>;
     changePassword(input: ChangePasswordDto, decoded: JwtPayloadType): Promise<NullableType<unknown>>;
+    createVerificationResetPassword(input: VerificationRegisterDto): Promise<NullableType<unknown>>;
+    verifyOtpResetPassword(input: VerifyOtpResetPasswordDto): Promise<NullableType<unknown>>;
+    resetPassword(input: ResetPasswordDto): Promise<NullableType<unknown>>;
 }

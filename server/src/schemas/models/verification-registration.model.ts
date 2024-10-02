@@ -51,7 +51,7 @@ export class VerificationRegistrationModel {
 
   findAllByEmailOrPhone(
     email: string,
-    isVerified: boolean[] = [false, true],
+    isVerified: boolean[] = [false, true, null],
   ): Promise<VerificationRegistration[]> {
     return this.verificationRegistration
       .find({ email, isVerified: { $in: isVerified } })
@@ -60,7 +60,7 @@ export class VerificationRegistrationModel {
 
   findOneByEmailOrPhone(
     email: string,
-    isVerified: boolean[] = [false, true],
+    isVerified: boolean[] = [false, true, null],
   ): Promise<VerificationRegistration> {
     return this.verificationRegistration
       .findOne({ email, isVerified: { $in: isVerified } })

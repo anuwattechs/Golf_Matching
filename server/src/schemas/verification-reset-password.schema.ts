@@ -13,7 +13,7 @@ export class VerificationResetPassword extends Document {
   _id: string;
 
   @Prop({ required: true })
-  userId: string;
+  memberId: string;
 
   @Prop({ required: true }) //! Email or Phone Number
   email: string;
@@ -24,7 +24,7 @@ export class VerificationResetPassword extends Document {
   @Prop({ required: true })
   verifyCode: string;
 
-  @Prop({ default: null })
+  @Prop({ default: false })
   isVerified: boolean;
 
   @Prop({ default: null })

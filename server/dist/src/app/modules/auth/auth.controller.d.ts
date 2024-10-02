@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { VerificationRegisterDto, VerifyOtpDto, RegisterDto, LoginDto, ChangePasswordDto } from './dto';
+import { VerificationRegisterDto, VerifyOtpDto, VerifyOtpResetPasswordDto, RegisterDto, LoginDto, ChangePasswordDto, ResetPasswordDto } from './dto';
 import { Request } from 'express';
 import { JwtPayloadType } from './strategy/jwt-payload.type';
 export declare class AuthController {
@@ -12,7 +12,7 @@ export declare class AuthController {
     changePassword(body: ChangePasswordDto, req: Request & {
         decoded: JwtPayloadType;
     }): Promise<unknown>;
-    test1(req: Request & {
-        decoded: JwtPayloadType;
-    }): Promise<JwtPayloadType>;
+    createVerificationResetPassword(body: VerificationRegisterDto): Promise<unknown>;
+    verifyOtpResetPassword(body: VerifyOtpResetPasswordDto): Promise<unknown>;
+    resetPassword(body: ResetPasswordDto): Promise<unknown>;
 }

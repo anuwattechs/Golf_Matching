@@ -35,12 +35,16 @@ let AuthController = class AuthController {
         return await this.authService.login(body);
     }
     async changePassword(body, req) {
-        console.log('req.decoded', req.decoded);
         return await this.authService.changePassword(body, req.decoded);
     }
-    async test1(req) {
-        console.log('req.decoded', req.decoded);
-        return req.decoded;
+    async createVerificationResetPassword(body) {
+        return await this.authService.createVerificationResetPassword(body);
+    }
+    async verifyOtpResetPassword(body) {
+        return await this.authService.verifyOtpResetPassword(body);
+    }
+    async resetPassword(body) {
+        return await this.authService.resetPassword(body);
     }
 };
 exports.AuthController = AuthController;
@@ -70,6 +74,7 @@ __decorate([
 ], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('login'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, response_message_decorator_1.ResponseMessage)('User logged in successfully'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -87,14 +92,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "changePassword", null);
 __decorate([
-    (0, common_1.Get)('test1'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, response_message_decorator_1.ResponseMessage)('Test1'),
-    __param(0, (0, common_1.Req)()),
+    (0, common_1.Post)('verification-reset-password'),
+    (0, response_message_decorator_1.ResponseMessage)('Verification code sent successfully'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [dto_1.VerificationRegisterDto]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "test1", null);
+], AuthController.prototype, "createVerificationResetPassword", null);
+__decorate([
+    (0, common_1.Patch)('verify-otp-reset-password'),
+    (0, response_message_decorator_1.ResponseMessage)('User verified successfully'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.VerifyOtpResetPasswordDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifyOtpResetPassword", null);
+__decorate([
+    (0, common_1.Patch)('reset-password'),
+    (0, response_message_decorator_1.ResponseMessage)('User reset password successfully'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.ResetPasswordDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "resetPassword", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

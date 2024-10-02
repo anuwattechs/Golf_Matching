@@ -51,7 +51,7 @@ let AuthService = class AuthService {
                 provider: authProvider,
             });
             const accessToken = this.generateToken({
-                userId: created._id,
+                memberId: created._id,
                 email: socialData?.email?.toLowerCase(),
                 firstName: socialData?.firstName,
                 lastName: socialData?.lastName,
@@ -164,7 +164,7 @@ let AuthService = class AuthService {
             if (!isMatched)
                 throw new common_1.HttpException('Invalid password', common_1.HttpStatus.BAD_REQUEST);
             const accessToken = this.generateToken({
-                userId: userRegistered._id,
+                memberId: userRegistered._id,
                 email: userRegistered.email,
                 firstName: userRegistered.firstName,
                 lastName: userRegistered.lastName,
@@ -203,6 +203,67 @@ let AuthService = class AuthService {
                 throw new common_1.HttpException('Invalid password', common_1.HttpStatus.BAD_REQUEST);
             const hashedPassword = await bcrypt.hash(input.newPassword, 10);
             await this.memberModel.updatePassword(userRegistered._id, hashedPassword);
+            return null;
+        }
+        catch (error) {
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
+        }
+    }
+    async createVerificationResetPassword(input) {
+        try {
+            const userRegistered = await this.memberModel.findOneByEmailOrPhone(input.email.toLowerCase());
+            if (!userRegistered)
+                throw new common_1.HttpException('User not registered', common_1.HttpStatus.BAD_REQUEST);
+            const verifyCode = this.utilsService.generateRandomNumber(6);
+            const created = await this.verificationResetPasswordModel.create({
+                memberId: userRegistered._id,
+                email: input.email.toLowerCase(),
+                provider: input.provider,
+                verifyCode,
+            });
+            return [{ transactionId: created._id, verifyCode }];
+        }
+        catch (error) {
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
+        }
+    }
+    async verifyOtpResetPassword(input) {
+        try {
+            const transaction = await this.verificationResetPasswordModel.findById(input.transactionId);
+            if (!transaction)
+                throw new common_1.HttpException('Transaction not found', common_1.HttpStatus.BAD_REQUEST);
+            if (transaction.verifyCode !== input.verifyCode)
+                throw new common_1.HttpException('Invalid verification code', common_1.HttpStatus.BAD_REQUEST);
+            await this.verificationResetPasswordModel.verify(input.transactionId);
+            return null;
+        }
+        catch (error) {
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
+        }
+    }
+    async resetPassword(input) {
+        try {
+            const transaction = await this.verificationResetPasswordModel.findById(input.transactionId, [true]);
+            if (!transaction)
+                throw new common_1.HttpException('Transaction not found or not verified', common_1.HttpStatus.BAD_REQUEST);
+            await this.verificationResetPasswordModel.resetAt(input.transactionId);
+            const hashedPassword = await bcrypt.hash(input.newPassword, 10);
+            await this.memberModel.updatePassword(transaction.memberId, hashedPassword);
             return null;
         }
         catch (error) {

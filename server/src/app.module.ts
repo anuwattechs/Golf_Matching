@@ -15,9 +15,9 @@ import { AuthFacebookModule } from './app/modules/auth-facebook/auth-facebook.mo
 // import { AuthAppleController } from './app/modules/auth-apple/auth-apple.controller';
 import { AuthAppleModule } from './app/modules/auth-apple/auth-apple.module';
 // import { MailService } from './app/modules/mail/mail.service';
-import { MailModule } from './app/modules/mail/mail.module';
-import { SmsModule } from './app/modules/sms/sms.module';
-import { ProfileModule } from './app/modules/profile/profile.module';
+// import { MailModule } from './app/modules/mail/mail.module';
+// import { SmsModule } from './app/modules/sms/sms.module';
+import { MembersModule } from './app/modules/members/members.module';
 import googleConfig from './app/modules/auth-google/config/google.config';
 import facebookConfig from './app/modules/auth-facebook/config/facebook.config';
 import mailConfig from './app/modules/mail/config/mail.config';
@@ -47,9 +47,9 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     AuthGoogleModule,
     AuthFacebookModule,
     AuthAppleModule,
-    MailModule,
-    SmsModule,
-    ProfileModule,
+    MembersModule,
+    // MailModule,
+    // SmsModule,
   ],
 })
 export class AppModule {}

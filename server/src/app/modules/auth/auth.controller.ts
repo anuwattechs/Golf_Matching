@@ -5,18 +5,21 @@ import {
   Patch,
   Body,
   // HttpException,
-  // HttpStatus,
+  HttpStatus,
   UseGuards,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import {
   VerificationRegisterDto,
   VerifyOtpDto,
+  VerifyOtpResetPasswordDto,
   RegisterDto,
   LoginDto,
   ChangePasswordDto,
+  ResetPasswordDto,
 } from './dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { Request } from 'express';
@@ -50,6 +53,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ResponseMessage('User logged in successfully')
   async login(@Body() body: LoginDto) /*: Promise<LoginResponseDto> */ {
     return await this.authService.login(body);
@@ -62,17 +66,30 @@ export class AuthController {
     @Body() body: ChangePasswordDto,
     @Req() req: Request & { decoded: JwtPayloadType },
   ) /*: Promise<LoginResponseDto> */ {
-    console.log('req.decoded', req.decoded);
     return await this.authService.changePassword(body, req.decoded);
   }
 
-  @Get('test1')
-  @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Test1')
-  async test1(
-    @Req() req: Request & { decoded: JwtPayloadType },
+  @Post('verification-reset-password')
+  @ResponseMessage('Verification code sent successfully')
+  async createVerificationResetPassword(
+    @Body() body: VerificationRegisterDto,
   ) /*: Promise<LoginResponseDto> */ {
-    console.log('req.decoded', req.decoded);
-    return req.decoded;
+    return await this.authService.createVerificationResetPassword(body);
+  }
+
+  @Patch('verify-otp-reset-password')
+  @ResponseMessage('User verified successfully')
+  async verifyOtpResetPassword(
+    @Body() body: VerifyOtpResetPasswordDto,
+  ) /*: Promise<LoginResponseDto> */ {
+    return await this.authService.verifyOtpResetPassword(body);
+  }
+
+  @Patch('reset-password')
+  @ResponseMessage('User reset password successfully')
+  async resetPassword(
+    @Body() body: ResetPasswordDto,
+  ) /*: Promise<LoginResponseDto> */ {
+    return await this.authService.resetPassword(body);
   }
 }

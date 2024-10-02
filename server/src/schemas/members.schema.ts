@@ -84,7 +84,7 @@ export class Member extends Document {
   introduction: string;
 
   @Prop({ default: true })
-  isInvited: boolean;
+  isInviteAble: boolean;
 
   @Prop({ default: false })
   isActived: boolean;
