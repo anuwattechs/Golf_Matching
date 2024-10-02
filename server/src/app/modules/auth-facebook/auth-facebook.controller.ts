@@ -8,7 +8,7 @@ import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
 import { AuthProvidersEnum } from 'src/shared/enums';
 import { UseGuards } from '@nestjs/common';
 import { FacebookAuthGuard } from './guard/facebook.guard';
-import {LoginResponseType} from 'src/shared/types'
+import { LoginResponseType } from 'src/shared/types';
 
 @Controller({
   path: 'auth/facebook',
@@ -23,9 +23,10 @@ export class AuthFacebookController {
   @ResponseMessage('User logged in successfully')
   async login(
     @Body() loginDto: AuthFacebookLoginDto,
-  ): Promise<LoginResponseType> {
+  ): Promise<LoginResponseType[]> {
     try {
-      const socialData = await this.authFacebookService.getProfileByToken(loginDto);
+      const socialData =
+        await this.authFacebookService.getProfileByToken(loginDto);
       return this.authService.validateSocialLogin(
         AuthProvidersEnum.FACEBOOK,
         socialData,

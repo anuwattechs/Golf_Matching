@@ -52,7 +52,12 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
       statusCode: status,
       // path: request.url,
       message: exception.message,
-      data: null,
+      data:
+        status === HttpStatus.BAD_REQUEST
+          ? typeof exception.getResponse() === 'string'
+            ? exception.getResponse()
+            : (exception.getResponse() as any).message
+          : null,
       // timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
     });
   }
@@ -71,8 +76,8 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     return {
       status: true,
       // path: request.url,
-      message: message,
       statusCode,
+      message: message,
       data: res,
       // timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
     };

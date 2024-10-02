@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Member } from '..';
 import { Model } from 'mongoose';
-import { CreateMemberDto , CreateMemberBySocialDto} from './dto';
+import { CreateMemberDto, CreateMemberBySocialDto } from './dto';
 
 @Injectable()
 export class MemberModel {
@@ -22,5 +22,12 @@ export class MemberModel {
 
   createBySocial(input: CreateMemberBySocialDto): Promise<Member> {
     return this.member.create(input);
+  }
+
+  active(email: string, isActived: boolean = true) {
+    return this.member.updateOne(
+      { email: email.toLowerCase() },
+      { $set: { isActived } },
+    );
   }
 }

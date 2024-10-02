@@ -14,8 +14,8 @@ export declare class ResponseInterceptor<T> implements NestInterceptor<T, Respon
     errorHandler(exception: HttpException, context: ExecutionContext): void;
     responseHandler(res: T, context: ExecutionContext): {
         status: boolean;
-        message: string;
         statusCode: any;
+        message: string;
         data: T;
     };
 }

@@ -45,7 +45,7 @@ let AuthService = class AuthService {
                 firstName: socialData.firstName,
                 lastName: socialData.lastName,
                 email: socialData?.email?.toLowerCase(),
-                provider: authProvider
+                provider: authProvider,
             });
             const accessToken = this.generateToken({
                 userId: created._id,
@@ -53,16 +53,18 @@ let AuthService = class AuthService {
                 firstName: socialData?.firstName,
                 lastName: socialData?.lastName,
             });
-            const jwtExpiresIn = this.configService.get("auth.jwtExpiresIn", {
+            const jwtExpiresIn = this.configService.get('auth.jwtExpiresIn', {
                 infer: true,
             });
-            return {
-                accessToken,
-                refreshToken: this.configService.get("auth.refreshSecret", {
-                    infer: true,
-                }),
-                accessTokenExpiresIn: this.convertTimeStringToMs(jwtExpiresIn),
-            };
+            return [
+                {
+                    accessToken,
+                    refreshToken: this.configService.get('auth.refreshSecret', {
+                        infer: true,
+                    }),
+                    accessTokenExpiresIn: this.convertTimeStringToMs(jwtExpiresIn),
+                },
+            ];
         }
         catch (error) {
             throw new common_1.HttpException(error.message(), common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,13 +92,13 @@ let AuthService = class AuthService {
                     sentCount: user.sentCount + 1,
                 });
             }
-            return null;
+            return [{ verifyCode }];
         }
         catch (error) {
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async verifyRegister(input) {
+    async verifyOtpRegister(input) {
         try {
             const userRegistered = await this.verificationRegistrationModel.findOneByEmailOrPhone(input.email.toLowerCase());
             if (!userRegistered)
@@ -112,19 +114,47 @@ let AuthService = class AuthService {
     }
     async register(input) {
         try {
-            const userIdentityVerified = await this.verificationRegistrationModel.findOneByEmailOrPhone(input.email.toLowerCase(), true);
+            const userIdentityVerified = await this.verificationRegistrationModel.findOneByEmailOrPhone(input.email.toLowerCase(), [true]);
             if (!userIdentityVerified)
                 throw new common_1.HttpException('User not verified', common_1.HttpStatus.BAD_REQUEST);
             const userRegistered = await this.memberModel.findAllByEmailOrPhone(input.email.toLowerCase());
             if (userRegistered.length > 0)
                 throw new common_1.HttpException('User already registered', common_1.HttpStatus.BAD_REQUEST);
-            const hashedPassword = await bcrypt.hash(input.password, 10);
+            const hashedPassword = await bcrypt.hash(input.password, bcrypt.genSaltSync(10));
             await this.memberModel.create({
                 ...input,
                 email: input.email.toLowerCase(),
                 password: hashedPassword,
             });
             return null;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async login(input) {
+        try {
+            const userRegistered = await this.memberModel.findOneByEmailOrPhone(input.email.toLowerCase());
+            if (!userRegistered)
+                throw new common_1.HttpException('User not registered', common_1.HttpStatus.BAD_REQUEST);
+            const accessToken = this.generateToken({
+                userId: userRegistered._id,
+                email: userRegistered.email,
+                firstName: userRegistered.firstName,
+                lastName: userRegistered.lastName,
+            });
+            await this.memberModel.active(userRegistered.email, true);
+            return [
+                {
+                    accessToken,
+                    refreshToken: this.configService.get('auth.refreshSecret', {
+                        infer: true,
+                    }),
+                    accessTokenExpiresIn: this.convertTimeStringToMs(this.configService.get('auth.jwtExpiresIn', {
+                        infer: true,
+                    })),
+                },
+            ];
         }
         catch (error) {
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);

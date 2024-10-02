@@ -15,6 +15,7 @@ const config_2 = require("./core/database/config");
 const auth_module_1 = require("./app/modules/auth/auth.module");
 const google_config_1 = require("./app/modules/auth-google/config/google.config");
 const facebook_config_1 = require("./app/modules/auth-facebook/config/facebook.config");
+const auth_config_1 = require("./app/modules/auth/config/auth.config");
 const app_config_1 = require("./app/config/app.config");
 const infrastructureDatabaseModule = mongoose_1.MongooseModule.forRootAsync({
     useClass: mongoose_config_service_1.MongooseConfigService,
@@ -27,7 +28,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [config_2.databaseConfig, google_config_1.default, facebook_config_1.default, app_config_1.default],
+                load: [config_2.databaseConfig, auth_config_1.default, google_config_1.default, facebook_config_1.default, app_config_1.default],
                 envFilePath: ['.env'],
             }),
             infrastructureDatabaseModule,

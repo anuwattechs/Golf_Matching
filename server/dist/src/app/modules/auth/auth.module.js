@@ -27,13 +27,13 @@ exports.AuthModule = AuthModule = __decorate([
             models_module_1.ModelsModule,
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
             jwt_1.JwtModule.register({
-                secret: process.env.AUTH_JWT_SECRET,
-                signOptions: { expiresIn: process.env.AUTH_JWT_TOKEN_EXPIRES_IN },
+                secret: '' + process.env.AUTH_JWT_SECRET,
+                signOptions: { expiresIn: '1h' },
             }),
         ],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
-        exports: [auth_service_1.AuthService]
+        exports: [auth_service_1.AuthService],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString /*, IsEnum*/, Matches } from 'class-validator';
 // import { AuthProvidersEnum } from 'src/shared/enums';
 
-export class VerifyOptDto {
+export class VerifyOtpDto {
   @IsString()
   @IsNotEmpty()
   email: string; //! Email or Phone

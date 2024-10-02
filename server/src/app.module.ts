@@ -10,6 +10,7 @@ import { databaseConfig } from './core/database/config';
 import { AuthModule } from './app/modules/auth/auth.module';
 import googleConfig from './app/modules/auth-google/config/google.config';
 import facebookConfig from './app/modules/auth-facebook/config/facebook.config';
+import authConfig from './app/modules/auth/config/auth.config';
 import appConfig from './app/config/app.config';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
@@ -20,7 +21,7 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, googleConfig, facebookConfig, appConfig],
+      load: [databaseConfig, authConfig, googleConfig, facebookConfig, appConfig],
       envFilePath: ['.env'],
     }),
     infrastructureDatabaseModule,

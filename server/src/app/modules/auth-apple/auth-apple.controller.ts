@@ -19,7 +19,9 @@ export class AuthAppleController {
 
   @Post('login')
   @ResponseMessage('User logged in successfully')
-  async login(@Body() loginDto: AuthAppleLoginDto): Promise<LoginResponseType> {
+  async login(
+    @Body() loginDto: AuthAppleLoginDto,
+  ): Promise<LoginResponseType[]> {
     try {
       const socialData =
         await this.authFacebookService.getProfileByToken(loginDto);

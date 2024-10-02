@@ -32,7 +32,11 @@ let ResponseInterceptor = class ResponseInterceptor {
             status: false,
             statusCode: status,
             message: exception.message,
-            data: null,
+            data: status === common_1.HttpStatus.BAD_REQUEST
+                ? typeof exception.getResponse() === 'string'
+                    ? exception.getResponse()
+                    : exception.getResponse().message
+                : null,
         });
     }
     responseHandler(res, context) {
@@ -42,8 +46,8 @@ let ResponseInterceptor = class ResponseInterceptor {
         const message = this.reflector.get(response_message_decorator_1.RESPONSE_MESSAGE_METADATA, context.getHandler()) || 'success';
         return {
             status: true,
-            message: message,
             statusCode,
+            message: message,
             data: res,
         };
     }

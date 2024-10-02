@@ -7,8 +7,8 @@ const common_1 = require("@nestjs/common");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true });
     app.setGlobalPrefix(process.env.API_PREFIX || '/api');
-    app.useGlobalInterceptors(new interceptors_1.ResponseInterceptor(new core_1.Reflector()));
     app.useGlobalPipes(new common_1.ValidationPipe());
+    app.useGlobalInterceptors(new interceptors_1.ResponseInterceptor(new core_1.Reflector()));
     await app.listen(3000);
 }
 bootstrap();

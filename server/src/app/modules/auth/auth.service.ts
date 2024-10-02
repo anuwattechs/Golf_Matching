@@ -1,8 +1,13 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { LoginResponseType, NullableType} from 'src/shared/types';
-import { SocialInterface} from 'src/shared/interfaces';
+import { LoginResponseType, NullableType } from 'src/shared/types';
+import { SocialInterface } from 'src/shared/interfaces';
 import * as bcrypt from 'bcrypt';
-import { VerificationRegisterDto, VerifyOptDto, RegisterDto , LoginDto} from './dto';
+import {
+  VerificationRegisterDto,
+  VerifyOtpDto,
+  RegisterDto,
+  LoginDto,
+} from './dto';
 import {
   MemberModel,
   VerificationRegistrationModel,
@@ -10,8 +15,8 @@ import {
 } from 'src/schemas/models';
 import { UtilsService } from 'src/shared/utils/utils.service';
 import { JwtService } from '@nestjs/jwt';
-import {AuthProvidersEnum} from 'src/shared/enums'
-import {JwtPayloadType} from './strategy/jwt-payload.type'
+import { AuthProvidersEnum } from 'src/shared/enums';
+import { JwtPayloadType } from './strategy/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
 
@@ -23,10 +28,10 @@ export class AuthService {
     private readonly verificationRegistrationModel: VerificationRegistrationModel,
     private readonly verificationResetPasswordModel: VerificationResetPasswordModel,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService<AllConfigType>
+    private readonly configService: ConfigService<AllConfigType>,
   ) {}
 
-  private generateToken(payload: JwtPayloadType){
+  private generateToken(payload: JwtPayloadType): string {
     return this.jwtService.sign(payload);
   }
 
@@ -34,24 +39,26 @@ export class AuthService {
     const unit = timeString.at(-1);
     const value = Number(timeString.slice(0, -1));
     if (isNaN(value)) return 0;
-    return unit == 'h' ? value * 3.6e6 : unit == 'd' ? value * 24*3.6e6 : 0;
+    return unit == 'h' ? value * 3.6e6 : unit == 'd' ? value * 24 * 3.6e6 : 0;
   }
 
   async validateSocialLogin(
     authProvider: AuthProvidersEnum,
-    socialData: SocialInterface
-  ): Promise<LoginResponseType> {
+    socialData: SocialInterface,
+  ): Promise<LoginResponseType[]> {
     try {
-
-      const userRegistered = await this.memberModel.findAllByEmailOrPhone(socialData?.email?.toLowerCase())
-      if (userRegistered.length > 0) throw new HttpException('User registered', HttpStatus.BAD_REQUEST);
+      const userRegistered = await this.memberModel.findAllByEmailOrPhone(
+        socialData?.email?.toLowerCase(),
+      );
+      if (userRegistered.length > 0)
+        throw new HttpException('User registered', HttpStatus.BAD_REQUEST);
 
       const created = await this.memberModel.createBySocial({
         socialId: socialData.id,
         firstName: socialData.firstName,
         lastName: socialData.lastName,
         email: socialData?.email?.toLowerCase(),
-        provider: authProvider
+        provider: authProvider,
       });
 
       const accessToken = this.generateToken({
@@ -59,22 +66,26 @@ export class AuthService {
         email: socialData?.email?.toLowerCase(),
         firstName: socialData?.firstName,
         lastName: socialData?.lastName,
-      })
+      });
 
-
-      const jwtExpiresIn = this.configService.get<string>("auth.jwtExpiresIn", {
+      const jwtExpiresIn = this.configService.get<string>('auth.jwtExpiresIn', {
         infer: true,
       });
 
-      return {
-        accessToken,
-        refreshToken: this.configService.get<string>("auth.refreshSecret", {
-          infer: true,
-        }),
-        accessTokenExpiresIn: this.convertTimeStringToMs(jwtExpiresIn),
-      }
+      return [
+        {
+          accessToken,
+          refreshToken: this.configService.get<string>('auth.refreshSecret', {
+            infer: true,
+          }),
+          accessTokenExpiresIn: this.convertTimeStringToMs(jwtExpiresIn),
+        },
+      ];
     } catch (error) {
-      throw new HttpException(error.message(), HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException(
+        error.message(),
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -117,12 +128,12 @@ export class AuthService {
 
       //! Send verification code to user (OTP via Email or Phone)
 
-      return null;
+      return [{ verifyCode }];
       // return {
       //   status: true,
       //   statusCode: HttpStatus.CREATED,
       //   message: 'Verification code sent successfully',
-      //   data: [{ verify_code: verifyCode }],
+      //   data: [{ verifyCode }],
       // };
     } catch (error) {
       //  return {
@@ -135,7 +146,7 @@ export class AuthService {
     }
   }
 
-  async verifyRegister(input: VerifyOptDto): Promise<NullableType<unknown>> {
+  async verifyOtpRegister(input: VerifyOtpDto): Promise<NullableType<unknown>> {
     try {
       //! Check if user identity verified
       const userRegistered =
@@ -161,7 +172,7 @@ export class AuthService {
       // return {
       //   status: true,
       //   statusCode: HttpStatus.CREATED,
-      //   message: 'Indentity verified successfully',
+      //   message: 'User verified successfully',
       //   data: [],
       // };
     } catch (error) {
@@ -175,7 +186,7 @@ export class AuthService {
       const userIdentityVerified =
         await this.verificationRegistrationModel.findOneByEmailOrPhone(
           input.email.toLowerCase(),
-          true,
+          [true],
         );
 
       if (!userIdentityVerified)
@@ -192,7 +203,10 @@ export class AuthService {
           HttpStatus.BAD_REQUEST,
         );
 
-      const hashedPassword = await bcrypt.hash(input.password, 10);
+      const hashedPassword = await bcrypt.hash(
+        input.password,
+        bcrypt.genSaltSync(10),
+      );
 
       /*const created = */ await this.memberModel.create({
         ...input,
@@ -212,73 +226,52 @@ export class AuthService {
     }
   }
 
-  /*
-  async login(input: LoginDto): Promise<ResponseType<any[]>> {
+  async login(input: LoginDto): Promise<LoginResponseType[]> {
     try {
       //! Check if user registered
-      const userRegistered = await this.memberModel.findOneByEmailOrPhone(input.email.toLowerCase());
-
-      if (!userRegistered) throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
-
-      const isMatched = await bcrypt.compare(
-        input.password,
-        userRegistered.password,
+      const userRegistered = await this.memberModel.findOneByEmailOrPhone(
+        input.email.toLowerCase(),
       );
 
-      if (!isMatched) throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+      if (!userRegistered)
+        throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
 
-      const now = new Date();
-      const payload: TJwtPayload = {
-        user_id: userRegistered._id,
-        name: `${userRegistered.first_name} ${userRegistered.last_name}`,
+      // const isMatched = await bcrypt.compare(
+      //   input.password,
+      //   userRegistered.password,
+      // );
+
+      // if (!isMatched)
+      //   throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+
+      const accessToken = this.generateToken({
+        userId: userRegistered._id,
         email: userRegistered.email,
-        phone_number: userRegistered.phone_number,
-        // role: userRegistered.role,
-        // iat: now.getTime(),
-        // exp: now.getTime() + 1000 * 60 * 60 * 24 * 30,
-      };
-      const token = jwt.sign(payload, configuration().jwtSecret, {
-        expiresIn: '1000d',
+        firstName: userRegistered.firstName,
+        lastName: userRegistered.lastName,
       });
 
-      await this.userModel.updateOne(
-        {
-          _id: userRegistered._id,
-        },
-        {
-          $set: {
-            is_actived: true,
-            actived_at: now,
-          },
-        },
-      );
+      await this.memberModel.active(userRegistered.email, true);
 
-      return {
-        status: 'success',
-        statusCode: 200,
-        message: 'User logged in successfully',
-        data: [
-          {
-            user_id: userRegistered._id,
-            token,
-            first_name: userRegistered.first_name,
-            last_name: userRegistered.last_name,
-            email: userRegistered.email,
-            phone_number: userRegistered.phone_number,
-            nick_name: userRegistered.nick_name,
-          },
-        ],
-      };
+      return [
+        {
+          accessToken,
+          refreshToken: this.configService.get<string>('auth.refreshSecret', {
+            infer: true,
+          }),
+          accessTokenExpiresIn: this.convertTimeStringToMs(
+            this.configService.get<string>('auth.jwtExpiresIn', {
+              infer: true,
+            }),
+          ),
+        },
+      ];
     } catch (error) {
-      return {
-        status: 'error',
-        statusCode: 500,
-        message: error.message,
-        data: [],
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
+  /*
   async updateProfile(
     input: UpdatePersonalInfoDto,
     decoded: TJwtPayload,

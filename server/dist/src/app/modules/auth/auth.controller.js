@@ -24,6 +24,15 @@ let AuthController = class AuthController {
     async createVerificationRegister(body) {
         return await this.authService.createVerificationRegister(body);
     }
+    async verifyOtpRegister(body) {
+        return await this.authService.verifyOtpRegister(body);
+    }
+    async register(body) {
+        return await this.authService.register(body);
+    }
+    async login(body) {
+        return await this.authService.login(body);
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -34,6 +43,30 @@ __decorate([
     __metadata("design:paramtypes", [dto_1.VerificationRegisterDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "createVerificationRegister", null);
+__decorate([
+    (0, common_1.Patch)('verify-otp-register'),
+    (0, response_message_decorator_1.ResponseMessage)('User verified successfully'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.VerifyOtpDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifyOtpRegister", null);
+__decorate([
+    (0, common_1.Post)('register'),
+    (0, response_message_decorator_1.ResponseMessage)('User registered successfully'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.RegisterDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.Post)('login'),
+    (0, response_message_decorator_1.ResponseMessage)('User logged in successfully'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.LoginDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "login", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

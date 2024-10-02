@@ -29,7 +29,7 @@ export class VerificationRegistrationModel {
         $set: {
           ...input,
           email: input.email.toLowerCase(),
-          updatedAt: new Date(),
+          // updatedAt: new Date(),
         },
       },
     );
@@ -51,15 +51,19 @@ export class VerificationRegistrationModel {
 
   findAllByEmailOrPhone(
     email: string,
-    isVerified: boolean = false,
+    isVerified: boolean[] = [false, true],
   ): Promise<VerificationRegistration[]> {
-    return this.verificationRegistration.find({ email, isVerified }).exec();
+    return this.verificationRegistration
+      .find({ email, isVerified: { $in: isVerified } })
+      .exec();
   }
 
   findOneByEmailOrPhone(
     email: string,
-    isVerified: boolean = false,
+    isVerified: boolean[] = [false, true],
   ): Promise<VerificationRegistration> {
-    return this.verificationRegistration.findOne({ email, isVerified }).exec();
+    return this.verificationRegistration
+      .findOne({ email, isVerified: { $in: isVerified } })
+      .exec();
   }
 }
