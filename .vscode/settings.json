@@ -10,5 +10,6 @@
         "Signin",
         "typeorm",
         "uuidv"
-    ]
+    ],
+    "nuxt.isNuxtApp": false
 }
