@@ -36,6 +36,10 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
+  validateToken(token: string): JwtPayloadType {
+    return this.jwtService.verify(token);
+  }
+
   private convertTimeStringToMs(timeString: string) {
     const unit = timeString.at(-1);
     const value = Number(timeString.slice(0, -1));
@@ -83,9 +87,18 @@ export class AuthService {
         },
       ];
     } catch (error) {
+      // throw new HttpException(
+      //   error.message(),
+      //   HttpStatus.INTERNAL_SERVER_ERROR,
+      // );
       throw new HttpException(
-        error.message(),
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
       );
     }
   }
@@ -137,13 +150,16 @@ export class AuthService {
       //   data: [{ verifyCode }],
       // };
     } catch (error) {
-      //  return {
-      //    status: 'error',
-      //    statusCode: 500,
-      //    message: error.message,
-      //    data: [],
-      //  };
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
     }
   }
 
@@ -177,7 +193,16 @@ export class AuthService {
       //   data: [],
       // };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
     }
   }
 
@@ -223,7 +248,16 @@ export class AuthService {
       //   data: [],
       // };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
     }
   }
 
@@ -237,13 +271,14 @@ export class AuthService {
       if (!userRegistered)
         throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
 
-      // const isMatched = await bcrypt.compare(
-      //   input.password,
-      //   userRegistered.password,
-      // );
+      const isMatched = await bcrypt.compare(
+        input.password,
+        userRegistered.password,
+      );
 
-      // if (!isMatched)
-      //   throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+      if (!isMatched)
+        // return [{ accessToken: '', refreshToken: '', accessTokenExpiresIn: 0 }];
+        throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
 
       const accessToken = this.generateToken({
         userId: userRegistered._id,
@@ -268,7 +303,15 @@ export class AuthService {
         },
       ];
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
     }
   }
 
@@ -312,7 +355,15 @@ export class AuthService {
       //   data: [],
       // };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
     }
   }
 

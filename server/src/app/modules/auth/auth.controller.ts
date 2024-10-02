@@ -60,17 +60,19 @@ export class AuthController {
   @ResponseMessage('Password changed successfully')
   async changePassword(
     @Body() body: ChangePasswordDto,
-    @Req() req: Request & { user: JwtPayloadType },
+    @Req() req: Request & { decoded: JwtPayloadType },
   ) /*: Promise<LoginResponseDto> */ {
-    console.log('req.user', req.user);
-    return await this.authService.changePassword(body, req.user);
+    console.log('req.decoded', req.decoded);
+    return await this.authService.changePassword(body, req.decoded);
   }
 
   @Get('test1')
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('Test1')
-  async test1(@Req() req: Request) /*: Promise<LoginResponseDto> */ {
-    console.log('req.user', req.user);
-    return req.user;
+  async test1(
+    @Req() req: Request & { decoded: JwtPayloadType },
+  ) /*: Promise<LoginResponseDto> */ {
+    console.log('req.decoded', req.decoded);
+    return req.decoded;
   }
 }

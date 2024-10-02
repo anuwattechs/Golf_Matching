@@ -27,9 +27,9 @@ export class Member extends Document {
   @Prop({ unique: true, required: true, type: String }) //! Email, Phone, Social
   email: string | null;
 
-  @Prop({ nullable: true, select: false })
-  @Exclude({ toPlainOnly: true })
-  password?: string;
+  @Prop({ nullable: true })
+  // @Exclude({ toPlainOnly: true })
+  password: string;
 
   @Exclude({ toPlainOnly: true })
   previousPassword?: string;
@@ -44,15 +44,15 @@ export class Member extends Document {
   @Prop({ nullable: true, type: String })
   socialId: string | null;
 
-  @Prop({ default: null})
+  @Prop({ default: null })
   // @Prop({ required: true })
   gender: string;
 
-  @Prop({ default: null})
+  @Prop({ default: null })
   // @Prop({ required: true })
   country: string;
 
-  @Prop({ default: null})
+  @Prop({ default: null })
   // @Prop({ required: true })
   location: string;
 

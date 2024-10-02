@@ -33,9 +33,9 @@ let ResponseInterceptor = class ResponseInterceptor {
             statusCode: status,
             message: exception.message,
             data: status === common_1.HttpStatus.BAD_REQUEST
-                ? typeof exception.getResponse() === 'string'
-                    ? exception.getResponse()
-                    : exception.getResponse().message
+                ? typeof exception.message === 'string'
+                    ? null
+                    : exception.getResponse().message || null
                 : null,
         });
     }

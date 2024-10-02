@@ -10,7 +10,9 @@ export declare class AuthController {
     register(body: RegisterDto): Promise<unknown>;
     login(body: LoginDto): Promise<import("../../../shared/types").LoginResponseType[]>;
     changePassword(body: ChangePasswordDto, req: Request & {
-        user: JwtPayloadType;
+        decoded: JwtPayloadType;
     }): Promise<unknown>;
-    test1(req: Request): Promise<Express.User>;
+    test1(req: Request & {
+        decoded: JwtPayloadType;
+    }): Promise<JwtPayloadType>;
 }

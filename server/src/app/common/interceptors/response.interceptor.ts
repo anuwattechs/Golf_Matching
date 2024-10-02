@@ -54,9 +54,9 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
       message: exception.message,
       data:
         status === HttpStatus.BAD_REQUEST
-          ? typeof exception.getResponse() === 'string'
-            ? exception.getResponse()
-            : (exception.getResponse() as any).message
+          ? typeof exception.message === 'string'
+            ? null
+            : (exception.getResponse() as any).message || null
           : null,
       // timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
     });

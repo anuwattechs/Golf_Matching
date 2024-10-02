@@ -28,6 +28,9 @@ let AuthService = class AuthService {
     generateToken(payload) {
         return this.jwtService.sign(payload);
     }
+    validateToken(token) {
+        return this.jwtService.verify(token);
+    }
     convertTimeStringToMs(timeString) {
         const unit = timeString.at(-1);
         const value = Number(timeString.slice(0, -1));
@@ -67,7 +70,12 @@ let AuthService = class AuthService {
             ];
         }
         catch (error) {
-            throw new common_1.HttpException(error.message(), common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
         }
     }
     async createVerificationRegister(input) {
@@ -95,7 +103,12 @@ let AuthService = class AuthService {
             return [{ verifyCode }];
         }
         catch (error) {
-            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
         }
     }
     async verifyOtpRegister(input) {
@@ -109,7 +122,12 @@ let AuthService = class AuthService {
             return null;
         }
         catch (error) {
-            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
         }
     }
     async register(input) {
@@ -129,7 +147,12 @@ let AuthService = class AuthService {
             return null;
         }
         catch (error) {
-            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
         }
     }
     async login(input) {
@@ -137,6 +160,9 @@ let AuthService = class AuthService {
             const userRegistered = await this.memberModel.findOneByEmailOrPhone(input.email.toLowerCase());
             if (!userRegistered)
                 throw new common_1.HttpException('User not registered', common_1.HttpStatus.BAD_REQUEST);
+            const isMatched = await bcrypt.compare(input.password, userRegistered.password);
+            if (!isMatched)
+                throw new common_1.HttpException('Invalid password', common_1.HttpStatus.BAD_REQUEST);
             const accessToken = this.generateToken({
                 userId: userRegistered._id,
                 email: userRegistered.email,
@@ -157,7 +183,12 @@ let AuthService = class AuthService {
             ];
         }
         catch (error) {
-            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
         }
     }
     async changePassword(input, decoded) {
@@ -175,7 +206,12 @@ let AuthService = class AuthService {
             return null;
         }
         catch (error) {
-            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException({
+                status: false,
+                statusCode: error.status,
+                message: error.message,
+                data: null,
+            }, error.status);
         }
     }
 };

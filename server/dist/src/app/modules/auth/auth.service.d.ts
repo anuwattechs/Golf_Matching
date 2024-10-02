@@ -17,6 +17,7 @@ export declare class AuthService {
     private readonly configService;
     constructor(utilsService: UtilsService, memberModel: MemberModel, verificationRegistrationModel: VerificationRegistrationModel, verificationResetPasswordModel: VerificationResetPasswordModel, jwtService: JwtService, configService: ConfigService<AllConfigType>);
     private generateToken;
+    validateToken(token: string): JwtPayloadType;
     private convertTimeStringToMs;
     validateSocialLogin(authProvider: AuthProvidersEnum, socialData: SocialInterface): Promise<LoginResponseType[]>;
     createVerificationRegister(input: VerificationRegisterDto): Promise<NullableType<unknown>>;

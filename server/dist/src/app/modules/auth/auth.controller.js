@@ -35,12 +35,12 @@ let AuthController = class AuthController {
         return await this.authService.login(body);
     }
     async changePassword(body, req) {
-        console.log('req.user', req.user);
-        return await this.authService.changePassword(body, req.user);
+        console.log('req.decoded', req.decoded);
+        return await this.authService.changePassword(body, req.decoded);
     }
     async test1(req) {
-        console.log('req.user', req.user);
-        return req.user;
+        console.log('req.decoded', req.decoded);
+        return req.decoded;
     }
 };
 exports.AuthController = AuthController;
