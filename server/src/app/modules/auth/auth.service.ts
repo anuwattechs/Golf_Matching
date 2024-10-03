@@ -65,7 +65,7 @@ export class AuthService {
       )
         throw new HttpException('User registered', HttpStatus.BAD_REQUEST);
 
-      let memberId: string = userRegistered?.[0]?._id;
+      let userId: string = userRegistered?.[0]?._id;
       if (userRegistered.length === 0) {
         const created = await this.memberModel.createBySocial({
           socialId: socialData.id,
@@ -75,13 +75,13 @@ export class AuthService {
           provider: authProvider,
         });
 
-        memberId = created._id;
+        userId = created._id;
       }
 
       await this.memberModel.active(socialData.email, true);
 
       const accessToken = this.generateToken({
-        memberId,
+        userId,
         email: socialData?.email?.toLowerCase(),
         firstName: socialData?.firstName,
         lastName: socialData?.lastName,
@@ -303,7 +303,7 @@ export class AuthService {
         throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
 
       const accessToken = this.generateToken({
-        memberId: userRegistered._id,
+        userId: userRegistered._id,
         email: userRegistered.email,
         firstName: userRegistered.firstName,
         lastName: userRegistered.lastName,
@@ -393,7 +393,7 @@ export class AuthService {
 
       const verifyCode = this.utilsService.generateRandomNumber(6);
       const created = await this.verificationResetPasswordModel.create({
-        memberId: userRegistered._id,
+        userId: userRegistered._id,
         email: input.email.toLowerCase(),
         provider: input.provider,
         verifyCode,
@@ -472,7 +472,7 @@ export class AuthService {
 
       const hashedPassword = await bcrypt.hash(input.newPassword, 10);
       await this.memberModel.updatePassword(
-        transaction.memberId,
+        transaction.userId,
         hashedPassword,
       );
 

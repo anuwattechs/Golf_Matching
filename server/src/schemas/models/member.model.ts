@@ -12,9 +12,9 @@ import {
 export class MemberModel {
   constructor(@InjectModel(Member.name) private member: Model<Member>) {}
 
-  findProfileById(memberId: string): Promise<Member> {
+  findProfileById(userId: string): Promise<Member> {
     return this.member
-      .findOne({ _id: memberId })
+      .findOne({ _id: userId })
       .select('-_id -password -isActived -activedAt -updatedAt -__v')
       .exec();
   }
@@ -33,7 +33,7 @@ export class MemberModel {
 
   updateById(input: UpdateMemberDto): Promise<any> {
     return this.member.updateOne(
-      { _id: input.memberId },
+      { _id: input.userId },
       { $set: { ...input } },
     );
   }
@@ -49,11 +49,11 @@ export class MemberModel {
     );
   }
 
-  changeInviteMode(memberId: string, isInviteAble: boolean) {
-    return this.member.updateOne({ _id: memberId }, { $set: { isInviteAble } });
+  changeInviteMode(userId: string, isInviteAble: boolean) {
+    return this.member.updateOne({ _id: userId }, { $set: { isInviteAble } });
   }
 
-  updatePassword(memberId: string, password: string) {
-    return this.member.updateOne({ _id: memberId }, { $set: { password } });
+  updatePassword(userId: string, password: string) {
+    return this.member.updateOne({ _id: userId }, { $set: { password } });
   }
 }

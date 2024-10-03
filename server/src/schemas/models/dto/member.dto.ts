@@ -21,7 +21,7 @@ export class CreateMemberDto {
 }
 
 export class UpdateMemberDto {
-  memberId: string;
+  userId: string;
   firstName: string;
   lastName: string;
   dateOfBirth: string;

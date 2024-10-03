@@ -33,7 +33,7 @@ export class MembersService {
 
       /*const updated = */ await this.memberModel.updateById({
         ...input,
-        memberId: decoded.memberId,
+        userId: decoded.userId,
       });
 
       return null;
@@ -69,7 +69,7 @@ export class MembersService {
       //   };
 
       await this.memberModel.changeInviteMode(
-        decoded.memberId,
+        decoded.userId,
         input.isInviteAble,
       );
 
@@ -104,7 +104,7 @@ export class MembersService {
       //     data: [],
       //   };
 
-      const member = await this.memberModel.findProfileById(decoded.memberId);
+      const member = await this.memberModel.findProfileById(decoded.userId);
 
       return !member ? null : [member];
     } catch (error) {

@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   public validate(payload: JwtPayloadType): OrNeverType<JwtPayloadType> {
     console.log('JwtStrategy.validate', payload);
     return {
-      memberId: payload.memberId,
+      userId: payload.userId,
       email: payload.email,
       firstName: payload.firstName,
       lastName: payload.lastName,
