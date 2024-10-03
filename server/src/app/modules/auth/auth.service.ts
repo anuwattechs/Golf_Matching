@@ -18,7 +18,7 @@ import {
 } from 'src/schemas/models';
 import { UtilsService } from 'src/shared/utils/utils.service';
 import { JwtService } from '@nestjs/jwt';
-import { AuthProvidersEnum } from 'src/shared/enums';
+import { AuthTypeEnum } from 'src/shared/enums';
 import { JwtPayloadType } from './strategy/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
@@ -52,7 +52,7 @@ export class AuthService {
   }
 
   async validateSocialLogin(
-    authProvider: AuthProvidersEnum,
+    authProvider: AuthTypeEnum,
     socialData: SocialInterface,
   ): Promise<LoginResponseType[]> {
     try {
@@ -155,13 +155,13 @@ export class AuthService {
       }
 
       //! Send verification code to user (OTP via Email or Phone)
-      if (input.provider === AuthProvidersEnum.PHONE) {
+      if (input.provider === AuthTypeEnum.PHONE) {
         // const resp1 = await this.smsService.sendSms(
         //   input.email,
         //   `Your verification code is ${verifyCode}`,
         // );
         // console.log('SMS Response: ', resp1);
-      } else if (input.provider === AuthProvidersEnum.EMAIL) {
+      } else if (input.provider === AuthTypeEnum.EMAIL) {
       }
 
       return [{ verifyCode }];

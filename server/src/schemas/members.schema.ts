@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { AuthProvidersEnum } from 'src/shared/enums';
+import { AuthTypeEnum } from 'src/shared/enums';
 import { Exclude } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
-@Schema({ collection: 'Members', timestamps: true })
+@Schema({ collection: 'Members', timestamps: true, versionKey: false })
 export class Member extends Document {
   @Prop({
     type: String, // Define the type of _id as String for UUID
@@ -22,10 +23,10 @@ export class Member extends Document {
   nickName: string;
 
   @Prop({ default: null })
-  dateOfBirth: string;
+  birthDate: string;
 
   @Prop({ unique: true, required: true, type: String }) //! Email, Phone, Social
-  email: string | null;
+  username: string | null;
 
   @Prop({ nullable: true })
   // @Exclude({ toPlainOnly: true })
@@ -38,8 +39,8 @@ export class Member extends Document {
     this.previousPassword = this.password;
   }
 
-  @Prop({ default: AuthProvidersEnum.EMAIL })
-  provider: AuthProvidersEnum;
+  @Prop({ default: AuthTypeEnum.EMAIL })
+  authType: AuthTypeEnum;
 
   @Prop({ nullable: true, type: String })
   socialId: string | null;
@@ -60,25 +61,25 @@ export class Member extends Document {
   occupation: string;
 
   @Prop({ default: [], type: [String] })
-  lifestyle: string[];
+  tags: string[];
 
   @Prop({ default: null }) //! Year 4 digits
-  startedGolf: number;
+  yearStart: string;
 
   @Prop({ default: null })
   avgScore: number;
 
-  @Prop({ default: null })
-  favoriteCourse: string;
+  @Prop({ default: null, type: [UUID] })
+  favoriteCourses: string[];
 
   @Prop({ default: null })
-  holesInOne: number;
+  countHoleInOne: number;
 
   @Prop({ default: null })
   bestScore: number;
 
   @Prop({ default: '' })
-  clubs: string;
+  clubBrands: string;
 
   @Prop({ default: '' })
   introduction: string;
@@ -89,23 +90,11 @@ export class Member extends Document {
   @Prop({ default: false })
   isActived: boolean;
 
+  @Prop({ default: false })
+  isRegistered: boolean;
+
   @Prop({ default: null })
   activedAt: Date;
-
-  // @Prop({ nullable: true, type: String })
-  // phone: string | null;
-
-  // @Prop({ default: Date.now })
-  // lastLogin: Date;
-
-  // @Prop({default: Date.now})
-  // createdAt: Date;
-
-  // @Prop({default: Date.now})
-  // updatedAt: Date;m
-
-  // @Prop({ nullable: true })
-  // deletedAt: Date | null;
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);

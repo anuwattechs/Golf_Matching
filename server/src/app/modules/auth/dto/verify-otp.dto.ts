@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString /*, IsEnum*/, Matches } from 'class-validator';
-// import { AuthProvidersEnum } from 'src/shared/enums';
+// import { AuthTypeEnum } from 'src/shared/enums';
 
 export class VerifyOtpDto {
   @IsString()
@@ -8,8 +8,8 @@ export class VerifyOtpDto {
 
   // @IsString()
   // @IsNotEmpty()
-  // @IsEnum(AuthProvidersEnum)
-  // provider: AuthProvidersEnum;
+  // @IsEnum(AuthTypeEnum)
+  // provider: AuthTypeEnum;
 
   @IsNotEmpty()
   @Matches(/^\d{6}$/, { message: 'Code must be exactly 6 digits' })

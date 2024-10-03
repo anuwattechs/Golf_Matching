@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { AuthProvidersEnum } from 'src/shared/enums';
+import { AuthTypeEnum } from 'src/shared/enums';
 
 // @Schema({ collection: 'IdentityResetPassword', versionKey: false })
 @Schema({ collection: 'VerificationResetPassword', timestamps: true })
@@ -18,8 +18,8 @@ export class VerificationResetPassword extends Document {
   @Prop({ required: true }) //! Email or Phone Number
   email: string;
 
-  @Prop({ required: true, default: AuthProvidersEnum.EMAIL }) //! "EMAIL" or "PHONE"
-  provider: AuthProvidersEnum;
+  @Prop({ required: true, default: AuthTypeEnum.EMAIL }) //! "EMAIL" or "PHONE"
+  provider: AuthTypeEnum;
 
   @Prop({ required: true })
   verifyCode: string;

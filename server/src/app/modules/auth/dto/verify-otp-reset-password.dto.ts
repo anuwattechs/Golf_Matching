@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsUUID, Matches } from 'class-validator';
-// import { AuthProvidersEnum } from 'src/shared/enums';
+// import { AuthTypeEnum } from 'src/shared/enums';
 
 export class VerifyOtpResetPasswordDto {
   @IsUUID()

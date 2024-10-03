@@ -1,4 +1,4 @@
-import { GenderEnum, AuthProvidersEnum } from 'src/shared/enums';
+import { GenderEnum, AuthTypeEnum } from 'src/shared/enums';
 
 export class CreateMemberDto {
   firstName: string;
@@ -45,5 +45,5 @@ export class CreateMemberBySocialDto {
   lastName: string;
   email: string;
   socialId: string;
-  provider: AuthProvidersEnum;
+  provider: AuthTypeEnum;
 }

@@ -14,7 +14,7 @@ import { ResponseMessage } from 'src/app/common/decorator/response-message.decor
 import { AuthFacebookService } from './auth-facebook.service';
 import { AuthFacebookLoginDto } from './dto/auth-facebook-login.dto';
 // import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
-import { AuthProvidersEnum } from 'src/shared/enums';
+import { AuthTypeEnum } from 'src/shared/enums';
 // import { FacebookAuthGuard } from './guard/facebook.guard';
 import { LoginResponseType } from 'src/shared/types';
 
@@ -37,7 +37,7 @@ export class AuthFacebookController {
       const socialData =
         await this.authFacebookService.getProfileByToken(loginDto);
       return this.authService.validateSocialLogin(
-        AuthProvidersEnum.FACEBOOK,
+        AuthTypeEnum.FACEBOOK,
         socialData,
       );
     } catch (error) {
@@ -64,7 +64,7 @@ export class AuthFacebookController {
   async facebookAuthRedirect(@Request() req: any) {
     try {
       return this.authService.validateSocialLogin(
-        AuthProvidersEnum.FACEBOOK,
+        AuthTypeEnum.FACEBOOK,
         req.user,
       );
     } catch (error) {

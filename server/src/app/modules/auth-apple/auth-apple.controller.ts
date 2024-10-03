@@ -11,7 +11,7 @@ import { AuthAppleService } from './auth-apple.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthAppleLoginDto } from './dto/auth-apple-login.dto';
 import { LoginResponseType } from 'src/shared/types';
-import { AuthProvidersEnum } from 'src/shared/enums';
+import { AuthTypeEnum } from 'src/shared/enums';
 
 @Controller({
   path: 'auth/apple',
@@ -32,7 +32,7 @@ export class AuthAppleController {
       const socialData =
         await this.authFacebookService.getProfileByToken(loginDto);
       return this.authService.validateSocialLogin(
-        AuthProvidersEnum.APPLE,
+        AuthTypeEnum.APPLE,
         socialData,
       );
     } catch (error) {

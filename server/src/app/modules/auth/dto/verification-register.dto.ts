@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsEnum } from 'class-validator';
-import { AuthProvidersEnum } from 'src/shared/enums';
+import { AuthTypeEnum } from 'src/shared/enums';
 
 export class VerificationRegisterDto {
   @IsString()
@@ -8,6 +8,6 @@ export class VerificationRegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsEnum(AuthProvidersEnum)
-  provider: AuthProvidersEnum;
+  @IsEnum(AuthTypeEnum)
+  provider: AuthTypeEnum;
 }

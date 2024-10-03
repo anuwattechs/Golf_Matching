@@ -1,8 +1,8 @@
-import { AuthProvidersEnum } from 'src/shared/enums';
+import { AuthTypeEnum } from 'src/shared/enums';
 
 export class CreateVerificationRegistrationDto {
   email: string;
-  provider: AuthProvidersEnum;
+  provider: AuthTypeEnum;
   verifyCode: string;
 }
 

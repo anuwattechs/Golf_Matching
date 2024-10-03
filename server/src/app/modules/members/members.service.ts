@@ -4,7 +4,7 @@ import { UpdateProfileDto, ChangeInviteModeDto } from './dto';
 import { MemberModel } from 'src/schemas/models';
 // import { UtilsService } from 'src/shared/utils/utils.service';
 // import { JwtService } from '@nestjs/jwt';
-// import { AuthProvidersEnum } from 'src/shared/enums';
+// import { AuthTypeEnum } from 'src/shared/enums';
 import { JwtPayloadType } from 'src/app/modules/auth/strategy/jwt-payload.type';
 // import { ConfigService } from '@nestjs/config';
 // import { AllConfigType } from 'src/app/config/config.type';

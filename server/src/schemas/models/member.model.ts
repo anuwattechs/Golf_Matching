@@ -19,12 +19,12 @@ export class MemberModel {
       .exec();
   }
 
-  findAllByEmailOrPhone(email: string): Promise<Member[]> {
-    return this.member.find({ email }).exec();
+  findAllByUsername(username: string): Promise<Member[]> {
+    return this.member.find({ username }).exec();
   }
 
-  findOneByEmailOrPhone(email: string): Promise<Member> {
-    return this.member.findOne({ email }).exec();
+  findOneByUsername(username: string): Promise<Member> {
+    return this.member.findOne({ username }).exec();
   }
 
   create(input: CreateMemberDto): Promise<Member> {
@@ -42,9 +42,9 @@ export class MemberModel {
     return this.member.create(input);
   }
 
-  active(email: string, isActived: boolean = true) {
+  active(username: string, isActived: boolean = true) {
     return this.member.updateOne(
-      { email: email.toLowerCase() },
+      { username: username.toLowerCase() },
       { $set: { isActived } },
     );
   }

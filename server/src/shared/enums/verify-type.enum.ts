@@ -1,0 +1,4 @@
+export enum VerifyTypeEnum {
+  REGISTER = 'REGISTER',
+  RECOVER_PASSWORD = 'RECOVER_PASSWORD',
+}

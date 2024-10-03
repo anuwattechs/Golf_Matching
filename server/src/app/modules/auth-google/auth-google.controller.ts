@@ -13,7 +13,7 @@ import {
 import { AuthGoogleService } from './auth-google.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
-import { AuthProvidersEnum } from 'src/shared/enums';
+import { AuthTypeEnum } from 'src/shared/enums';
 import { AuthService } from '../auth/auth.service';
 // import { GoogleOAuthGuard } from './guard/google-oauth.guard';
 // import { SocialInterface } from 'src/shared/interfaces';
@@ -38,7 +38,7 @@ export class AuthGoogleController {
     try {
       const socialData = await this.authGoogleService.getProfileByToken(body);
       return this.authService.validateSocialLogin(
-        AuthProvidersEnum.GOOGLE,
+        AuthTypeEnum.GOOGLE,
         socialData,
       );
     } catch (error) {
@@ -69,7 +69,7 @@ export class AuthGoogleController {
     try {
       const socialData = req.user as SocialInterface;
       return this.authService.validateSocialLogin(
-        AuthProvidersEnum.GOOGLE,
+        AuthTypeEnum.GOOGLE,
         socialData,
       );
     } catch (error) {

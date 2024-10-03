@@ -1,4 +1,4 @@
-export enum AuthProvidersEnum {
+export enum AuthTypeEnum {
   EMAIL = 'EMAIL',
   PHONE = 'PHONE',
   FACEBOOK = 'FACEBOOK',
