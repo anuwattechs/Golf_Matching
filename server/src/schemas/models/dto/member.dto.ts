@@ -3,7 +3,7 @@ import { GenderEnum, AuthTypeEnum } from 'src/shared/enums';
 export class CreateMemberDto {
   firstName: string;
   lastName: string;
-  dateOfBirth: string;
+  birthDate: string;
   gender: GenderEnum;
   username: string;
   password: string;
@@ -11,39 +11,44 @@ export class CreateMemberDto {
   location: string;
   nickName?: string;
   occupation?: string;
-  lifestyle?: string[];
-  startedGolf?: number;
+  tags?: string[];
+  yearStart?: string;
   avgScore?: number;
-  favoriteCourse?: string;
-  holesInOne?: number;
+  favoriteCourses?: string[];
+  countHoleInOne?: number;
   bestScore?: number;
-  clubs?: string;
+  clubBrands?: string;
 }
 
 export class UpdateMemberDto {
   userId: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: string;
+  birthDate: string;
   gender: GenderEnum;
   country: string;
   location: string;
   nickName?: string;
   occupation?: string;
-  lifestyle?: string[];
-  startedGolf?: number;
+  tags?: string[];
+  yearStart?: number;
   avgScore?: number;
-  favoriteCourse?: string;
-  holesInOne?: number;
+  favoriteCourses?: string[];
+  countHoleInOne?: number;
   bestScore?: number;
-  clubs?: string;
+  clubBrands?: string;
   introduction?: string;
 }
 
 export class CreateMemberBySocialDto {
   firstName: string;
   lastName: string;
-  email: string;
+  username: string;
+  socialId: string;
+  authType: AuthTypeEnum;
+}
+
+export class FindBySocialIdDto {
   socialId: string;
   authType: AuthTypeEnum;
 }

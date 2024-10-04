@@ -30,22 +30,6 @@ import { JwtPayloadType } from './strategy/jwt-payload.type';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('verification-register')
-  @ResponseMessage('Verification code sent successfully')
-  async createVerificationRegister(
-    @Body() body: VerificationRegisterDto,
-  ) /*: Promise<LoginResponseDto> */ {
-    return await this.authService.createVerificationRegister(body);
-  }
-
-  @Patch('verify-otp-register')
-  @ResponseMessage('User verified successfully')
-  async verifyOtpRegister(
-    @Body() body: VerifyOtpDto,
-  ) /*: Promise<LoginResponseDto> */ {
-    return await this.authService.verifyOtpRegister(body);
-  }
-
   @Post('register')
   @ResponseMessage('User registered successfully')
   async register(@Body() body: RegisterDto) /*: Promise<LoginResponseDto> */ {
@@ -68,22 +52,6 @@ export class AuthController {
     @Req() req: Request & { decoded: JwtPayloadType },
   ) /*: Promise<LoginResponseDto> */ {
     return await this.authService.changePassword(body, req.decoded);
-  }
-
-  @Post('verification-reset-password')
-  @ResponseMessage('Verification code sent successfully')
-  async createVerificationResetPassword(
-    @Body() body: VerificationRegisterDto,
-  ) /*: Promise<LoginResponseDto> */ {
-    return await this.authService.createVerificationResetPassword(body);
-  }
-
-  @Patch('verify-otp-reset-password')
-  @ResponseMessage('User verified successfully')
-  async verifyOtpResetPassword(
-    @Body() body: VerifyOtpResetPasswordDto,
-  ) /*: Promise<LoginResponseDto> */ {
-    return await this.authService.verifyOtpResetPassword(body);
   }
 
   @Patch('reset-password')

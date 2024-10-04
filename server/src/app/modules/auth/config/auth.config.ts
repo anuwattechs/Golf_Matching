@@ -25,12 +25,12 @@ class EnvironmentVariablesValidator {
 export default registerAs<AuthConfig>('auth', () => {
   validateConfig(process.env, EnvironmentVariablesValidator);
 
-  console.log('AUTH_JWT_SECRET', process.env.AUTH_JWT_SECRET);
+  // console.log('AUTH_JWT_SECRET', process.env.AUTH_JWT_SECRET);
 
   return {
     jwtSecret: '' + process.env.AUTH_JWT_SECRET,
     jwtExpiresIn: process.env.AUTH_JWT_EXPIRES_IN || '1h',
     refreshSecret: '' + process.env.AUTH_REFRESH_SECRET,
-    refreshExpiresIn: '' + process.env.AUTH_REFRESH_EXPIRES_IN || '7d',
+    refreshExpiresIn: process.env.AUTH_REFRESH_EXPIRES_IN || '365d',
   };
 });

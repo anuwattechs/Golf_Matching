@@ -24,7 +24,7 @@ export class Member extends Document {
   @Prop({ default: null })
   birthDate: string;
 
-  @Prop({ unique: true, required: true, type: String }) //! Email, Phone, Social
+  @Prop() //! Email, Phone, Social
   username: string | null;
 
   @Prop({ nullable: true })

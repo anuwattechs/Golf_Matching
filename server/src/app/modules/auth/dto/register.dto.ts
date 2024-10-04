@@ -1,7 +1,11 @@
-import { IsNotEmpty, IsString, IsEnum, Matches } from 'class-validator';
+import { IsNotEmpty, IsUUID, IsString, IsEnum, Matches } from 'class-validator';
 import { GenderEnum } from 'src/shared/enums';
 
 export class RegisterDto {
+  @IsUUID()
+  @IsNotEmpty()
+  verifyId: string;
+
   @IsString()
   @IsNotEmpty()
   firstName: string;
@@ -39,7 +43,7 @@ export class RegisterDto {
 
   nickName: string;
   occupation: string;
-  lags: string[];
+  tags: string[];
   yearStart: string;
   avgScore: number;
   favoriteCourses: string[];

@@ -3,41 +3,43 @@ import { LoginResponseType, NullableType } from 'src/shared/types';
 import { SocialInterface } from 'src/shared/interfaces';
 import * as bcrypt from 'bcrypt';
 import {
-  VerificationRegisterDto,
-  VerifyOtpDto,
-  VerifyOtpResetPasswordDto,
   RegisterDto,
   LoginDto,
   ChangePasswordDto,
   ResetPasswordDto,
 } from './dto';
-import {
-  MemberModel,
-  VerificationRegistrationModel,
-  VerificationResetPasswordModel,
-} from 'src/schemas/models';
-import { UtilsService } from 'src/shared/utils/utils.service';
+import { MemberModel, VerificationCodesModel } from 'src/schemas/models';
 import { JwtService } from '@nestjs/jwt';
-import { AuthTypeEnum } from 'src/shared/enums';
+import { AuthTypeEnum, VerifyTypeEnum } from 'src/shared/enums';
 import { JwtPayloadType } from './strategy/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
-import { SmsService } from 'src/app/common/services/sms/sms.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly utilsService: UtilsService,
     private readonly memberModel: MemberModel,
-    private readonly verificationRegistrationModel: VerificationRegistrationModel,
-    private readonly verificationResetPasswordModel: VerificationResetPasswordModel,
+    private readonly verificationCodesModel: VerificationCodesModel,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<AllConfigType>,
-    private readonly smsService: SmsService,
   ) {}
 
-  private generateToken(payload: JwtPayloadType): string {
+  private generateAccessToken(payload: JwtPayloadType): string {
     return this.jwtService.sign(payload);
+  }
+
+  private generateRefreshToken(payload: JwtPayloadType): string {
+    return this.jwtService.sign(payload, {
+      // secret: this.configService.get<string>('auth.refreshSecret', {
+      //   infer: true,
+      // }),
+      // expiresIn: this.configService.get<string>('auth.refreshExpiresIn', {
+      //   infer: true,
+      // }),
+
+      secret: process.env.AUTH_REFRESH_SECRET,
+      expiresIn: process.env.AUTH_REFRESH_EXPIRES_IN,
+    });
   }
 
   validateToken(token: string): JwtPayloadType {
@@ -51,53 +53,113 @@ export class AuthService {
     return unit == 'h' ? value * 3.6e6 : unit == 'd' ? value * 24 * 3.6e6 : 0;
   }
 
+  async validateRefreshToken(token: string): Promise<LoginResponseType[]> {
+    try {
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.AUTH_REFRESH_SECRET,
+      });
+
+      const accessToken = this.generateAccessToken({
+        userId: decoded.userId,
+        username: decoded.username,
+        firstName: decoded.firstName,
+        lastName: decoded.lastName,
+      });
+
+      const refreshToken = this.generateRefreshToken({
+        userId: decoded.userId,
+        username: decoded.username,
+        firstName: decoded.firstName,
+        lastName: decoded.lastName,
+      });
+
+      const jwtExpiresIn = this.convertTimeStringToMs(
+        this.configService.get<string>('auth.jwtExpiresIn', {
+          infer: true,
+        }),
+      );
+      const refreshTokenExpiresIn = this.convertTimeStringToMs(
+        this.configService.get<string>('auth.refreshExpiresIn', {
+          infer: true,
+        }),
+      );
+
+      const now = Date.now();
+      return [
+        {
+          accessToken,
+          refreshToken,
+          accessTokenExpiresIn: now + jwtExpiresIn,
+          refreshTokenExpiresIn: now + refreshTokenExpiresIn,
+        },
+      ];
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: error.status,
+          message: error.message,
+          data: null,
+        },
+        error.status,
+      );
+    }
+  }
+
   async validateSocialLogin(
     authType: AuthTypeEnum,
     socialData: SocialInterface,
   ): Promise<LoginResponseType[]> {
     try {
-      const userRegistered = await this.memberModel.findAllByUsername(
-        socialData?.email?.toLowerCase(),
-      );
-      if (
-        userRegistered.length > 0 &&
-        userRegistered?.[0]?.authType !== authType
-      )
-        throw new HttpException('User registered', HttpStatus.BAD_REQUEST);
+      const userRegistered = await this.memberModel.findOneBySocialId({
+        socialId: socialData.id,
+        authType: authType,
+      });
 
-      let userId: string = userRegistered?.[0]?._id;
-      if (userRegistered.length === 0) {
-        const created = await this.memberModel.createBySocial({
-          socialId: socialData.id,
-          firstName: socialData.firstName,
-          lastName: socialData.lastName,
-          email: socialData?.email?.toLowerCase(),
-          authType: authType,
-        });
+      const created = !userRegistered
+        ? await this.memberModel.createBySocial({
+            socialId: socialData.id,
+            firstName: socialData.firstName,
+            lastName: socialData.lastName,
+            username: socialData?.email?.toLowerCase(),
+            authType: authType,
+          })
+        : userRegistered;
 
-        userId = created._id;
-      }
+      await this.memberModel.active(created._id, true);
 
-      await this.memberModel.active(socialData.email, true);
-
-      const accessToken = this.generateToken({
-        userId,
+      const accessToken = this.generateAccessToken({
+        userId: created._id,
         username: socialData?.email?.toLowerCase(),
         firstName: socialData?.firstName,
         lastName: socialData?.lastName,
       });
 
-      const jwtExpiresIn = this.configService.get<string>('auth.jwtExpiresIn', {
-        infer: true,
+      const refreshToken = this.generateRefreshToken({
+        userId: userRegistered._id,
+        username: userRegistered.username,
+        firstName: userRegistered.firstName,
+        lastName: userRegistered.lastName,
       });
 
+      const jwtExpiresIn = this.convertTimeStringToMs(
+        this.configService.get<string>('auth.jwtExpiresIn', {
+          infer: true,
+        }),
+      );
+      const refreshTokenExpiresIn = this.convertTimeStringToMs(
+        this.configService.get<string>('auth.refreshExpiresIn', {
+          infer: true,
+        }),
+      );
+
+      const now = Date.now();
       return [
         {
           accessToken,
-          refreshToken: this.configService.get<string>('auth.refreshSecret', {
-            infer: true,
-          }),
-          accessTokenExpiresIn: this.convertTimeStringToMs(jwtExpiresIn),
+          refreshToken,
+          accessTokenExpiresIn: now + jwtExpiresIn,
+          refreshTokenExpiresIn: now + refreshTokenExpiresIn,
         },
       ];
     } catch (error) {
@@ -117,128 +179,25 @@ export class AuthService {
     }
   }
 
-  async createVerificationRegister(
-    input: VerificationRegisterDto,
-  ): Promise<NullableType<unknown>> {
-    try {
-      //! Check if user registered
-      const userRegistered = await this.memberModel.findAllByUsername(
-        input.username,
-      );
-
-      if (userRegistered.length > 0)
-        throw new HttpException(
-          'User already registered',
-          HttpStatus.BAD_REQUEST,
-        );
-
-      //! Check if user exists
-      const user =
-        await this.verificationRegistrationModel.findOneByEmailOrPhone(
-          input.username.toLowerCase(),
-        );
-
-      const verifyCode = this.utilsService.generateRandomNumber(6);
-      if (!user) {
-        await this.verificationRegistrationModel.create({
-          username: input.username.toLowerCase(),
-          authType: input.authType,
-          verifyCode,
-        });
-      } else {
-        await this.verificationRegistrationModel.updateOne({
-          username: input.username.toLowerCase(),
-          verifyCode,
-          isVerified: false,
-          sentCount: user.sentCount + 1,
-        });
-      }
-
-      //! Send verification code to user (OTP via Email or Phone)
-      if (input.authType === AuthTypeEnum.PHONE) {
-        // const resp1 = await this.smsService.sendSms(
-        //   input.email,
-        //   `Your verification code is ${verifyCode}`,
-        // );
-        // console.log('SMS Response: ', resp1);
-      } else if (input.authType === AuthTypeEnum.EMAIL) {
-      }
-
-      return [{ verifyCode }];
-      // return {
-      //   status: true,
-      //   statusCode: HttpStatus.CREATED,
-      //   message: 'Verification code sent successfully',
-      //   data: [{ verifyCode }],
-      // };
-    } catch (error) {
-      // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
-      );
-    }
-  }
-
-  async verifyOtpRegister(input: VerifyOtpDto): Promise<NullableType<unknown>> {
-    try {
-      //! Check if user identity verified
-      const userRegistered =
-        await this.verificationRegistrationModel.findOneByEmailOrPhone(
-          input.email.toLowerCase(),
-        );
-
-      if (!userRegistered)
-        throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
-
-      if (userRegistered.verifyCode !== input.verifyCode)
-        throw new HttpException(
-          'Invalid verification code',
-          HttpStatus.BAD_REQUEST,
-        );
-
-      //! Check if user exists
-      await this.verificationRegistrationModel.verify(
-        input.email.toLowerCase(),
-      );
-
-      return null;
-      // return {
-      //   status: true,
-      //   statusCode: HttpStatus.CREATED,
-      //   message: 'User verified successfully',
-      //   data: [],
-      // };
-    } catch (error) {
-      // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
-      );
-    }
-  }
-
   async register(input: RegisterDto): Promise<NullableType<unknown>> {
     try {
-      //! Check if user identity verified
-      const userIdentityVerified =
-        await this.verificationRegistrationModel.findOneByEmailOrPhone(
-          input.username.toLowerCase(),
-          [true],
-        );
-
-      if (!userIdentityVerified)
+      //! Check if user verified
+      const userVerified = await this.verificationCodesModel.findById(
+        input.verifyId,
+        [true],
+      );
+      if (!userVerified)
         throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
+      if (userVerified.verifyType !== VerifyTypeEnum.REGISTER)
+        throw new HttpException('Invalid verify type', HttpStatus.BAD_REQUEST);
+      if (userVerified.username !== input.username.toLowerCase())
+        throw new HttpException('Invalid username', HttpStatus.BAD_REQUEST);
+      if (
+        ![AuthTypeEnum.EMAIL, AuthTypeEnum.PHONE].includes(
+          userVerified.authType,
+        )
+      )
+        throw new HttpException('Invalid auth type', HttpStatus.BAD_REQUEST);
 
       //! Check if user registered
       const userRegistered = await this.memberModel.findAllByUsername(
@@ -262,13 +221,9 @@ export class AuthService {
         password: hashedPassword,
       });
 
+      await this.verificationCodesModel.registerAt(userVerified._id);
+
       return null;
-      // return {
-      //   status: true,
-      //   statusCode: HttpStatus.CREATED,
-      //   message: 'User registered successfully',
-      //   data: [],
-      // };
     } catch (error) {
       // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
       throw new HttpException(
@@ -299,28 +254,42 @@ export class AuthService {
       );
 
       if (!isMatched)
-        // return [{ accessToken: '', refreshToken: '', accessTokenExpiresIn: 0 }];
         throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
 
-      const accessToken = this.generateToken({
+      const accessToken = this.generateAccessToken({
         userId: userRegistered._id,
         username: userRegistered.username,
         firstName: userRegistered.firstName,
         lastName: userRegistered.lastName,
       });
 
-      await this.memberModel.active(userRegistered.username, true);
+      const refreshToken = this.generateRefreshToken({
+        userId: userRegistered._id,
+        username: userRegistered.username,
+        firstName: userRegistered.firstName,
+        lastName: userRegistered.lastName,
+      });
+
+      await this.memberModel.active(userRegistered._id, true);
+
+      const jwtExpiresIn = this.convertTimeStringToMs(
+        this.configService.get<string>('auth.jwtExpiresIn', {
+          infer: true,
+        }),
+      );
+      const refreshTokenExpiresIn = this.convertTimeStringToMs(
+        this.configService.get<string>('auth.refreshExpiresIn', {
+          infer: true,
+        }),
+      );
+
+      const now = Date.now();
       return [
         {
           accessToken,
-          refreshToken: this.configService.get<string>('auth.refreshSecret', {
-            infer: true,
-          }),
-          accessTokenExpiresIn: this.convertTimeStringToMs(
-            this.configService.get<string>('auth.jwtExpiresIn', {
-              infer: true,
-            }),
-          ),
+          refreshToken,
+          accessTokenExpiresIn: now + jwtExpiresIn,
+          refreshTokenExpiresIn: now + refreshTokenExpiresIn,
         },
       ];
     } catch (error) {
@@ -363,82 +332,14 @@ export class AuthService {
 
       if (!isMatched)
         throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
-      const hashedPassword = await bcrypt.hash(input.newPassword, 10);
-      await this.memberModel.updatePassword(userRegistered._id, hashedPassword);
-      return null;
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
+      const hashedPassword = await bcrypt.hash(
+        input.newPassword,
+        bcrypt.genSaltSync(10),
       );
-    }
-  }
-
-  async createVerificationResetPassword(
-    input: VerificationRegisterDto,
-  ): Promise<NullableType<unknown>> {
-    try {
-      //! Check if user registered
-      const userRegistered = await this.memberModel.findOneByUsername(
-        input.username.toLowerCase(),
+      await this.memberModel.updatePasswordById(
+        userRegistered._id,
+        hashedPassword,
       );
-
-      if (!userRegistered)
-        throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
-
-      const verifyCode = this.utilsService.generateRandomNumber(6);
-      const created = await this.verificationResetPasswordModel.create({
-        userId: userRegistered._id,
-        username: input.username.toLowerCase(),
-        authType: input.authType,
-        verifyCode,
-      });
-
-      //! Send verification code to user (OTP via Email or Phone)
-
-      return [{ transactionId: created._id, verifyCode }];
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
-      );
-    }
-  }
-
-  async verifyOtpResetPassword(
-    input: VerifyOtpResetPasswordDto,
-  ): Promise<NullableType<unknown>> {
-    try {
-      //! Check if user identity verified
-      const transaction = await this.verificationResetPasswordModel.findById(
-        input.transactionId,
-      );
-
-      if (!transaction)
-        throw new HttpException(
-          'Transaction not found',
-          HttpStatus.BAD_REQUEST,
-        );
-
-      if (transaction.verifyCode !== input.verifyCode)
-        throw new HttpException(
-          'Invalid verification code',
-          HttpStatus.BAD_REQUEST,
-        );
-
-      //! Check if user exists
-      await this.verificationResetPasswordModel.verify(input.transactionId);
-
       return null;
     } catch (error) {
       throw new HttpException(
@@ -455,23 +356,33 @@ export class AuthService {
 
   async resetPassword(input: ResetPasswordDto): Promise<NullableType<unknown>> {
     try {
-      //! Check if user identity verified
-      const transaction = await this.verificationResetPasswordModel.findById(
-        input.transactionId,
+      //! Check if user verified
+      const userVerified = await this.verificationCodesModel.findById(
+        input.verifyId,
         [true],
       );
-
-      if (!transaction)
-        throw new HttpException(
-          'Transaction not found or not verified',
-          HttpStatus.BAD_REQUEST,
-        );
+      if (!userVerified)
+        throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
+      if (userVerified.verifyType !== VerifyTypeEnum.REGISTER)
+        throw new HttpException('Invalid verify type', HttpStatus.BAD_REQUEST);
+      if (
+        ![AuthTypeEnum.EMAIL, AuthTypeEnum.PHONE].includes(
+          userVerified.authType,
+        )
+      )
+        throw new HttpException('Invalid auth type', HttpStatus.BAD_REQUEST);
 
       //! Check if user exists
-      await this.verificationResetPasswordModel.resetAt(input.transactionId);
+      await this.verificationCodesModel.resetAt(input.verifyId);
 
-      const hashedPassword = await bcrypt.hash(input.newPassword, 10);
-      await this.memberModel.updatePassword(transaction.userId, hashedPassword);
+      const hashedPassword = await bcrypt.hash(
+        input.newPassword,
+        bcrypt.genSaltSync(10),
+      );
+      await this.memberModel.updatePasswordByUsername(
+        userVerified.username,
+        hashedPassword,
+      );
 
       return null;
     } catch (error) {

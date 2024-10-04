@@ -35,6 +35,12 @@ export class VerificationCode extends Document {
 
   @Prop({ default: null })
   expiredAt: Date;
+
+  @Prop({ default: null })
+  registeredAt: Date;
+
+  @Prop({ default: null })
+  resetedAt: Date;
 }
 
 export const VerificationCodeSchema =

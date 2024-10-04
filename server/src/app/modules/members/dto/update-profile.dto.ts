@@ -14,7 +14,7 @@ export class UpdateProfileDto {
   @Matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, {
     message: 'Date of birth must be in the format YYYY-MM-DD',
   })
-  dateOfBirth: string;
+  birthDate: string;
 
   @IsString()
   @IsNotEmpty()
@@ -31,12 +31,12 @@ export class UpdateProfileDto {
 
   nickName: string;
   occupation: string;
-  lifestyle: string[];
-  startedGolf: number;
+  tags: string[];
+  yearStart: number;
   avgScore: number;
-  favoriteCourse: string;
-  holesInOne: number;
+  favoriteCourses: string[];
+  countHoleInOne: number;
   bestScore: number;
-  clubs: string;
+  clubBrands: string;
   introduction: string;
 }

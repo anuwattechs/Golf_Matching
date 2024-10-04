@@ -12,14 +12,12 @@ import { SmsModule } from 'src/app/common/services/sms/sms.module';
 @Module({
   imports: [
     ConfigModule,
-    UtilsModule,
     ModelsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: '' + process.env.AUTH_JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
-    SmsModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

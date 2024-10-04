@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { VerificationCode } from '..';
 import { Model } from 'mongoose';
-import { CreateVerificationCodeDto } from './dto/verification-codes.dto';
+import { CreateVerificationCodeDto } from './dto';
 
 @Injectable()
 export class VerificationCodesModel {
@@ -20,7 +20,33 @@ export class VerificationCodesModel {
     return this.verificationCode.create(input);
   }
 
-  verify(verifyId: string): Promise<any> {
+  registerAt(verifyId: string): Promise<unknown> {
+    return this.verificationCode.updateOne(
+      {
+        _id: verifyId,
+      },
+      {
+        $set: {
+          registeredAt: new Date(),
+        },
+      },
+    );
+  }
+
+  resetAt(verifyId: string): Promise<unknown> {
+    return this.verificationCode.updateOne(
+      {
+        _id: verifyId,
+      },
+      {
+        $set: {
+          resetedAt: new Date(),
+        },
+      },
+    );
+  }
+
+  verify(verifyId: string): Promise<unknown> {
     return this.verificationCode.updateOne(
       {
         _id: verifyId,
@@ -40,6 +66,15 @@ export class VerificationCodesModel {
   ): Promise<VerificationCode> {
     return this.verificationCode
       .findOne({ _id: verifyId, isVerified: { $in: isVerified } })
+      .exec();
+  }
+
+  findByUsername(
+    username: string,
+    isVerified: boolean[] = [false, true, null],
+  ): Promise<VerificationCode> {
+    return this.verificationCode
+      .findOne({ username: username, isVerified: { $in: isVerified } })
       .exec();
   }
 
