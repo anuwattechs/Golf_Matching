@@ -83,6 +83,9 @@ export class Member extends Document {
   @Prop({ default: '' })
   introduction: string;
 
+  @Prop({ default: null })
+  profileImage: string;
+
   @Prop({ default: true })
   isInviteAble: boolean;
 
