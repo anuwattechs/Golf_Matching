@@ -31,7 +31,7 @@ export class UpdateMemberDto {
   nickName?: string;
   occupation?: string;
   tags?: string[];
-  yearStart?: number;
+  yearStart?: string;
   avgScore?: number;
   favoriteCourses?: string[];
   countHoleInOne?: number;
