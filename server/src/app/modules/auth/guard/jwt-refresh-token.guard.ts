@@ -3,15 +3,13 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  // UnauthorizedException,
-  // ForbiddenException,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class JwtRefreshTokenGuard implements CanActivate {
   constructor(private readonly authService: AuthService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -31,7 +29,7 @@ export class JwtAuthGuard implements CanActivate {
         );
       }
       const authToken = authorization.replace(/bearer/gim, '').trim();
-      const resp = await this.authService.validateToken(authToken);
+      const resp = await this.authService.validateRefreshToken(authToken);
       request.decoded = resp;
       return true;
     } catch (error) {

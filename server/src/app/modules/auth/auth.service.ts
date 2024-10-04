@@ -30,20 +30,18 @@ export class AuthService {
 
   private generateRefreshToken(payload: JwtPayloadType): string {
     return this.jwtService.sign(payload, {
-      // secret: this.configService.get<string>('auth.refreshSecret', {
-      //   infer: true,
-      // }),
-      // expiresIn: this.configService.get<string>('auth.refreshExpiresIn', {
-      //   infer: true,
-      // }),
-
-      secret: process.env.AUTH_REFRESH_SECRET,
-      expiresIn: process.env.AUTH_REFRESH_EXPIRES_IN,
+      expiresIn: process.env.AUTH_REFRESH_EXPIRES_IN || '3650d',
     });
   }
 
   validateToken(token: string): JwtPayloadType {
     return this.jwtService.verify(token);
+  }
+
+  validateRefreshToken(token: string): JwtPayloadType {
+    return this.jwtService.verify(token, {
+      secret: '' + process.env.AUTH_REFRESH_SECRET,
+    });
   }
 
   private convertTimeStringToMs(timeString: string) {
@@ -53,10 +51,11 @@ export class AuthService {
     return unit == 'h' ? value * 3.6e6 : unit == 'd' ? value * 24 * 3.6e6 : 0;
   }
 
-  async validateRefreshToken(token: string): Promise<LoginResponseType[]> {
+  /*
+  async refreshToken(token: string): Promise<LoginResponseType[]> {
     try {
       const decoded = this.jwtService.verify(token, {
-        secret: process.env.AUTH_REFRESH_SECRET,
+        secret: '' + process.env.AUTH_REFRESH_SECRET,
       });
 
       const accessToken = this.generateAccessToken({
@@ -105,6 +104,7 @@ export class AuthService {
       );
     }
   }
+  */
 
   async validateSocialLogin(
     authType: AuthTypeEnum,

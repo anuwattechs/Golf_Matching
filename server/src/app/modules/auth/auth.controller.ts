@@ -13,15 +13,12 @@ import {
 import { AuthService } from './auth.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import {
-  VerificationRegisterDto,
-  VerifyOtpDto,
-  VerifyOtpResetPasswordDto,
   RegisterDto,
   LoginDto,
   ChangePasswordDto,
   ResetPasswordDto,
 } from './dto';
-import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import { JwtAuthGuard } from './guard';
 import { Request } from 'express';
 import { JwtPayloadType } from './strategy/jwt-payload.type';
 
@@ -43,7 +40,6 @@ export class AuthController {
     return await this.authService.login(body);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch('change-password')
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('Password changed successfully')
@@ -53,6 +49,16 @@ export class AuthController {
   ) /*: Promise<LoginResponseDto> */ {
     return await this.authService.changePassword(body, req.decoded);
   }
+
+  // @Post('refresh')
+  // @HttpCode(HttpStatus.OK)
+  // @UseGuards(JwtRefreshTokenGuard)
+  // @ResponseMessage('Token refreshed successfully')
+  // async refreshToken(
+  //   @Req() req: Request & { refreshToken: string },
+  // ) /*: Promise<LoginResponseDto> */ {
+  //   return await this.authService.refreshToken(req.refreshToken);
+  // }
 
   @Patch('reset-password')
   @ResponseMessage('User reset password successfully')
