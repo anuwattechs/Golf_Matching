@@ -4,7 +4,9 @@ import { CountryController } from './country.controller';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  controllers: [ConfigModule, CountryController],
+  imports: [ConfigModule],
+  controllers: [CountryController],
   providers: [CountryService],
+  exports: [CountryService],
 })
 export class CountryModule {}
