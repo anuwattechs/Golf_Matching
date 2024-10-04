@@ -23,7 +23,7 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  email: string;
+  username: string;
 
   @IsString()
   @IsNotEmpty()

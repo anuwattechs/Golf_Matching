@@ -52,16 +52,16 @@ export class AuthService {
   }
 
   async validateSocialLogin(
-    authProvider: AuthTypeEnum,
+    authType: AuthTypeEnum,
     socialData: SocialInterface,
   ): Promise<LoginResponseType[]> {
     try {
-      const userRegistered = await this.memberModel.findAllByEmailOrPhone(
+      const userRegistered = await this.memberModel.findAllByUsername(
         socialData?.email?.toLowerCase(),
       );
       if (
         userRegistered.length > 0 &&
-        userRegistered?.[0]?.provider !== authProvider
+        userRegistered?.[0]?.authType !== authType
       )
         throw new HttpException('User registered', HttpStatus.BAD_REQUEST);
 
@@ -72,7 +72,7 @@ export class AuthService {
           firstName: socialData.firstName,
           lastName: socialData.lastName,
           email: socialData?.email?.toLowerCase(),
-          provider: authProvider,
+          authType: authType,
         });
 
         userId = created._id;
@@ -82,7 +82,7 @@ export class AuthService {
 
       const accessToken = this.generateToken({
         userId,
-        email: socialData?.email?.toLowerCase(),
+        username: socialData?.email?.toLowerCase(),
         firstName: socialData?.firstName,
         lastName: socialData?.lastName,
       });
@@ -122,8 +122,8 @@ export class AuthService {
   ): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
-      const userRegistered = await this.memberModel.findAllByEmailOrPhone(
-        input.email,
+      const userRegistered = await this.memberModel.findAllByUsername(
+        input.username,
       );
 
       if (userRegistered.length > 0)
@@ -135,19 +135,19 @@ export class AuthService {
       //! Check if user exists
       const user =
         await this.verificationRegistrationModel.findOneByEmailOrPhone(
-          input.email.toLowerCase(),
+          input.username.toLowerCase(),
         );
 
       const verifyCode = this.utilsService.generateRandomNumber(6);
       if (!user) {
         await this.verificationRegistrationModel.create({
-          email: input.email.toLowerCase(),
-          provider: input.provider,
+          username: input.username.toLowerCase(),
+          authType: input.authType,
           verifyCode,
         });
       } else {
         await this.verificationRegistrationModel.updateOne({
-          email: input.email.toLowerCase(),
+          username: input.username.toLowerCase(),
           verifyCode,
           isVerified: false,
           sentCount: user.sentCount + 1,
@@ -155,13 +155,13 @@ export class AuthService {
       }
 
       //! Send verification code to user (OTP via Email or Phone)
-      if (input.provider === AuthTypeEnum.PHONE) {
+      if (input.authType === AuthTypeEnum.PHONE) {
         // const resp1 = await this.smsService.sendSms(
         //   input.email,
         //   `Your verification code is ${verifyCode}`,
         // );
         // console.log('SMS Response: ', resp1);
-      } else if (input.provider === AuthTypeEnum.EMAIL) {
+      } else if (input.authType === AuthTypeEnum.EMAIL) {
       }
 
       return [{ verifyCode }];
@@ -233,7 +233,7 @@ export class AuthService {
       //! Check if user identity verified
       const userIdentityVerified =
         await this.verificationRegistrationModel.findOneByEmailOrPhone(
-          input.email.toLowerCase(),
+          input.username.toLowerCase(),
           [true],
         );
 
@@ -241,8 +241,8 @@ export class AuthService {
         throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
 
       //! Check if user registered
-      const userRegistered = await this.memberModel.findAllByEmailOrPhone(
-        input.email.toLowerCase(),
+      const userRegistered = await this.memberModel.findAllByUsername(
+        input.username.toLowerCase(),
       );
 
       if (userRegistered.length > 0)
@@ -258,7 +258,7 @@ export class AuthService {
 
       /*const created = */ await this.memberModel.create({
         ...input,
-        email: input.email.toLowerCase(),
+        username: input.username.toLowerCase(),
         password: hashedPassword,
       });
 
@@ -286,8 +286,8 @@ export class AuthService {
   async login(input: LoginDto): Promise<LoginResponseType[]> {
     try {
       //! Check if user registered
-      const userRegistered = await this.memberModel.findOneByEmailOrPhone(
-        input.email.toLowerCase(),
+      const userRegistered = await this.memberModel.findOneByUsername(
+        input.username.toLowerCase(),
       );
 
       if (!userRegistered)
@@ -304,12 +304,12 @@ export class AuthService {
 
       const accessToken = this.generateToken({
         userId: userRegistered._id,
-        email: userRegistered.email,
+        username: userRegistered.username,
         firstName: userRegistered.firstName,
         lastName: userRegistered.lastName,
       });
 
-      await this.memberModel.active(userRegistered.email, true);
+      await this.memberModel.active(userRegistered.username, true);
       return [
         {
           accessToken,
@@ -349,8 +349,8 @@ export class AuthService {
         );
 
       //! Check if user registered
-      const userRegistered = await this.memberModel.findOneByEmailOrPhone(
-        decoded.email,
+      const userRegistered = await this.memberModel.findOneByUsername(
+        decoded.username,
       );
 
       if (!userRegistered)
@@ -384,8 +384,8 @@ export class AuthService {
   ): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
-      const userRegistered = await this.memberModel.findOneByEmailOrPhone(
-        input.email.toLowerCase(),
+      const userRegistered = await this.memberModel.findOneByUsername(
+        input.username.toLowerCase(),
       );
 
       if (!userRegistered)
@@ -394,8 +394,8 @@ export class AuthService {
       const verifyCode = this.utilsService.generateRandomNumber(6);
       const created = await this.verificationResetPasswordModel.create({
         userId: userRegistered._id,
-        email: input.email.toLowerCase(),
-        provider: input.provider,
+        username: input.username.toLowerCase(),
+        authType: input.authType,
         verifyCode,
       });
 
@@ -471,10 +471,7 @@ export class AuthService {
       await this.verificationResetPasswordModel.resetAt(input.transactionId);
 
       const hashedPassword = await bcrypt.hash(input.newPassword, 10);
-      await this.memberModel.updatePassword(
-        transaction.userId,
-        hashedPassword,
-      );
+      await this.memberModel.updatePassword(transaction.userId, hashedPassword);
 
       return null;
     } catch (error) {

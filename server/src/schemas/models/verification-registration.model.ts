@@ -23,12 +23,12 @@ export class VerificationRegistrationModel {
   updateOne(input: UpdateOneVerificationRegistrationDto): Promise<any> {
     return this.verificationRegistration.updateOne(
       {
-        email: input.email.toLowerCase(),
+        email: input.username.toLowerCase(),
       },
       {
         $set: {
           ...input,
-          email: input.email.toLowerCase(),
+          username: input.username.toLowerCase(),
           // updatedAt: new Date(),
         },
       },

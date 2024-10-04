@@ -3,8 +3,12 @@ import { Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthTypeEnum, VerifyTypeEnum } from 'src/shared/enums';
 
-@Schema({ collection: 'VerificationCodes', timestamps: true, versionKey: false })
-export class VerificationCodes extends Document {
+@Schema({
+  collection: 'VerificationCodes',
+  timestamps: true,
+  versionKey: false,
+})
+export class VerificationCode extends Document {
   @Prop({
     type: String, // Define the type of _id as String for UUID
     default: uuidv4, // Set UUID as the default value for _id
@@ -16,8 +20,8 @@ export class VerificationCodes extends Document {
 
   @Prop({ required: true, default: AuthTypeEnum.EMAIL }) //! "EMAIL" or "PHONE"
   authType: AuthTypeEnum;
-  
-  @Prop({ required: true })
+
+  @Prop({ required: true, default: VerifyTypeEnum.REGISTER })
   verifyType: VerifyTypeEnum;
 
   @Prop({ required: true })
@@ -33,6 +37,17 @@ export class VerificationCodes extends Document {
   expiredAt: Date;
 }
 
-export const VerificationCodesSchema = SchemaFactory.createForClass(
-  VerificationCodes,
-);
+export const VerificationCodeSchema =
+  SchemaFactory.createForClass(VerificationCode);
+
+VerificationCodeSchema.pre('save', function (next) {
+  const verificationCode = this as VerificationCode;
+  const now = new Date();
+  // if (verificationCode.isModified('isVerified')) {
+  //   verificationCode.verifiedAt = now;
+  //   return next();
+  // }
+  now.setMinutes(now.getMinutes() + 5);
+  verificationCode.expiredAt = now;
+  next();
+});

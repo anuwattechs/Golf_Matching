@@ -5,7 +5,7 @@ export class CreateMemberDto {
   lastName: string;
   dateOfBirth: string;
   gender: GenderEnum;
-  email: string;
+  username: string;
   password: string;
   country: string;
   location: string;
@@ -45,5 +45,5 @@ export class CreateMemberBySocialDto {
   lastName: string;
   email: string;
   socialId: string;
-  provider: AuthTypeEnum;
+  authType: AuthTypeEnum;
 }

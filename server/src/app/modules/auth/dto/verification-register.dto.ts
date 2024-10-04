@@ -4,10 +4,10 @@ import { AuthTypeEnum } from 'src/shared/enums';
 export class VerificationRegisterDto {
   @IsString()
   @IsNotEmpty()
-  email: string; //! Email or Phone
+  username: string; //! Email or Phone
 
   @IsString()
   @IsNotEmpty()
   @IsEnum(AuthTypeEnum)
-  provider: AuthTypeEnum;
+  authType: AuthTypeEnum;
 }

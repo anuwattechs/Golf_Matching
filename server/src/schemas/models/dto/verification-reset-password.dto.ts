@@ -2,7 +2,7 @@ import { AuthTypeEnum } from 'src/shared/enums';
 
 export class CreateVerificationResetPasswordDto {
   userId: string;
-  email: string;
-  provider: AuthTypeEnum;
+  username: string;
+  authType: AuthTypeEnum;
   verifyCode: string;
 }

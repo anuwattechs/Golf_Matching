@@ -24,8 +24,8 @@ export class MembersService {
   ): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
-      const userRegistered = await this.memberModel.findOneByEmailOrPhone(
-        decoded.email,
+      const userRegistered = await this.memberModel.findOneByUsername(
+        decoded.username,
       );
 
       if (!userRegistered)

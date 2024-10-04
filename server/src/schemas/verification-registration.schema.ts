@@ -6,7 +6,11 @@ import { AuthTypeEnum } from 'src/shared/enums';
 // export type IdentityRegistrationDocument = IdentityRegistration & Document;
 
 // @Schema({ collection: 'IdentityRegistration', versionKey: false })
-@Schema({ collection: 'VerificationRegistration', timestamps: true })
+@Schema({
+  collection: 'VerificationRegistration',
+  timestamps: true,
+  versionKey: false,
+})
 export class VerificationRegistration extends Document {
   @Prop({
     type: String, // Define the type of _id as String for UUID

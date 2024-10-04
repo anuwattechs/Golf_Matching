@@ -1,13 +1,13 @@
 import { AuthTypeEnum } from 'src/shared/enums';
 
 export class CreateVerificationRegistrationDto {
-  email: string;
-  provider: AuthTypeEnum;
+  username: string;
+  authType: AuthTypeEnum;
   verifyCode: string;
 }
 
 export class UpdateOneVerificationRegistrationDto {
-  email: string;
+  username: string;
   verifyCode: string;
   isVerified: boolean;
   sentCount: number;

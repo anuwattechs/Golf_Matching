@@ -3,7 +3,6 @@ import { Document } from 'mongoose';
 import { AuthTypeEnum } from 'src/shared/enums';
 import { Exclude } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
-import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
 @Schema({ collection: 'Members', timestamps: true, versionKey: false })
 export class Member extends Document {
@@ -69,7 +68,7 @@ export class Member extends Document {
   @Prop({ default: null })
   avgScore: number;
 
-  @Prop({ default: null, type: [UUID] })
+  @Prop({ default: null, type: [String] })
   favoriteCourses: string[];
 
   @Prop({ default: null })

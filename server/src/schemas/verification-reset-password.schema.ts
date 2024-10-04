@@ -4,7 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthTypeEnum } from 'src/shared/enums';
 
 // @Schema({ collection: 'IdentityResetPassword', versionKey: false })
-@Schema({ collection: 'VerificationResetPassword', timestamps: true })
+@Schema({
+  collection: 'VerificationResetPassword',
+  timestamps: true,
+  versionKey: false,
+})
 export class VerificationResetPassword extends Document {
   @Prop({
     type: String, // Define the type of _id as String for UUID
