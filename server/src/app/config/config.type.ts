@@ -6,6 +6,7 @@ import { FacebookConfig } from '../modules/auth-facebook/config/facebook-config.
 import { AppleConfig } from '../modules/auth-apple/config/apple-config.type';
 import { MailConfig } from '../common/services/mail/config/mail-config.type';
 import { SMSConfig } from '../common/services/sms/config/sms-config.type';
+import { CountryConfig } from '../modules/country/config/country-config.type';
 
 export type AllConfigType = {
   app: AppConfig;
@@ -16,4 +17,5 @@ export type AllConfigType = {
   apple: AppleConfig;
   mail: MailConfig;
   sms: SMSConfig;
+  country: CountryConfig;
 };
