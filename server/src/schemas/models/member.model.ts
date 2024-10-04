@@ -41,7 +41,7 @@ export class MemberModel {
   }
 
   create(input: CreateMemberDto): Promise<Member> {
-    return this.member.create(input);
+    return this.member.create({ ...input, isRegistered: true });
   }
 
   updateById(input: UpdateMemberDto): Promise<any> {

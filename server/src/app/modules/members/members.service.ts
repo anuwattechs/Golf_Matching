@@ -89,19 +89,6 @@ export class MembersService {
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     try {
-      // //! Check if user registered
-      // const userRegistered = await this.userModel.findOne({
-      //   _id: decoded.user_id,
-      // });
-
-      // if (!userRegistered)
-      //   return {
-      //     status: 'error',
-      //     statusCode: 400,
-      //     message: 'User not registered',
-      //     data: [],
-      //   };
-
       const member = await this.memberModel.findProfileById(decoded.userId);
 
       return !member ? null : [member];
