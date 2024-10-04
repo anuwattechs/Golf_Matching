@@ -24,9 +24,7 @@ export class MembersService {
   ): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
-      const userRegistered = await this.memberModel.findOneByUsername(
-        decoded.username,
-      );
+      const userRegistered = await this.memberModel.findById(decoded.userId);
 
       if (!userRegistered)
         throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);

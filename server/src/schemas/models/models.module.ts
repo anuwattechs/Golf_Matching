@@ -6,6 +6,8 @@ import {
   MemberSchema,
   VerificationCode,
   VerificationCodeSchema,
+  GolfCourse,
+  GolfCourseSchema,
 } from 'src/schemas';
 
 @Module({
@@ -18,6 +20,10 @@ import {
       {
         name: VerificationCode.name,
         schema: VerificationCodeSchema,
+      },
+      {
+        name: GolfCourse.name,
+        schema: GolfCourseSchema,
       },
     ]),
   ],

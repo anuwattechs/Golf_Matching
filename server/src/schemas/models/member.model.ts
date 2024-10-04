@@ -32,6 +32,10 @@ export class MemberModel {
     return this.member.find({ username }).exec();
   }
 
+  findById(userId: string): Promise<Member> {
+    return this.member.findOne({ _id: userId }).exec();
+  }
+
   findOneByUsername(username: string): Promise<Member> {
     return this.member.findOne({ username }).exec();
   }
