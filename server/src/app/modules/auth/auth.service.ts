@@ -30,7 +30,12 @@ export class AuthService {
   ) {}
 
   validateToken(token: string): JwtPayloadType {
-    return this.jwtService.verify(token);
+    return this.jwtService.verify(token, {
+      // secret: '' + process.env.AUTH_JWT_SECRET,
+      secret: this.configService.get<string>('auth.jwtSecret', {
+        infer: true,
+      }),
+    });
   }
 
   validateRefreshToken(token: string): JwtPayloadType {

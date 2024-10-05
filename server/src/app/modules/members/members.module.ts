@@ -4,10 +4,13 @@ import { ModelsModule } from 'src/schemas/models/models.module';
 import { MembersService } from './members.service';
 import { MembersController } from './members.controller';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
+// import { JwtRefreshStrategy } from '../auth/strategies/jwt-refresh.strategy';
 import { AuthModule } from '../auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     ModelsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     AuthModule,
