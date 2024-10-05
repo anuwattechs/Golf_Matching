@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-// import { AnonymousStrategy } from './strategies/anonymous.strategy';
+import { AnonymousStrategy } from './strategies/anonymous.strategy';
 import { ConfigModule } from '@nestjs/config';
 // import { UtilsModule } from 'src/shared/utils/utils.module';
 import { ModelsModule } from 'src/schemas/models/models.module';
@@ -24,7 +24,7 @@ import { ModelsModule } from 'src/schemas/models/models.module';
     JwtModule.register({}),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtRefreshStrategy],
+  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, AnonymousStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

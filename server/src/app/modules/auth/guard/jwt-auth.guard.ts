@@ -35,7 +35,7 @@ export class JwtAuthGuard implements CanActivate {
       request.decoded = resp;
       return true;
     } catch (error) {
-      //  console.log('auth error - ', error.message);
+       console.log('auth error - ', error.message);
       //  throw new ForbiddenException(
       //    error.message || 'session expired! Please sign In',
       //  );
