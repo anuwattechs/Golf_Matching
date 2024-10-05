@@ -26,20 +26,13 @@ export class CountryController {
     }
   }
 
-  @Get('cities/:state/:country')
-  @ResponseMessage('Cities fetched successfully')
-  async getCities(
-    @Param('state') state: string,
-    @Param('country') country: string,
-  ) {
+  @Get('countries/:countryId')
+  @ResponseMessage('States fetched successfully')
+  async getStatesByCountry(@Param('countryId') countryId) {
     try {
-      // You can also add logic to get cities by state and country using countryService if available
-      return {
-        state,
-        country,
-      };
+      return await this.countryService.getStatesByCountry(countryId);
     } catch (error) {
-      throw new Error('Failed to fetch cities');
+      throw new Error('Failed to fetch states');
     }
   }
 }
