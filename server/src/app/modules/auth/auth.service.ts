@@ -2,7 +2,7 @@ import {
   Injectable,
   HttpException,
   HttpStatus,
-  UnauthorizedException,
+  // UnauthorizedException,
 } from '@nestjs/common';
 import { LoginResponseType, NullableType } from 'src/shared/types';
 import { SocialInterface } from 'src/shared/interfaces';
