@@ -49,7 +49,7 @@ export class AuthService {
     return unit == 'h' ? value * 3.6e6 : unit == 'd' ? value * 24 * 3.6e6 : 0;
   }
 
-  async refreshToken(decoded: JwtPayloadType): Promise<LoginResponseType[]> {
+  async refreshToken(decoded: JwtPayloadType): Promise<LoginResponseType> {
     try {
       const {
         accessToken,
@@ -63,14 +63,12 @@ export class AuthService {
         lastName: decoded.lastName,
       });
 
-      return [
-        {
+      return {
           accessToken,
           refreshToken,
           accessTokenExpiresIn,
           refreshTokenExpiresIn,
-        },
-      ];
+        };
     } catch (error) {
       throw new HttpException(
         {
