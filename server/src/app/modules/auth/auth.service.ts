@@ -29,18 +29,6 @@ export class AuthService {
     private readonly configService: ConfigService<AllConfigType>,
   ) {}
 
-  /*
-  private generateAccessToken(payload: JwtPayloadType): string {
-    return this.jwtService.sign(payload);
-  }
-
-  private generateRefreshToken(payload: JwtPayloadType): string {
-    return this.jwtService.sign(payload, {
-      expiresIn: process.env.AUTH_REFRESH_EXPIRES_IN || '3650d',
-    });
-  }
-  */
-
   validateToken(token: string): JwtPayloadType {
     return this.jwtService.verify(token);
   }
@@ -63,43 +51,6 @@ export class AuthService {
 
   async refreshToken(decoded: JwtPayloadType): Promise<LoginResponseType[]> {
     try {
-      /*
-      const accessToken = this.generateAccessToken({
-        userId: decoded.userId,
-        username: decoded.username,
-        firstName: decoded.firstName,
-        lastName: decoded.lastName,
-      });
-
-      const refreshToken = this.generateRefreshToken({
-        userId: decoded.userId,
-        username: decoded.username,
-        firstName: decoded.firstName,
-        lastName: decoded.lastName,
-      });
-
-      const jwtExpiresIn = this.convertTimeStringToMs(
-        this.configService.get<string>('auth.jwtExpiresIn', {
-          infer: true,
-        }),
-      );
-      const refreshTokenExpiresIn = this.convertTimeStringToMs(
-        this.configService.get<string>('auth.refreshExpiresIn', {
-          infer: true,
-        }),
-      );
-
-      const now = Date.now();
-      return [
-        {
-          accessToken,
-          refreshToken,
-          accessTokenExpiresIn: now + jwtExpiresIn,
-          refreshTokenExpiresIn: now + refreshTokenExpiresIn,
-        },
-      ];
-      */
-
       const {
         accessToken,
         refreshToken,
@@ -155,42 +106,6 @@ export class AuthService {
 
       await this.memberModel.active(created._id, true);
 
-      /*
-      const accessToken = this.generateAccessToken({
-        userId: created._id,
-        username: socialData?.email?.toLowerCase(),
-        firstName: socialData?.firstName,
-        lastName: socialData?.lastName,
-      });
-
-      const refreshToken = this.generateRefreshToken({
-        userId: userRegistered._id,
-        username: userRegistered.username,
-        firstName: userRegistered.firstName,
-        lastName: userRegistered.lastName,
-      });
-
-      const jwtExpiresIn = this.convertTimeStringToMs(
-        this.configService.get<string>('auth.jwtExpiresIn', {
-          infer: true,
-        }),
-      );
-      const refreshTokenExpiresIn = this.convertTimeStringToMs(
-        this.configService.get<string>('auth.refreshExpiresIn', {
-          infer: true,
-        }),
-      );
-
-      const now = Date.now();
-      return [
-        {
-          accessToken,
-          refreshToken,
-          accessTokenExpiresIn: now + jwtExpiresIn,
-          refreshTokenExpiresIn: now + refreshTokenExpiresIn,
-        },
-      ];
-      */
       const {
         accessToken,
         refreshToken,
@@ -203,15 +118,6 @@ export class AuthService {
         lastName: created.lastName,
       });
 
-      // return [
-      //   {
-      //     accessToken,
-      //     refreshToken,
-      //     accessTokenExpiresIn,
-      //     refreshTokenExpiresIn,
-      //   },
-      // ];
-
       const statusCode = created.isRegistered
         ? HttpStatus.CREATED
         : HttpStatus.OK;
@@ -221,24 +127,18 @@ export class AuthService {
           status: true,
           statusCode,
           message: 'Login success',
-          data: [
-            {
+          data: {
               accessToken,
               refreshToken,
               accessTokenExpiresIn,
               refreshTokenExpiresIn,
             },
-          ],
         },
         statusCode,
       );
 
       return null;
     } catch (error) {
-      // throw new HttpException(
-      //   error.message(),
-      //   HttpStatus.INTERNAL_SERVER_ERROR,
-      // );
       throw new HttpException(
         {
           status: false,
@@ -310,7 +210,7 @@ export class AuthService {
     }
   }
 
-  async login(input: LoginDto): Promise<LoginResponseType[]> {
+  async login(input: LoginDto): Promise<LoginResponseType> {
     try {
       //! Check if user registered
       const userRegistered = await this.memberModel.findOneByUsername(
@@ -379,14 +279,12 @@ export class AuthService {
         lastName: userRegistered.lastName,
       });
 
-      return [
-        {
+      return {
           accessToken,
           refreshToken,
           accessTokenExpiresIn,
           refreshTokenExpiresIn,
-        },
-      ];
+        };
     } catch (error) {
       throw new HttpException(
         {
