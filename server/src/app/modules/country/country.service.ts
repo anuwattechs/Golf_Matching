@@ -60,7 +60,7 @@ export class CountryService {
       return response?.data?.map((state: { name: string | number }) => ({
         ...state,
         name: state?.name,
-        native: this.utilsService.getThaiCountry()[state?.name] ?? '',
+        native: this?.utilsService?.getThaiCountry()[state?.name] ?? '',
       }));
     } catch (error) {
       throw new HttpException('Failed to get states', 500);
