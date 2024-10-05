@@ -91,7 +91,7 @@ export class MembersService {
     try {
       const member = await this.memberModel.findProfileById(decoded.userId);
 
-      return !member ? null : [member];
+      return !member ? null : member;
     } catch (error) {
       throw new HttpException(
         {

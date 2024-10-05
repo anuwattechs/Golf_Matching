@@ -59,13 +59,11 @@ export class OtpService {
       } else if (input.authType === AuthTypeEnum.EMAIL) {
       }
 
-      return [
-        {
+      return {
           verifyId: created._id,
           referenceNo: created._id.slice(0, 6),
           verifyCode,
-        },
-      ];
+        };
     } catch (error) {
       // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
       throw new HttpException(
@@ -122,13 +120,11 @@ export class OtpService {
       } else if (input.authType === AuthTypeEnum.EMAIL) {
       }
 
-      return [
-        {
+      return {
           verifyId: created._id,
           referenceNo: created._id.slice(0, 6),
           verifyCode,
-        },
-      ];
+        };
     } catch (error) {
       // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
       throw new HttpException(
