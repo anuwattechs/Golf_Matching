@@ -16,6 +16,6 @@ export default registerAs('country', () => {
 
   return {
     baseUrl: process.env.COUNTRY_API_URL,
-    authToken: process.env.COUNTRY_API_KEY,
+    authToken: '' + process.env.COUNTRY_API_KEY,
   };
 });
