@@ -287,11 +287,11 @@ export class AuthService {
         bcrypt.genSaltSync(10),
       );
 
-      /*const created = */ await this.memberModel.create({
-        ...input,
-        username: input.username.toLowerCase(),
-        password: hashedPassword,
-      });
+      // await this.memberModel.create({
+      //   ...input,
+      //   username: input.username.toLowerCase(),
+      //   password: hashedPassword,
+      // });
 
       await this.verificationCodesModel.registerAt(userVerified._id);
 

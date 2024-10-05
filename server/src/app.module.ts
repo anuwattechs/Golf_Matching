@@ -3,20 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './core/database/mongoose-config.service';
 import { databaseConfig } from './core/database/config';
-// import { AuthGoogleModule } from './app/modules/auth-google/auth-google.module';
-// import { AuthFacebookModule } from './app/modules/auth-facebook/auth-facebook.module';
-// import { AuthAppleController } from './app/modules/auth-apple/auth-apple.controller';
-// import { AuthAppleModule } from './app/modules/auth-apple/auth-apple.module';
 import { AuthModule } from './app/modules/auth/auth.module';
 import authConfig from './app/modules/auth/config/auth.config';
 import appConfig from './app/config/app.config';
 import { AuthGoogleModule } from './app/modules/auth-google/auth-google.module';
 import { AuthFacebookModule } from './app/modules/auth-facebook/auth-facebook.module';
-// import { AuthAppleController } from './app/modules/auth-apple/auth-apple.controller';
 import { AuthAppleModule } from './app/modules/auth-apple/auth-apple.module';
-// import { MailService } from './app/modules/mail/mail.service';
-// import { MailModule } from './app/modules/mail/mail.module';
-// import { SmsModule } from './app/modules/sms/sms.module';
 import { MembersModule } from './app/modules/members/members.module';
 import { OtpModule } from './app/modules/otp/otp.module';
 import { GolfCoursesModule } from './app/modules/golf-courses/golf-courses.module';
@@ -24,6 +16,8 @@ import googleConfig from './app/modules/auth-google/config/google.config';
 import facebookConfig from './app/modules/auth-facebook/config/facebook.config';
 import mailConfig from './app/common/services/mail/config/mail.config';
 import smsConfig from './app/common/services/sms/config/sms.config';
+import countryConfig from './app/modules/country/config/country.config';
+import { CountryModule } from './app/modules/country/country.module';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -41,6 +35,7 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
         facebookConfig,
         mailConfig,
         smsConfig,
+        countryConfig,
       ],
       envFilePath: ['.env'],
     }),
@@ -52,6 +47,7 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     MembersModule,
     OtpModule,
     GolfCoursesModule,
+    CountryModule,
   ],
 })
 export class AppModule {}
