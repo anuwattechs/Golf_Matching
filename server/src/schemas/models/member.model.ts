@@ -45,7 +45,10 @@ export class MemberModel {
   }
 
   updateById(input: UpdateMemberDto): Promise<any> {
-    return this.member.updateOne({ _id: input.userId }, { $set: { ...input } });
+    return this.member.updateOne(
+      { _id: input.userId },
+      { $set: { ...input, isRegistered: true } },
+    );
   }
 
   createBySocial(input: CreateMemberBySocialDto): Promise<Member> {

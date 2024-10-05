@@ -10,7 +10,7 @@ import {
 import { JwtAuthGuard } from 'src/app/modules/auth/guard/jwt-auth.guard';
 import { MembersService } from './members.service';
 import { Request } from 'express';
-import { JwtPayloadType } from 'src/app/modules/auth/strategy/jwt-payload.type';
+import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payload.type';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { UpdateProfileDto, ChangeInviteModeDto } from './dto';
 

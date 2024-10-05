@@ -1,9 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
-import { JwtPayloadType } from './jwt-payload.type';
+import { JwtPayloadType } from './types/jwt-payload.type';
 import { OrNeverType } from 'src/shared/types';
 
 @Injectable()
@@ -17,6 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   public validate(payload: JwtPayloadType): OrNeverType<JwtPayloadType> {
+    if (!payload.userId) throw new UnauthorizedException();
     // console.log('JwtStrategy.validate', payload);
     return {
       userId: payload.userId,

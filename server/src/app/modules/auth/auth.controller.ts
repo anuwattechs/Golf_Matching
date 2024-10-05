@@ -18,11 +18,10 @@ import {
   ChangePasswordDto,
   ResetPasswordDto,
 } from './dto';
-import { JwtAuthGuard } from './guard';
+import { JwtAuthGuard, JwtRefreshTokenGuard } from './guard';
 import { Request } from 'express';
-import { JwtPayloadType } from './strategy/jwt-payload.type';
+import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 
-// @UseGuards(JwtAuthGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -50,15 +49,17 @@ export class AuthController {
     return await this.authService.changePassword(body, req.decoded);
   }
 
-  // @Post('refresh')
-  // @HttpCode(HttpStatus.OK)
-  // @UseGuards(JwtRefreshTokenGuard)
-  // @ResponseMessage('Token refreshed successfully')
-  // async refreshToken(
-  //   @Req() req: Request & { refreshToken: string },
-  // ) /*: Promise<LoginResponseDto> */ {
-  //   return await this.authService.refreshToken(req.refreshToken);
-  // }
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtRefreshTokenGuard)
+  @ResponseMessage('Token refreshed successfully')
+  async refreshToken(
+    @Req() req: Request & { decoded: JwtPayloadType },
+  ) /*: Promise<LoginResponseDto> */ {
+    return await this.authService.refreshToken(req.decoded);
+    // console.log('req.decoded', req.decoded);
+    // return null;
+  }
 
   @Patch('reset-password')
   @ResponseMessage('User reset password successfully')

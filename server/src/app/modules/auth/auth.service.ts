@@ -1,4 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LoginResponseType, NullableType } from 'src/shared/types';
 import { SocialInterface } from 'src/shared/interfaces';
 import * as bcrypt from 'bcrypt';
@@ -11,7 +16,7 @@ import {
 import { MemberModel, VerificationCodesModel } from 'src/schemas/models';
 import { JwtService } from '@nestjs/jwt';
 import { AuthTypeEnum, VerifyTypeEnum } from 'src/shared/enums';
-import { JwtPayloadType } from './strategy/jwt-payload.type';
+import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
 
@@ -24,6 +29,7 @@ export class AuthService {
     private readonly configService: ConfigService<AllConfigType>,
   ) {}
 
+  /*
   private generateAccessToken(payload: JwtPayloadType): string {
     return this.jwtService.sign(payload);
   }
@@ -33,6 +39,7 @@ export class AuthService {
       expiresIn: process.env.AUTH_REFRESH_EXPIRES_IN || '3650d',
     });
   }
+  */
 
   validateToken(token: string): JwtPayloadType {
     return this.jwtService.verify(token);
@@ -40,7 +47,10 @@ export class AuthService {
 
   validateRefreshToken(token: string): JwtPayloadType {
     return this.jwtService.verify(token, {
-      secret: '' + process.env.AUTH_REFRESH_SECRET,
+      // secret: '' + process.env.AUTH_REFRESH_SECRET,
+      secret: this.configService.get<string>('auth.refreshSecret', {
+        infer: true,
+      }),
     });
   }
 
@@ -51,13 +61,9 @@ export class AuthService {
     return unit == 'h' ? value * 3.6e6 : unit == 'd' ? value * 24 * 3.6e6 : 0;
   }
 
-  /*
-  async refreshToken(token: string): Promise<LoginResponseType[]> {
+  async refreshToken(decoded: JwtPayloadType): Promise<LoginResponseType[]> {
     try {
-      const decoded = this.jwtService.verify(token, {
-        secret: '' + process.env.AUTH_REFRESH_SECRET,
-      });
-
+      /*
       const accessToken = this.generateAccessToken({
         userId: decoded.userId,
         username: decoded.username,
@@ -92,6 +98,28 @@ export class AuthService {
           refreshTokenExpiresIn: now + refreshTokenExpiresIn,
         },
       ];
+      */
+
+      const {
+        accessToken,
+        refreshToken,
+        accessTokenExpiresIn,
+        refreshTokenExpiresIn,
+      } = await this.getTokensData({
+        userId: decoded.userId,
+        username: decoded.username,
+        firstName: decoded.firstName,
+        lastName: decoded.lastName,
+      });
+
+      return [
+        {
+          accessToken,
+          refreshToken,
+          accessTokenExpiresIn,
+          refreshTokenExpiresIn,
+        },
+      ];
     } catch (error) {
       throw new HttpException(
         {
@@ -104,12 +132,11 @@ export class AuthService {
       );
     }
   }
-  */
 
   async validateSocialLogin(
     authType: AuthTypeEnum,
     socialData: SocialInterface,
-  ): Promise<LoginResponseType[]> {
+  ) /*: Promise<LoginResponseType[]>*/ {
     try {
       const userRegistered = await this.memberModel.findOneBySocialId({
         socialId: socialData.id,
@@ -128,6 +155,7 @@ export class AuthService {
 
       await this.memberModel.active(created._id, true);
 
+      /*
       const accessToken = this.generateAccessToken({
         userId: created._id,
         username: socialData?.email?.toLowerCase(),
@@ -162,6 +190,50 @@ export class AuthService {
           refreshTokenExpiresIn: now + refreshTokenExpiresIn,
         },
       ];
+      */
+      const {
+        accessToken,
+        refreshToken,
+        accessTokenExpiresIn,
+        refreshTokenExpiresIn,
+      } = await this.getTokensData({
+        userId: created._id,
+        username: created.username,
+        firstName: created.firstName,
+        lastName: created.lastName,
+      });
+
+      // return [
+      //   {
+      //     accessToken,
+      //     refreshToken,
+      //     accessTokenExpiresIn,
+      //     refreshTokenExpiresIn,
+      //   },
+      // ];
+
+      const statusCode = created.isRegistered
+        ? HttpStatus.CREATED
+        : HttpStatus.OK;
+
+      throw new HttpException(
+        {
+          status: true,
+          statusCode,
+          message: 'Login success',
+          data: [
+            {
+              accessToken,
+              refreshToken,
+              accessTokenExpiresIn,
+              refreshTokenExpiresIn,
+            },
+          ],
+        },
+        statusCode,
+      );
+
+      return null;
     } catch (error) {
       // throw new HttpException(
       //   error.message(),
@@ -256,6 +328,7 @@ export class AuthService {
       if (!isMatched)
         throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
 
+      /*
       const accessToken = this.generateAccessToken({
         userId: userRegistered._id,
         username: userRegistered.username,
@@ -290,6 +363,28 @@ export class AuthService {
           refreshToken,
           accessTokenExpiresIn: now + jwtExpiresIn,
           refreshTokenExpiresIn: now + refreshTokenExpiresIn,
+        },
+      ];
+      */
+
+      const {
+        accessToken,
+        refreshToken,
+        accessTokenExpiresIn,
+        refreshTokenExpiresIn,
+      } = await this.getTokensData({
+        userId: userRegistered._id,
+        username: userRegistered.username,
+        firstName: userRegistered.firstName,
+        lastName: userRegistered.lastName,
+      });
+
+      return [
+        {
+          accessToken,
+          refreshToken,
+          accessTokenExpiresIn,
+          refreshTokenExpiresIn,
         },
       ];
     } catch (error) {
@@ -396,5 +491,53 @@ export class AuthService {
         error.status,
       );
     }
+  }
+
+  private async getTokensData(payload: JwtPayloadType) {
+    const jwtExpiresIn = this.configService.getOrThrow<string>(
+      'auth.jwtExpiresIn',
+      {
+        infer: true,
+      },
+    );
+    const refreshExpiresIn = this.configService.getOrThrow<string>(
+      'auth.refreshExpiresIn',
+      {
+        infer: true,
+      },
+    );
+
+    const accessTokenExpiresIn =
+      Date.now() + this.convertTimeStringToMs(jwtExpiresIn);
+    const refreshTokenExpiresIn =
+      Date.now() + this.convertTimeStringToMs(refreshExpiresIn);
+
+    const [accessToken, refreshToken] = await Promise.all([
+      await this.jwtService.signAsync(
+        { ...payload },
+        {
+          secret: this.configService.getOrThrow<string>('auth.jwtSecret', {
+            infer: true,
+          }),
+          expiresIn: jwtExpiresIn,
+        },
+      ),
+      await this.jwtService.signAsync(
+        { ...payload },
+        {
+          secret: this.configService.getOrThrow<string>('auth.refreshSecret', {
+            infer: true,
+          }),
+          expiresIn: refreshExpiresIn,
+        },
+      ),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+      accessTokenExpiresIn,
+      refreshTokenExpiresIn,
+    };
   }
 }
