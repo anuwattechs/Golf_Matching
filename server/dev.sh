@@ -26,7 +26,7 @@ else
 fi
 
 # Run the NestJS development server
-echo "Starting NestJS server in development mode..."
+echo "Starting NestJS server in development mode..." 
 if command_exists yarn; then
   yarn start:dev
 else
