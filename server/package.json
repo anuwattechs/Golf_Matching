@@ -7,18 +7,22 @@
   "license": "MIT",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start": "npm run start:dev",
+    "start:dev": "NODE_ENV=development nest start --watch",
+    "start:prod": "NODE_ENV=production node dist/main.js",
+    "start:test": "NODE_ENV=test node dist/main.js",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "release": "release-it"
+    "release": "release-it",
+    "env:dev": "NODE_ENV=development",
+    "env:prod": "NODE_ENV=production",
+    "env:test": "NODE_ENV=test"
   },
   "dependencies": {
     "@commitlint/cli": "^19.5.0",

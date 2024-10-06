@@ -23,6 +23,8 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
 });
 
+const environment = process.env.NODE_ENV || 'development';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -37,7 +39,7 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
         smsConfig,
         countryConfig,
       ],
-      envFilePath: ['.env'],
+      envFilePath: [`.env.${environment}`, `.env`],
     }),
     infrastructureDatabaseModule,
     AuthModule,
