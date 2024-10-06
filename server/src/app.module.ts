@@ -22,6 +22,8 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
 });
 
+const environment = process.env.NODE_ENV || 'development'; // กำหนด environment จาก NODE_ENV ถ้าไม่มีให้เป็น development
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,7 +38,10 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
         smsConfig,
         countryConfig,
       ],
-      envFilePath: ['.env'],
+      envFilePath: [
+        `.env.${environment}`, // โหลดไฟล์ .env ตาม environment
+        `.env`, // สำรองสำหรับค่าทั่วไป
+      ],
     }),
     infrastructureDatabaseModule,
     AuthModule,
