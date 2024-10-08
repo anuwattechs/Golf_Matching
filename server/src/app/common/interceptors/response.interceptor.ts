@@ -54,7 +54,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
       message: exception.message,
       data:
         status === HttpStatus.BAD_REQUEST
-          ? typeof exception.message === 'string'
+          ? typeof (exception.getResponse() as any).message === 'string'
             ? null
             : (exception.getResponse() as any).message || null
           : null,
