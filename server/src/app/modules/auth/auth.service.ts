@@ -69,11 +69,11 @@ export class AuthService {
       });
 
       return {
-          accessToken,
-          refreshToken,
-          accessTokenExpiresIn,
-          refreshTokenExpiresIn,
-        };
+        accessToken,
+        refreshToken,
+        accessTokenExpiresIn,
+        refreshTokenExpiresIn,
+      };
     } catch (error) {
       throw new HttpException(
         {
@@ -131,11 +131,11 @@ export class AuthService {
           statusCode,
           message: 'Login success',
           data: {
-              accessToken,
-              refreshToken,
-              accessTokenExpiresIn,
-              refreshTokenExpiresIn,
-            },
+            accessToken,
+            refreshToken,
+            accessTokenExpiresIn,
+            refreshTokenExpiresIn,
+          },
         },
         statusCode,
       );
@@ -190,11 +190,11 @@ export class AuthService {
         bcrypt.genSaltSync(10),
       );
 
-      // await this.memberModel.create({
-      //   ...input,
-      //   username: input.username.toLowerCase(),
-      //   password: hashedPassword,
-      // });
+      await this.memberModel.create({
+        ...input,
+        username: input.username.toLowerCase(),
+        password: hashedPassword,
+      });
 
       await this.verificationCodesModel.registerAt(userVerified._id);
 
@@ -283,11 +283,11 @@ export class AuthService {
       });
 
       return {
-          accessToken,
-          refreshToken,
-          accessTokenExpiresIn,
-          refreshTokenExpiresIn,
-        };
+        accessToken,
+        refreshToken,
+        accessTokenExpiresIn,
+        refreshTokenExpiresIn,
+      };
     } catch (error) {
       throw new HttpException(
         {
