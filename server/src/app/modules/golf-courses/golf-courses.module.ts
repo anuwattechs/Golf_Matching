@@ -7,7 +7,11 @@ import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [ModelsModule, AuthModule, PassportModule],
+  imports: [
+    ModelsModule,
+    AuthModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   controllers: [GolfCoursesController],
   providers: [GolfCoursesService, JwtStrategy],
   exports: [GolfCoursesService],

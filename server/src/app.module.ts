@@ -18,10 +18,14 @@ import mailConfig from './app/common/services/mail/config/mail.config';
 import smsConfig from './app/common/services/sms/config/sms.config';
 import countryConfig from './app/modules/country/config/country.config';
 import { CountryModule } from './app/modules/country/country.module';
+import { AssetsModule } from './app/modules/assets/assets.module';
+import assetsConfig from './app/modules/assets/config/assets.config';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
 });
+
+const environment = process.env.NODE_ENV || 'development';
 
 @Module({
   imports: [
@@ -36,8 +40,9 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
         mailConfig,
         smsConfig,
         countryConfig,
+        assetsConfig,
       ],
-      envFilePath: ['.env'],
+      envFilePath: [`.env.${environment}`, `.env`],
     }),
     infrastructureDatabaseModule,
     AuthModule,
@@ -48,6 +53,7 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
     OtpModule,
     GolfCoursesModule,
     CountryModule,
+    AssetsModule,
   ],
 })
 export class AppModule {}

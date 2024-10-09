@@ -1,7 +1,64 @@
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Post,
+  Body,
+  BadRequestException,
+  UsePipes,
+  ValidationPipe,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { GolfCoursesService } from './golf-courses.service';
+import { JwtAuthGuard } from '../auth/guard';
+import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
+// import { CreateGolfCourseDto } from '../../../schemas/models/dto/golf-course.dto';
 
 @Controller('golf-courses')
 export class GolfCoursesController {
   constructor(private readonly golfCoursesService: GolfCoursesService) {}
+
+  @Get()
+  // @UseGuards(JwtAuthGuard)
+  async findAll() {
+    return this.golfCoursesService.findAll(); // Directly returning the promise
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ResponseMessage('Golf course created successfully')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async create(@Body() createGolfCourseDto: any) {
+    console.log('createGolfCourseDto', createGolfCourseDto);
+    try {
+      return await this.golfCoursesService.createGolfCourse(
+        createGolfCourseDto,
+      );
+    } catch (error) {
+      console.error(error); // Log the entire error for debugging
+      throw this.handleError(error);
+    }
+  }
+
+  private handleError(error: any) {
+    const statusCode = error?.response?.status || 500; // Default to 500 if no status is found
+    const message = error?.response?.error || 'Internal Server Error';
+
+    // Throwing specific exception based on the error type
+    if (statusCode === 400) {
+      throw new BadRequestException({
+        status: false,
+        statusCode,
+        message,
+        data: null,
+      });
+    }
+
+    throw new InternalServerErrorException({
+      status: false,
+      statusCode,
+      message,
+      data: null,
+    });
+  }
 }
