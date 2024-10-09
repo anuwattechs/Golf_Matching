@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MemberModel, VerificationCodesModel } from '.';
+import {
+  MemberModel,
+  VerificationCodesModel,
+  GolfCourseModel,
+  TagModel,
+} from '.';
 import {
   Member,
   MemberSchema,
@@ -27,7 +32,7 @@ import {
       },
     ]),
   ],
-  providers: [MemberModel, VerificationCodesModel],
-  exports: [MemberModel, VerificationCodesModel],
+  providers: [MemberModel, VerificationCodesModel, GolfCourseModel, TagModel],
+  exports: [MemberModel, VerificationCodesModel, GolfCourseModel, TagModel],
 })
 export class ModelsModule {}
