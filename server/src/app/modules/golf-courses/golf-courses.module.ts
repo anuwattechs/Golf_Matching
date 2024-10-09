@@ -10,7 +10,8 @@ import { PassportModule } from '@nestjs/passport';
   imports: [
     ModelsModule,
     AuthModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    // PassportModule.register({ defaultStrategy: 'jwt' }),
+    PassportModule,
   ],
   controllers: [GolfCoursesController],
   providers: [GolfCoursesService, JwtStrategy],

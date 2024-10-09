@@ -13,6 +13,8 @@ import {
   VerificationCodeSchema,
   GolfCourse,
   GolfCourseSchema,
+  Tag,
+  TagSchema,
 } from 'src/schemas';
 
 @Module({
@@ -29,6 +31,10 @@ import {
       {
         name: GolfCourse.name,
         schema: GolfCourseSchema,
+      },
+      {
+        name: Tag.name,
+        schema: TagSchema,
       },
     ]),
   ],

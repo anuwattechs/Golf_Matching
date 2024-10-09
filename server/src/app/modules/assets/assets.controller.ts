@@ -148,7 +148,7 @@ export class AssetsController {
    * @returns An array of tag objects
    */
   @Get('tags')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getTags() {
     return this.assetsService.getTags({
       isPublic: false,
