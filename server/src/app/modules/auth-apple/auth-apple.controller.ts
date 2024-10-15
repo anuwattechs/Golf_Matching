@@ -10,7 +10,7 @@ import { AuthService } from '../auth/auth.service';
 import { AuthAppleService } from './auth-apple.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthAppleLoginDto } from './dto/auth-apple-login.dto';
-import { LoginResponseType } from 'src/shared/types';
+import { LoginResponseType, NullableType } from 'src/shared/types';
 import { AuthTypeEnum } from 'src/shared/enums';
 
 @Controller({
@@ -27,14 +27,11 @@ export class AuthAppleController {
   @ResponseMessage('User logged in successfully')
   async login(
     @Body() loginDto: AuthAppleLoginDto,
-  ): Promise<LoginResponseType[]> {
+  ): Promise<NullableType<unknown>> {
     try {
       const socialData =
         await this.authFacebookService.getProfileByToken(loginDto);
-      return this.authService.validateSocialLogin(
-        AuthTypeEnum.APPLE,
-        socialData,
-      );
+      return this.authService.validateSocialLogin(socialData);
     } catch (error) {
       throw new HttpException(
         {

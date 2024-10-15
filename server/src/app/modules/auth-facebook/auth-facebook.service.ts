@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { Facebook } from "fb";
-import { ConfigService } from "@nestjs/config";
-import { SocialInterface } from "src/shared/interfaces";
-import { AuthFacebookLoginDto } from "./dto/auth-facebook-login.dto";
-import { AllConfigType } from "src/app/config/config.type";
-import { FacebookInterface } from "../../../shared/interfaces/facebook.interface";
+import { Injectable } from '@nestjs/common';
+import { Facebook } from 'fb';
+import { ConfigService } from '@nestjs/config';
+import { SocialInterface } from 'src/shared/interfaces';
+import { AuthFacebookLoginDto } from './dto/auth-facebook-login.dto';
+import { AllConfigType } from 'src/app/config/config.type';
+import { FacebookInterface } from '../../../shared/interfaces/facebook.interface';
 
 @Injectable()
 export class AuthFacebookService {
@@ -12,16 +12,16 @@ export class AuthFacebookService {
 
   constructor(private configService: ConfigService<AllConfigType>) {
     this.fb = new Facebook({
-      appId: this.configService.get<string>("facebook.appId", { infer: true }),
-      appSecret: this.configService.get<string>("facebook.appSecret", {
+      appId: this.configService.get<string>('facebook.appId', { infer: true }),
+      appSecret: this.configService.get<string>('facebook.appSecret', {
         infer: true,
       }),
-      version: "v7.0",
+      version: 'v7.0',
     });
   }
 
   async getProfileByToken(
-    loginDto: AuthFacebookLoginDto
+    loginDto: AuthFacebookLoginDto,
   ): Promise<SocialInterface> {
     this.fb.setAccessToken(loginDto.accessToken);
 
@@ -29,22 +29,22 @@ export class AuthFacebookService {
       const data: FacebookInterface = await this.fetchFacebookProfile();
       return this.mapToSocialInterface(data);
     } catch (error) {
-      throw new Error("Error fetching Facebook profile: " + error.message);
+      throw new Error('Error fetching Facebook profile: ' + error.message);
     }
   }
 
   private fetchFacebookProfile(): Promise<FacebookInterface> {
     return new Promise((resolve, reject) => {
       this.fb.api(
-        "/me",
-        "get",
-        { fields: "id,last_name,email,first_name" },
+        '/me',
+        'get',
+        { fields: 'id,last_name,email,first_name' },
         (response: any) => {
           if (response?.error) {
             return reject(response?.error);
           }
           resolve(response);
-        }
+        },
       );
     });
   }
@@ -52,6 +52,7 @@ export class AuthFacebookService {
   private mapToSocialInterface(data: FacebookInterface): SocialInterface {
     return {
       id: data.id,
+      facebookId: data.id,
       email: data.email,
       firstName: data.first_name,
       lastName: data.last_name,

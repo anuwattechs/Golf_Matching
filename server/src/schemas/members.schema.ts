@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { AuthTypeEnum } from 'src/shared/enums';
 import { Exclude } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -24,8 +23,11 @@ export class Member extends Document {
   @Prop({ default: null })
   birthDate: string;
 
-  @Prop() //! Email, Phone, Social
-  username: string | null;
+  @Prop({ default: null })
+  email: string; // Email may be updated later
+
+  @Prop({ default: null })
+  phoneNo: string; // Phone number may be updated later
 
   @Prop({ nullable: true })
   // @Exclude({ toPlainOnly: true })
@@ -38,22 +40,23 @@ export class Member extends Document {
     this.previousPassword = this.password;
   }
 
-  @Prop({ default: AuthTypeEnum.EMAIL })
-  authType: AuthTypeEnum;
-
-  @Prop({ nullable: true, type: String })
-  socialId: string | null;
+  // Remove authType and socialId, and instead define individual fields for social logins
+  @Prop({ default: null })
+  facebookId: string; // May register or connect to the account later
 
   @Prop({ default: null })
-  // @Prop({ required: true })
+  googleId: string; // May register or connect to the account later
+
+  @Prop({ default: null })
+  appleId: string; // May register or connect to the account later
+
+  @Prop({ default: null })
   gender: string;
 
   @Prop({ default: null })
-  // @Prop({ required: true })
   country: string;
 
   @Prop({ default: null })
-  // @Prop({ required: true })
   location: string;
 
   @Prop({ default: '' })
@@ -62,7 +65,7 @@ export class Member extends Document {
   @Prop({ default: [], type: [String] })
   tags: string[];
 
-  @Prop({ default: null }) //! Year 4 digits
+  @Prop({ default: null }) // Year 4 digits
   yearStart: string;
 
   @Prop({ default: null })

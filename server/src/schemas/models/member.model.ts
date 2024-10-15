@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Member } from '..';
 import { Model } from 'mongoose';
+import { Member } from '..';
 import {
   CreateMemberDto,
   CreateMemberBySocialDto,
@@ -11,63 +11,76 @@ import {
 
 @Injectable()
 export class MemberModel {
-  constructor(@InjectModel(Member.name) private member: Model<Member>) {}
+  constructor(
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+  ) {}
 
-  findProfileById(userId: string): Promise<Member> {
-    return this.member
+  // Fetch profile details by user ID excluding sensitive information
+  async findProfileById(userId: string): Promise<Member | null> {
+    return this.memberModel
       .findOne({ _id: userId })
       .select('-_id -password -isActived -activedAt -updatedAt -__v')
       .exec();
   }
 
-  findAllBySocialId(input: FindBySocialIdDto): Promise<Member[]> {
-    return this.member.find({ ...input }).exec();
+  async findAllBySocialId(input: FindBySocialIdDto): Promise<Member[]> {
+    return this.memberModel.find(input).exec();
   }
 
-  findOneBySocialId(input: FindBySocialIdDto): Promise<Member> {
-    return this.member.findOne({ ...input }).exec();
+  async findOneBySocialId(input: FindBySocialIdDto): Promise<Member | null> {
+    return this.memberModel.findOne(input).exec();
   }
 
-  findAllByUsername(username: string): Promise<Member[]> {
-    return this.member.find({ username }).exec();
+  async findAllByUsername(username: string): Promise<Member[]> {
+    return this.memberModel.find({ username }).exec();
   }
 
-  findById(userId: string): Promise<Member> {
-    return this.member.findOne({ _id: userId }).exec();
+  async findById(userId: string): Promise<Member | null> {
+    return this.memberModel.findOne({ _id: userId }).exec();
   }
 
-  findOneByUsername(username: string): Promise<Member> {
-    return this.member.findOne({ username }).exec();
+  async findOneByUsername(username: string): Promise<Member | null> {
+    return this.memberModel.findOne({ username }).exec();
   }
 
-  create(input: CreateMemberDto): Promise<Member> {
-    return this.member.create({ ...input, isRegistered: true });
+  async create(input: CreateMemberDto): Promise<Member> {
+    return this.memberModel.create({ ...input, isRegistered: true });
   }
 
-  updateById(input: UpdateMemberDto): Promise<any> {
-    return this.member.updateOne(
+  async updateById(input: UpdateMemberDto): Promise<Member | null> {
+    const result = await this.memberModel.updateOne(
       { _id: input.userId },
       { $set: { ...input, isRegistered: true } },
     );
+    return result.modifiedCount > 0 ? this.findById(input.userId) : null;
   }
 
-  createBySocial(input: CreateMemberBySocialDto): Promise<Member> {
-    return this.member.create(input);
+  async createBySocial(input: CreateMemberBySocialDto): Promise<Member> {
+    return this.memberModel.create(input);
   }
 
-  active(userId: string, isActived: boolean = true) {
-    return this.member.updateOne({ _id: userId }, { $set: { isActived } });
+  async setActive(userId: string, isActive: boolean = true): Promise<void> {
+    await this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { isActived: isActive } },
+    );
   }
 
-  changeInviteMode(userId: string, isInviteAble: boolean) {
-    return this.member.updateOne({ _id: userId }, { $set: { isInviteAble } });
+  async changeInviteMode(userId: string, isInviteAble: boolean): Promise<void> {
+    await this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { isInviteAble } },
+    );
   }
 
-  updatePasswordById(userId: string, password: string) {
-    return this.member.updateOne({ _id: userId }, { $set: { password } });
+  async updatePasswordById(userId: string, password: string): Promise<void> {
+    await this.memberModel.updateOne({ _id: userId }, { $set: { password } });
   }
 
-  updatePasswordByUsername(username: string, password: string) {
-    return this.member.updateOne({ username }, { $set: { password } });
+  async updatePasswordByUsername(
+    username: string,
+    password: string,
+  ): Promise<void> {
+    await this.memberModel.updateOne({ username }, { $set: { password } });
   }
 }

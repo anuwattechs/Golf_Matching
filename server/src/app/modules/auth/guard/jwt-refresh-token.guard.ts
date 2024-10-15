@@ -17,7 +17,6 @@ export class JwtRefreshTokenGuard implements CanActivate {
       const request = context.switchToHttp().getRequest();
       const { authorization }: any = request.headers;
       if (!authorization || authorization.trim() === '') {
-        //    throw new UnauthorizedException('Please provide token');
         throw new HttpException(
           {
             status: false,
@@ -33,15 +32,10 @@ export class JwtRefreshTokenGuard implements CanActivate {
       request.decoded = resp;
       return true;
     } catch (error) {
-      //  console.log('auth error - ', error.message);
-      //  throw new ForbiddenException(
-      //    error.message || 'session expired! Please sign In',
-      //  );
-
       throw new HttpException(
         {
           status: false,
-          statusCode: HttpStatus.FORBIDDEN,
+          statusCode: HttpStatus.UNAUTHORIZED,
           message: error.message || 'session expired! Please sign In',
           data: null,
         },

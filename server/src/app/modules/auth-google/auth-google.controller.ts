@@ -19,7 +19,7 @@ import { AuthService } from '../auth/auth.service';
 // import { SocialInterface } from 'src/shared/interfaces';
 // import { ConfigService } from '@nestjs/config';
 // import { AllConfigType } from 'src/app/config/config.type';
-import { LoginResponseType } from 'src/shared/types';
+import { LoginResponseType, NullableType } from 'src/shared/types';
 
 @Controller({
   path: 'auth/google',
@@ -34,13 +34,12 @@ export class AuthGoogleController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('User logged in successfully')
-  async login(@Body() body: AuthGoogleLoginDto): Promise<LoginResponseType[]> {
+  async login(
+    @Body() body: AuthGoogleLoginDto,
+  ): Promise<NullableType<unknown>> {
     try {
       const socialData = await this.authGoogleService.getProfileByToken(body);
-      return this.authService.validateSocialLogin(
-        AuthTypeEnum.GOOGLE,
-        socialData,
-      );
+      return this.authService.validateSocialLogin(socialData);
     } catch (error) {
       throw new HttpException(
         {

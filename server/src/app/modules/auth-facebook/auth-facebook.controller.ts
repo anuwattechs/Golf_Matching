@@ -16,7 +16,7 @@ import { AuthFacebookLoginDto } from './dto/auth-facebook-login.dto';
 // import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
 import { AuthTypeEnum } from 'src/shared/enums';
 // import { FacebookAuthGuard } from './guard/facebook.guard';
-import { LoginResponseType } from 'src/shared/types';
+import { LoginResponseType, NullableType } from 'src/shared/types';
 
 @Controller({
   path: 'auth/facebook',
@@ -32,14 +32,11 @@ export class AuthFacebookController {
   @ResponseMessage('User logged in successfully')
   async login(
     @Body() loginDto: AuthFacebookLoginDto,
-  ): Promise<LoginResponseType[]> {
+  ): Promise<NullableType<unknown>> {
     try {
       const socialData =
         await this.authFacebookService.getProfileByToken(loginDto);
-      return this.authService.validateSocialLogin(
-        AuthTypeEnum.FACEBOOK,
-        socialData,
-      );
+      return this.authService.validateSocialLogin(socialData);
     } catch (error) {
       throw new HttpException(
         {
