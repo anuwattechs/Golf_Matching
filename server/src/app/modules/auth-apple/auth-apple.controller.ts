@@ -10,8 +10,8 @@ import { AuthService } from '../auth/auth.service';
 import { AuthAppleService } from './auth-apple.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthAppleLoginDto } from './dto/auth-apple-login.dto';
-import { LoginResponseType, NullableType } from 'src/shared/types';
-import { AuthTypeEnum } from 'src/shared/enums';
+import { NullableType } from 'src/shared/types';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Controller({
   path: 'auth/apple',
@@ -20,11 +20,12 @@ export class AuthAppleController {
   constructor(
     private readonly authService: AuthService,
     private readonly authFacebookService: AuthAppleService,
+    private readonly utilsService: UtilsService,
   ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ResponseMessage('User logged in successfully')
+  @ResponseMessage('auth-apple.USER_LOGGED_IN_SUCCESSFULLY')
   async login(
     @Body() loginDto: AuthAppleLoginDto,
   ): Promise<NullableType<unknown>> {
@@ -35,7 +36,9 @@ export class AuthAppleController {
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Invalid token',
+          message: this.utilsService.getMessagesTypeSafe(
+            'auth-apple.INVALID_TOKEN',
+          ),
         },
         401,
       );

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
 import { CreateTagDto } from './dto';
 import { TagModel } from 'src/schemas/models/tag.model';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
 export class AssetsService {
@@ -21,6 +22,7 @@ export class AssetsService {
    * creating, updating, or deleting tags
    */
   constructor(
+    private readonly utilsService: UtilsService,
     private readonly configService: ConfigService<AllConfigType>,
     private readonly tagModel: TagModel,
   ) {
@@ -36,7 +38,10 @@ export class AssetsService {
    */
   private getConfig(key: string): string {
     const value = this.configService.get<string>(key, { infer: true });
-    if (!value) throw new Error(`Missing config key: ${key}`);
+    if (!value)
+      throw new Error(
+        `${this.utilsService.getMessagesTypeSafe('assets.MISSING_CONFIG_KEY:')} ${key}`,
+      );
     return value;
   }
 
@@ -46,7 +51,7 @@ export class AssetsService {
   async getBuckets(): Promise<AWS.S3.ListBucketsOutput> {
     return this.s3Operation(
       () => this.s3.listBuckets().promise(),
-      'Error listing buckets',
+      this.utilsService.getMessagesTypeSafe('assets.ERROR_LISTING_BUCKETS'),
     );
   }
 
@@ -67,7 +72,7 @@ export class AssetsService {
 
     return this.s3Operation(
       () => this.s3.upload(uploadParams).promise(),
-      'Error uploading file',
+      this.utilsService.getMessagesTypeSafe('assets.ERROR_UPLOADING_FILE'),
     );
   }
 
@@ -82,7 +87,7 @@ export class AssetsService {
 
     return this.s3Operation(
       () => this.s3.deleteObject(deleteParams).promise(),
-      'Error deleting file',
+      this.utilsService.getMessagesTypeSafe('assets.ERROR_DELETING_FILE'),
     );
   }
 
@@ -97,7 +102,7 @@ export class AssetsService {
 
     return this.s3Operation(
       () => this.s3.getObject(downloadParams).promise(),
-      'Error downloading file',
+      this.utilsService.getMessagesTypeSafe('assets.ERROR_DOWNLOADING_FILE'),
     );
   }
 
@@ -112,7 +117,7 @@ export class AssetsService {
 
     return this.s3Operation(
       () => this.s3.listObjectsV2(listParams).promise(),
-      'Error listing files',
+      this.utilsService.getMessagesTypeSafe('assets.ERROR_LISTING_FILES'),
     );
   }
 
@@ -212,7 +217,10 @@ export class AssetsService {
   async updateTag(tagId: string, tagName: string, file: Express.Multer.File) {
     const tag = await this.tagModel.findById(tagId);
     if (!tag) {
-      throw new HttpException('Tag not found', 404);
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('assets.TAG_NOT_FOUND'),
+        404,
+      );
     }
 
     // Update the file in S3
@@ -243,7 +251,10 @@ export class AssetsService {
     try {
       const tag = await this.tagModel.findById(tagId);
       if (!tag) {
-        throw new HttpException('Tag not found', 404);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('assets.TAG_NOT_FOUND'),
+          404,
+        );
       }
 
       // Concurrently delete the file from S3 and the tag from the database
@@ -257,7 +268,10 @@ export class AssetsService {
     } catch (error) {
       await session.abortTransaction();
       console.error('Error deleting tag:', error);
-      throw new HttpException('Error deleting tag', 500);
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('assets.ERROR_DELETING_TAG'),
+        500,
+      );
     } finally {
       session.endSession();
     }

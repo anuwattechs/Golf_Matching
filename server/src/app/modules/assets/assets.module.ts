@@ -6,9 +6,16 @@ import { ModelsModule } from 'src/schemas/models/models.module';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { UtilsModule } from 'src/shared/utils/utils.module';
 
 @Module({
-  imports: [ConfigModule, ModelsModule, AuthModule, PassportModule],
+  imports: [
+    ConfigModule,
+    ModelsModule,
+    AuthModule,
+    PassportModule,
+    UtilsModule,
+  ],
   controllers: [AssetsController],
   providers: [AssetsService, JwtStrategy],
   exports: [AssetsService],

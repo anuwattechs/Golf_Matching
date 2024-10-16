@@ -12,25 +12,22 @@ import {
 import { GolfCoursesService } from './golf-courses.service';
 import { JwtAuthGuard, BlockGuard } from '../auth/guard';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
-// import { CreateGolfCourseDto } from '../../../schemas/models/dto/golf-course.dto';
 
 @Controller('golf-courses')
 export class GolfCoursesController {
   constructor(private readonly golfCoursesService: GolfCoursesService) {}
 
   @Get()
-  // @UseGuards(JwtAuthGuard)
   async findAll() {
-    return this.golfCoursesService.findAll(); // Directly returning the promise
+    return this.golfCoursesService.findAll();
   }
 
   @Post()
   @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Golf course created successfully')
+  @ResponseMessage('golf-courses.GOLF_COURSE_CREATED_SUCCESSFULLY')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async create(@Body() createGolfCourseDto: any) {
-    console.log('createGolfCourseDto', createGolfCourseDto);
     try {
       return await this.golfCoursesService.createGolfCourse(
         createGolfCourseDto,

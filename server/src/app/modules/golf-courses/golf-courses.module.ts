@@ -5,14 +5,10 @@ import { ModelsModule } from 'src/schemas/models/models.module'; // Ensure Model
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { UtilsModule } from 'src/shared/utils/utils.module';
 
 @Module({
-  imports: [
-    ModelsModule,
-    AuthModule,
-    // PassportModule.register({ defaultStrategy: 'jwt' }),
-    PassportModule,
-  ],
+  imports: [ModelsModule, AuthModule, PassportModule, UtilsModule],
   controllers: [GolfCoursesController],
   providers: [GolfCoursesService, JwtStrategy],
   exports: [GolfCoursesService],

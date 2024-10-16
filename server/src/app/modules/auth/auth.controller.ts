@@ -1,10 +1,8 @@
 import {
   Controller,
   Post,
-  // Get,
   Patch,
   Body,
-  // HttpException,
   HttpStatus,
   UseGuards,
   Req,
@@ -21,6 +19,7 @@ import {
 import { JwtAuthGuard, JwtRefreshTokenGuard } from './guard';
 import { Request } from 'express';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { I18nTranslations } from 'src/generated/i18n.generated';
 
 @Controller('auth')
 export class AuthController {
@@ -28,45 +27,39 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
-  @ResponseMessage('User registered successfully')
-  async register(@Body() body: RegisterDto) /*: Promise<LoginResponseDto> */ {
+  @ResponseMessage('auth.USER_REGISTERED_SUCCESSFULLY')
+  async register(@Body() body: RegisterDto) {
     return await this.authService.register(body);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ResponseMessage('User logged in successfully')
-  async login(@Body() body: LoginDto) /*: Promise<LoginResponseDto> */ {
+  @ResponseMessage('auth.USER_LOGGED_IN_SUCCESSFULLY')
+  async login(@Body() body: LoginDto) {
     return await this.authService.login(body);
   }
 
   @Patch('change-password')
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Password changed successfully')
+  @ResponseMessage('auth.PASSWORD_CHANGED_SUCCESSFULLY')
   async changePassword(
     @Body() body: ChangePasswordDto,
     @Req() req: Request & { decoded: JwtPayloadType },
-  ) /*: Promise<LoginResponseDto> */ {
+  ) {
     return await this.authService.changePassword(body, req.decoded);
   }
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtRefreshTokenGuard)
-  @ResponseMessage('Token refreshed successfully')
-  async refreshToken(
-    @Req() req: Request & { decoded: JwtPayloadType },
-  ) /*: Promise<LoginResponseDto> */ {
+  @ResponseMessage('auth.TOKEN_REFRESHED_SUCCESSFULLY')
+  async refreshToken(@Req() req: Request & { decoded: JwtPayloadType }) {
     return await this.authService.refreshToken(req.decoded);
-    // console.log('req.decoded', req.decoded);
-    // return null;
   }
 
   @Patch('reset-password')
-  @ResponseMessage('User reset password successfully')
-  async resetPassword(
-    @Body() body: ResetPasswordDto,
-  ) /*: Promise<LoginResponseDto> */ {
+  @ResponseMessage('auth.USER_RESET_PASSWORD_SUCCESSFULLY')
+  async resetPassword(@Body() body: ResetPasswordDto) {
     return await this.authService.resetPassword(body);
   }
 }

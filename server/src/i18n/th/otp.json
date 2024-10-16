@@ -1,0 +1,6 @@
+{
+  "USER_ALREADY_REGISTERED": "ผู้ใช้ได้ลงทะเบียนแล้ว",
+  "OTP_SENT_SUCCESSFULLY": "ส่งรหัส OTP สำเร็จ",
+  "OTP_VERIFIED_SUCCESSFULLY": "ยืนยันรหัส OTP สำเร็จ",
+  "USER_DOES_NOT_EXISTS": "ไม่พบผู้ใช้"
+}

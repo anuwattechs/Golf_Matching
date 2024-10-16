@@ -1,0 +1,21 @@
+{
+  "MISSING_CONFIG_KEY:": "Missing config key:",
+  "ERROR_LISTING_BUCKETS": "Error listing buckets",
+  "ERROR_UPLOADING_FILE": "Error uploading file",
+  "ERROR_DELETING_FILE": "Error deleting file",
+  "ERROR_DOWNLOADING_FILE": "Error downloading file",
+  "ERROR_LISTING_FILES": "Error listing files",
+  "TAG_NOT_FOUND": "Tag not found",
+  "ERROR_DELETING_TAG:": "Error deleting tag:",
+  "ERROR_DELETING_TAG": "Error deleting tag",
+  "FILE_UPLOADED_SUCCESSFULLY": "File uploaded successfully",
+  "FILE_IS_TOO_LARGE._MAX_FILE_SIZE_IS_5MB": "File is too large. Max file size is 5MB",
+  "FILE_MUST_BE_PROVIDED": "File must be provided",
+  "FOLDER_MUST_BE_SPECIFIED": "Folder must be specified",
+  "FILE_DELETED_SUCCESSFULLY": "File deleted successfully",
+  "KEY_MUST_BE_SPECIFIED": "Key must be specified",
+  "FILE_DOWNLOADED_SUCCESSFULLY": "File downloaded successfully",
+  "TAG_CREATED_SUCCESSFULLY": "Tag created successfully",
+  "TAG_UPDATED_SUCCESSFULLY": "Tag updated successfully",
+  "TAG_DELETED_SUCCESSFULLY": "Tag deleted successfully"
+}

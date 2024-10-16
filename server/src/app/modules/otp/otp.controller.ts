@@ -16,16 +16,14 @@ export class OtpController {
 
   @Post('request')
   @HttpCode(HttpStatus.OK)
-  // @ResponseMessage('OTP sent successfully')
-  @ResponseMessage('otp.SENT_SUCCESS')
+  @ResponseMessage('otp.OTP_SENT_SUCCESSFULLY')
   async create(@Body() body: RequestOtpDto) {
     return await this.otpService.create(body);
   }
 
   @Patch('verify')
   @HttpCode(HttpStatus.OK)
-  // @ResponseMessage('OTP verified successfully')
-  @ResponseMessage('otp.VERIFIED_SUCCESS')
+  @ResponseMessage('otp.OTP_VERIFIED_SUCCESSFULLY')
   async verify(@Body() body: VerifyOtpDto) {
     return await this.otpService.verify(body);
   }

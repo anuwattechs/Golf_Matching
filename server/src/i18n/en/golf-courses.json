@@ -1,0 +1,8 @@
+{
+  "INVALID_RESPONSE_FROM_THE_DATABASE": "Invalid response from the database",
+  "FAILED_TO_FETCH_GOLF_COURSES": "Failed to fetch golf courses",
+  "FAILED_TO_CREATE_GOLF_COURSES": "Failed to create golf courses",
+  "UNKNOWN_ERROR": "Unknown error",
+  "GOLF_COURSE_CREATED_SUCCESSFULLY": "Golf course created successfully",
+  "INTERNAL_SERVER_ERROR": "Internal Server Error"
+}

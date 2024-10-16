@@ -5,12 +5,16 @@ import { SocialInterface } from 'src/shared/interfaces';
 import { AuthFacebookLoginDto } from './dto/auth-facebook-login.dto';
 import { AllConfigType } from 'src/app/config/config.type';
 import { FacebookInterface } from '../../../shared/interfaces/facebook.interface';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
 export class AuthFacebookService {
   private readonly fb: Facebook;
 
-  constructor(private configService: ConfigService<AllConfigType>) {
+  constructor(
+    private configService: ConfigService<AllConfigType>,
+    private readonly utilsService: UtilsService,
+  ) {
     this.fb = new Facebook({
       appId: this.configService.get<string>('facebook.appId', { infer: true }),
       appSecret: this.configService.get<string>('facebook.appSecret', {
@@ -29,7 +33,11 @@ export class AuthFacebookService {
       const data: FacebookInterface = await this.fetchFacebookProfile();
       return this.mapToSocialInterface(data);
     } catch (error) {
-      throw new Error('Error fetching Facebook profile: ' + error.message);
+      throw new Error(
+        this.utilsService.getMessagesTypeSafe(
+          'auth-facebook.ERROR_FETCHING_FACEBOOK_PROFILE:',
+        ) + error.message,
+      );
     }
   }
 

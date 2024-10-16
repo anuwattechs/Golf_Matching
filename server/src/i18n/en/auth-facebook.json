@@ -1,0 +1,5 @@
+{
+  "ERROR_FETCHING_FACEBOOK_PROFILE:": "Error fetching Facebook profile:",
+  "USER_LOGGED_IN_SUCCESSFULLY": "User logged in successfully",
+  "INVALID_TOKEN": "Invalid token"
+}

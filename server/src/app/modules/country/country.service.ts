@@ -34,7 +34,12 @@ export class CountryService {
       const response = await axios.get(url, { headers });
       return response?.data ?? [];
     } catch (error) {
-      throw new HttpException('Failed to get countries', 500);
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe(
+          'country.FAILED_TO_FETCH_COUNTRIES',
+        ),
+        500,
+      );
     }
   }
 
@@ -45,7 +50,10 @@ export class CountryService {
       const response = await axios.get(url, { headers });
       return response?.data ?? [];
     } catch (error) {
-      throw new HttpException('Failed to get states', 500);
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('country.FAILED_TO_FETCH_STATES'),
+        500,
+      );
     }
   }
 
@@ -63,7 +71,10 @@ export class CountryService {
         native: this?.utilsService?.getThaiCountry()[state?.name] ?? '',
       }));
     } catch (error) {
-      throw new HttpException('Failed to get states', 500);
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('country.FAILED_TO_FETCH_STATES'),
+        500,
+      );
     }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "MISSING_CONFIG_KEY:": "คีย์การตั้งค่าหาย:",
+  "ERROR_LISTING_BUCKETS": "ข้อผิดพลาดในการเรียกดูถังข้อมูล",
+  "ERROR_UPLOADING_FILE": "ข้อผิดพลาดในการอัปโหลดไฟล์",
+  "ERROR_DELETING_FILE": "ข้อผิดพลาดในการลบไฟล์",
+  "ERROR_DOWNLOADING_FILE": "ข้อผิดพลาดในการดาวน์โหลดไฟล์",
+  "ERROR_LISTING_FILES": "ข้อผิดพลาดในการเรียกดูไฟล์",
+  "TAG_NOT_FOUND": "ไม่พบแท็ก",
+  "ERROR_DELETING_TAG:": "ข้อผิดพลาดในการลบแท็ก:",
+  "ERROR_DELETING_TAG": "ข้อผิดพลาดในการลบแท็ก",
+  "FILE_UPLOADED_SUCCESSFULLY": "อัปโหลดไฟล์สำเร็จ",
+  "FILE_IS_TOO_LARGE._MAX_FILE_SIZE_IS_5MB": "ไฟล์มีขนาดใหญ่เกินไป ขนาดไฟล์สูงสุดคือ 5MB",
+  "FILE_MUST_BE_PROVIDED": "ต้องมีการให้ไฟล์",
+  "FOLDER_MUST_BE_SPECIFIED": "ต้องระบุโฟลเดอร์",
+  "FILE_DELETED_SUCCESSFULLY": "ลบไฟล์สำเร็จ",
+  "KEY_MUST_BE_SPECIFIED": "ต้องระบุคีย์",
+  "FILE_DOWNLOADED_SUCCESSFULLY": "ดาวน์โหลดไฟล์สำเร็จ",
+  "TAG_CREATED_SUCCESSFULLY": "สร้างแท็กสำเร็จ",
+  "TAG_UPDATED_SUCCESSFULLY": "อัปเดตแท็กสำเร็จ",
+  "TAG_DELETED_SUCCESSFULLY": "ลบแท็กสำเร็จ"
+}

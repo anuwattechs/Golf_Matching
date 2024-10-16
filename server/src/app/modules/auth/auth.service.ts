@@ -98,25 +98,6 @@ export class AuthService {
     const statusCode = userRegistered.isRegistered
       ? HttpStatus.OK
       : HttpStatus.CREATED;
-    // const responseData = {
-    //   ...tokensData,
-    //   userId: userRegistered._id,
-    //   firstName: userRegistered.firstName,
-    //   lastName: userRegistered.lastName,
-    // };
-
-    // throw new HttpException(
-    //   {
-    //     status: true,
-    //     statusCode,
-    //     message:
-    //       statusCode === HttpStatus.OK
-    //         ? 'User logged in successfully'
-    //         : 'Social login successful, please complete your registration.',
-    //     data: responseData,
-    //   },
-    //   statusCode,
-    // );
 
     return {
       userId: userRegistered._id,
@@ -188,16 +169,28 @@ export class AuthService {
         [true],
       );
       if (!userVerified)
-        throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_VERIFIED'),
+          HttpStatus.BAD_REQUEST,
+        );
       if (userVerified.verifyType !== VerifyTypeEnum.REGISTER)
-        throw new HttpException('Invalid verify type', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_VERIFY_TYPE'),
+          HttpStatus.BAD_REQUEST,
+        );
       if (userVerified.username !== input.username.toLowerCase())
-        throw new HttpException('Invalid username', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_USERNAME'),
+          HttpStatus.BAD_REQUEST,
+        );
 
       const isEmail = this.utilsService.validateEmail(input.username);
       const isPhoneNo = this.utilsService.validatePhoneNumber(input.username);
       if (!(isEmail || isPhoneNo))
-        throw new HttpException('Invalid auth type', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_AUTH_TYPE'),
+          HttpStatus.BAD_REQUEST,
+        );
 
       //! Check if user registered
       const userRegistered = await this.memberModel.findAllByUsername(
@@ -206,7 +199,7 @@ export class AuthService {
 
       if (userRegistered.length > 0)
         throw new HttpException(
-          'User already registered',
+          this.utilsService.getMessagesTypeSafe('auth.USER_ALREADY_REGISTERED'),
           HttpStatus.BAD_REQUEST,
         );
 
@@ -235,20 +228,29 @@ export class AuthService {
       const isEmail = this.utilsService.validateEmail(input.username);
       const isPhoneNo = this.utilsService.validatePhoneNumber(input.username);
       if (!(isEmail || isPhoneNo))
-        throw new HttpException('Invalid auth type', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_AUTH_TYPE'),
+          HttpStatus.BAD_REQUEST,
+        );
 
       const userRegistered = await this.memberModel.findOneByUsername(
         input.username,
       );
       if (!userRegistered)
-        throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
+          HttpStatus.BAD_REQUEST,
+        );
 
       const isMatched = await bcrypt.compare(
         input.password,
         userRegistered.password,
       );
       if (!isMatched)
-        throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_PASSWORD'),
+          HttpStatus.BAD_REQUEST,
+        );
 
       return await this.generateTokens({
         userId: userRegistered._id,
@@ -276,9 +278,15 @@ export class AuthService {
         [true],
       );
       if (!userVerified)
-        throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_VERIFIED'),
+          HttpStatus.BAD_REQUEST,
+        );
       if (userVerified.verifyType !== VerifyTypeEnum.REGISTER)
-        throw new HttpException('Invalid verify type', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_VERIFY_TYPE'),
+          HttpStatus.BAD_REQUEST,
+        );
 
       const isEmail = this.utilsService.validateEmail(userVerified.username);
       const isPhoneNo = this.utilsService.validatePhoneNumber(
@@ -286,7 +294,10 @@ export class AuthService {
       );
 
       if (!(isEmail || isPhoneNo))
-        throw new HttpException('Invalid auth type', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_VERIFY_TYPE'),
+          HttpStatus.BAD_REQUEST,
+        );
 
       //! Check if user exists
       await this.verificationCodesModel.resetAt(input.verifyId);

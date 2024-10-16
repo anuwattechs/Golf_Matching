@@ -2,10 +2,14 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { GolfCourseModel } from 'src/schemas/models';
 import { GolfCourse } from 'src/schemas';
 import { isArray } from 'class-validator';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
 export class GolfCoursesService {
-  constructor(private readonly golfCourseModel: GolfCourseModel) {}
+  constructor(
+    private readonly golfCourseModel: GolfCourseModel,
+    private readonly utilsService: UtilsService,
+  ) {}
 
   async findAll() {
     try {
@@ -14,8 +18,9 @@ export class GolfCoursesService {
         throw new HttpException(
           {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: 'Invalid response from the database',
-            error: 'Failed to fetch golf courses',
+            message: this.utilsService.getMessagesTypeSafe(
+              'golf-courses.FAILED_TO_FETCH_GOLF_COURSES',
+            ),
           },
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
@@ -29,7 +34,12 @@ export class GolfCoursesService {
         };
       });
     } catch (error) {
-      this.handleError('Failed to fetch golf courses', error);
+      this.handleError(
+        this.utilsService.getMessagesTypeSafe(
+          'golf-courses.FAILED_TO_FETCH_GOLF_COURSES',
+        ),
+        error,
+      );
     }
   }
 
@@ -39,7 +49,12 @@ export class GolfCoursesService {
     try {
       return await this.golfCourseModel.create(createGolfCourseDto);
     } catch (error) {
-      this.handleError('Failed to create golf course', error);
+      this.handleError(
+        this.utilsService.getMessagesTypeSafe(
+          'golf-courses.FAILED_TO_CREATE_GOLF_COURSES',
+        ),
+        error,
+      );
     }
   }
 

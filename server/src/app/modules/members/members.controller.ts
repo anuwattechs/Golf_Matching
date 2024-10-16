@@ -20,16 +20,16 @@ export class MembersController {
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Personal info retrieved successfully')
-  async findOneProsonalInfo(
+  @ResponseMessage('members.PERSONAL_INFO_RETRIEVED_SUCCESSFULLY')
+  async findOnePersonalInfo(
     @Req() req: Request & { decoded: JwtPayloadType },
   ) /*: Promise<LoginResponseDto> */ {
-    return await this.membersService.findOneProsonalInfo(req.decoded);
+    return await this.membersService.findOnePersonalInfo(req.decoded);
   }
 
   @Put()
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Profile updated successfully')
+  @ResponseMessage('members.PROFILE_UPDATED_SUCCESSFULLY')
   async updateProfile(
     @Body() body: UpdateProfileDto,
     @Req() req: Request & { decoded: JwtPayloadType },
@@ -39,7 +39,7 @@ export class MembersController {
 
   @Patch('change-invite-mode')
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Invite mode changed successfully')
+  @ResponseMessage('members.INVITE_MODE_CHANGED_SUCCESSFULLY')
   async changeInviteMode(
     @Body() body: ChangeInviteModeDto,
     @Req() req: Request & { decoded: JwtPayloadType },

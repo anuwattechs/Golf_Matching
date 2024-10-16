@@ -37,7 +37,7 @@ export class AssetsController {
   @Post('upload')
   @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('File uploaded successfully')
+  @ResponseMessage('assets.FILE_UPLOADED_SUCCESSFULLY')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile(
@@ -92,7 +92,7 @@ export class AssetsController {
   @Post('delete')
   @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('File deleted successfully')
+  @ResponseMessage('assets.FILE_DELETED_SUCCESSFULLY')
   async deleteFile(@Body('key') key: string) {
     if (!key) {
       throw new HttpException('Key must be specified', 400);
@@ -108,7 +108,7 @@ export class AssetsController {
   @Post('file')
   @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('File downloaded successfully')
+  @ResponseMessage('assets.FILE_DOWNLOADED_SUCCESSFULLY')
   async downloadFile(@Body('key') key: string) {
     if (!key) {
       throw new HttpException('Key must be specified', 400);
@@ -140,7 +140,7 @@ export class AssetsController {
   @Post('tags')
   @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Tag created successfully')
+  @ResponseMessage('assets.TAG_CREATED_SUCCESSFULLY')
   @UseInterceptors(FileInterceptor('file'))
   async createTag(
     @Body() body: CreateTagDto,
@@ -170,7 +170,7 @@ export class AssetsController {
   @Post('tags/:id')
   @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Tag updated successfully')
+  @ResponseMessage('assets.TAG_UPDATED_SUCCESSFULLY')
   @UseInterceptors(FileInterceptor('file'))
   async updateTag(
     @Param('id') id: string,
@@ -200,7 +200,7 @@ export class AssetsController {
   @Delete('tags/:id')
   @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
-  @ResponseMessage('Tag deleted successfully')
+  @ResponseMessage('assets.TAG_DELETED_SUCCESSFULLY')
   async deleteTag(@Param('id') id: string) {
     return this.assetsService.deleteTag(id);
   }

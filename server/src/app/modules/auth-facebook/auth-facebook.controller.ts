@@ -13,10 +13,8 @@ import { AuthService } from '../auth/auth.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { AuthFacebookService } from './auth-facebook.service';
 import { AuthFacebookLoginDto } from './dto/auth-facebook-login.dto';
-// import { LoginResponseDto } from '../auth-google/dto/login-response.dto';
-import { AuthTypeEnum } from 'src/shared/enums';
-// import { FacebookAuthGuard } from './guard/facebook.guard';
-import { LoginResponseType, NullableType } from 'src/shared/types';
+import { NullableType } from 'src/shared/types';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Controller({
   path: 'auth/facebook',
@@ -25,11 +23,12 @@ export class AuthFacebookController {
   constructor(
     private readonly authService: AuthService,
     private readonly authFacebookService: AuthFacebookService,
+    private readonly utilsService: UtilsService,
   ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ResponseMessage('User logged in successfully')
+  @ResponseMessage('auth-facebook.USER_LOGGED_IN_SUCCESSFULLY')
   async login(
     @Body() loginDto: AuthFacebookLoginDto,
   ): Promise<NullableType<unknown>> {
@@ -40,38 +39,12 @@ export class AuthFacebookController {
     } catch (error) {
       throw new HttpException(
         {
-          message: 'Invalid token',
+          message: this.utilsService.getMessagesTypeSafe(
+            'auth-facebook.INVALID_TOKEN',
+          ),
         },
         401,
       );
     }
   }
-
-  /*
-  @Get()
-  @UseGuards(FacebookAuthGuard)
-  @ResponseMessage('User logged in successfully')
-  async facebookAuth(@Request() _: unknown) {
-    return HttpStatus.OK;
-  }
-
-  @Get('callback')
-  @UseGuards(FacebookAuthGuard)
-  @ResponseMessage('User logged in successfully')
-  async facebookAuthRedirect(@Request() req: any) {
-    try {
-      return this.authService.validateSocialLogin(
-        AuthTypeEnum.FACEBOOK,
-        req.user,
-      );
-    } catch (error) {
-      throw new HttpException(
-        {
-          message: 'Invalid token',
-        },
-        401,
-      );
-    }
-  }
-    */
 }

@@ -9,7 +9,6 @@ import {
 } from './dto';
 import { NullableType } from 'src/shared/types';
 import { VerifyTypeEnum } from 'src/shared/enums';
-import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class OtpService {
@@ -22,7 +21,6 @@ export class OtpService {
 
   async create(input: RequestOtpDto): Promise<NullableType<unknown>> {
     try {
-      const i18n = I18nContext.current();
       //! Check if user registered
       const userRegistered = await this.memberModel.findAllByUsername(
         input.username,
@@ -32,7 +30,7 @@ export class OtpService {
 
       if (userRegistered.length > 0 && input.type === VerifyTypeEnum.REGISTER)
         throw new HttpException(
-          await i18n.t('otp.USER_ALREADY_REGISTERED'),
+          this.utilsService.getMessagesTypeSafe('otp.USER_ALREADY_REGISTERED'),
           HttpStatus.BAD_REQUEST,
         );
 
@@ -41,7 +39,7 @@ export class OtpService {
         input.type === VerifyTypeEnum.RECOVER_PASSWORD
       )
         throw new HttpException(
-          await i18n.t('otp.USER_DOES_NOT_EXISTS'),
+          'otp.USER_DOES_NOT_EXISTS',
           HttpStatus.BAD_REQUEST,
         );
 
@@ -55,13 +53,7 @@ export class OtpService {
       const isEmail = this.utilsService.validateEmail(input.username);
       const isPhone = this.utilsService.validatePhoneNumber(input.username);
 
-      //! Send verification code to user (OTP via Email or Phone)
       if (isEmail) {
-        // const resp1 = await this.smsService.sendSms(
-        //   input.email,
-        //   `Your verification code is ${verifyCode}`,
-        // );
-        // console.log('SMS Response: ', resp1);
       } else if (isPhone) {
       }
 
@@ -79,7 +71,6 @@ export class OtpService {
     input: RequestOtpChangeUsernameDto,
   ): Promise<NullableType<unknown>> {
     try {
-      const i18n = I18nContext.current();
       //! Check if user registered
       const userRegistered = await this.memberModel.findAllByUsername(
         input.username,
@@ -87,7 +78,7 @@ export class OtpService {
 
       if (userRegistered.length > 0 && input.type === VerifyTypeEnum.REGISTER)
         throw new HttpException(
-          i18n.t('otp.USER_ALREADY_REGISTERED'),
+          this.utilsService.getMessagesTypeSafe('otp.USER_ALREADY_REGISTERED'),
           HttpStatus.BAD_REQUEST,
         );
 
@@ -96,7 +87,7 @@ export class OtpService {
         input.type === VerifyTypeEnum.RECOVER_PASSWORD
       )
         throw new HttpException(
-          i18n.t('otp.USER_ALREADY_REGISTERED'),
+          'otp.USER_DOES_NOT_EXISTS',
           HttpStatus.BAD_REQUEST,
         );
 

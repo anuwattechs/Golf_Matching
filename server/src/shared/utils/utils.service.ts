@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { I18nPath } from 'src/generated/i18n.generated';
 
 @Injectable()
 export class UtilsService {
@@ -104,5 +105,9 @@ export class UtilsService {
       Yala: 'ยะลา',
       Yasothon: 'ยโสธร',
     };
+  }
+
+  getMessagesTypeSafe(message: I18nPath): string {
+    return message;
   }
 }

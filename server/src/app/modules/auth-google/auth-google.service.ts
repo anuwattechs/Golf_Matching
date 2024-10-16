@@ -4,12 +4,16 @@ import { OAuth2Client } from 'google-auth-library';
 import { SocialInterface } from 'src/shared/interfaces';
 import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
 import { AllConfigType } from 'src/app/config/config.type';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
 export class AuthGoogleService {
   private google: OAuth2Client;
 
-  constructor(private configService: ConfigService<AllConfigType>) {
+  constructor(
+    private configService: ConfigService<AllConfigType>,
+    private readonly utilsService: UtilsService,
+  ) {
     this.google = new OAuth2Client(
       configService.get<string>('google.clientId', { infer: true }),
       configService.get<string>('google.clientSecret', { infer: true }),
@@ -33,7 +37,9 @@ export class AuthGoogleService {
     if (!data) {
       throw new HttpException(
         {
-          message: 'Invalid token',
+          message: this.utilsService.getMessagesTypeSafe(
+            'auth-google.INVALID_TOKEN',
+          ),
         },
         HttpStatus.UNAUTHORIZED,
       );
