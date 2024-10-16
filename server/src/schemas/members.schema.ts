@@ -29,7 +29,7 @@ export class Member extends Document {
   @Prop({ default: null, type: String })
   phoneNo: string; // Phone number may be updated later
 
-  @Prop({ nullable: true, type: String })
+  @Prop({ default: null, type: String })
   // @Exclude({ toPlainOnly: true })
   password: string;
 

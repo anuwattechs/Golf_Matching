@@ -10,7 +10,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { GolfCoursesService } from './golf-courses.service';
-import { JwtAuthGuard } from '../auth/guard';
+import { JwtAuthGuard, BlockGuard } from '../auth/guard';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 // import { CreateGolfCourseDto } from '../../../schemas/models/dto/golf-course.dto';
 
@@ -25,6 +25,7 @@ export class GolfCoursesController {
   }
 
   @Post()
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('Golf course created successfully')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))

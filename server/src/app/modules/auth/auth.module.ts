@@ -7,12 +7,13 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { AnonymousStrategy } from './strategies/anonymous.strategy';
 import { ConfigModule } from '@nestjs/config';
-// import { UtilsModule } from 'src/shared/utils/utils.module';
+import { UtilsModule } from 'src/shared/utils/utils.module';
 import { ModelsModule } from 'src/schemas/models/models.module';
 // import { SmsModule } from 'src/app/common/services/sms/sms.module';
 
 @Module({
   imports: [
+    UtilsModule,
     ConfigModule,
     ModelsModule,
     PassportModule,

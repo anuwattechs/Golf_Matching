@@ -27,6 +27,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @HttpCode(HttpStatus.OK)
   @ResponseMessage('User registered successfully')
   async register(@Body() body: RegisterDto) /*: Promise<LoginResponseDto> */ {
     return await this.authService.register(body);

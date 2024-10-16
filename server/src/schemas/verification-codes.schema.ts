@@ -18,9 +18,6 @@ export class VerificationCode extends Document {
   @Prop({ required: true, type: String }) //! Email or Phone Number
   username: string;
 
-  @Prop({ required: true, default: AuthTypeEnum.EMAIL }) //! "EMAIL" or "PHONE"
-  authType: AuthTypeEnum;
-
   @Prop({ required: true, default: VerifyTypeEnum.REGISTER })
   verifyType: VerifyTypeEnum;
 

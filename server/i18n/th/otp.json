@@ -1,5 +1,6 @@
 {
   "USER_ALREADY_REGISTERED": "ผู้ใช้งานได้ลงทะเบียนแล้ว",
+  "USER_DOES_NOT_EXISTS": "ผู้ใช้งานไม่มีอยู่",
   "SENT_SUCCESS": "OTP ถูกส่งเรียบร้อยแล้ว",
   "VERIFIED_SUCCESS": "OTP ถูกตรวจสอบเรียบร้อยแล้ว"
 }

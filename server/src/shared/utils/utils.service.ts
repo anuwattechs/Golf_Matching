@@ -12,6 +12,17 @@ export class UtilsService {
     return result;
   }
 
+  validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  validatePhoneNumber(phone: string): boolean {
+    const phoneRegex =
+      /^(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}$/;
+    return phoneRegex.test(phone);
+  }
+
   getThaiCountry(): { [key: string]: string } {
     return {
       'Amnat Charoen': 'อำนาจเจริญ',

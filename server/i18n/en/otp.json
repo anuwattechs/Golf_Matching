@@ -1,5 +1,6 @@
 {
   "USER_ALREADY_REGISTERED": "User already registered",
+  "USER_DOES_NOT_EXISTS": "User does not exists",
   "SENT_SUCCESS": "OTP sent successfully",
   "VERIFIED_SUCCESS": "OTP verified successfully"
 }

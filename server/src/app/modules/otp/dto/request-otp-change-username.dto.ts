@@ -1,14 +1,10 @@
 import { IsString, IsEnum, IsNotEmpty } from 'class-validator';
-import { AuthTypeEnum, VerifyTypeEnum } from 'src/shared/enums';
+import { VerifyTypeEnum } from 'src/shared/enums';
 
 export class RequestOtpChangeUsernameDto {
   @IsString()
   @IsNotEmpty()
   username: string;
-
-  @IsNotEmpty()
-  @IsEnum(AuthTypeEnum)
-  authType: AuthTypeEnum;
 
   @IsNotEmpty()
   @IsEnum(VerifyTypeEnum)

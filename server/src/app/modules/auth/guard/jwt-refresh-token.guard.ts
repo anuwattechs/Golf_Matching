@@ -44,7 +44,7 @@ export class JwtRefreshTokenGuard implements CanActivate {
             (I18nContext.current().t('guard.SESSION_EXPIRED') as string),
           data: null,
         },
-        HttpStatus.FORBIDDEN,
+        HttpStatus.UNAUTHORIZED,
       );
     }
   }

@@ -5,7 +5,8 @@ export class CreateMemberDto {
   lastName: string;
   birthDate: string;
   gender: GenderEnum;
-  username: string; // Optional or required based on your application logic
+  email?: string | null; // Optional or required based on your application logic
+  phoneNo?: string | null; // Optional or required based on your application logic
   password: string; // Required
   country: string;
   location: string;

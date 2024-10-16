@@ -8,7 +8,7 @@ import {
   RequestOtpChangeUsernameDto,
 } from './dto';
 import { NullableType } from 'src/shared/types';
-import { AuthTypeEnum, VerifyTypeEnum } from 'src/shared/enums';
+import { VerifyTypeEnum } from 'src/shared/enums';
 import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
@@ -28,6 +28,8 @@ export class OtpService {
         input.username,
       );
 
+      console.log(userRegistered.length);
+
       if (userRegistered.length > 0 && input.type === VerifyTypeEnum.REGISTER)
         throw new HttpException(
           await i18n.t('otp.USER_ALREADY_REGISTERED'),
@@ -39,26 +41,28 @@ export class OtpService {
         input.type === VerifyTypeEnum.RECOVER_PASSWORD
       )
         throw new HttpException(
-          await i18n.t('otp.USER_ALREADY_REGISTERED'),
+          await i18n.t('otp.USER_DOES_NOT_EXISTS'),
           HttpStatus.BAD_REQUEST,
         );
 
       const verifyCode = this.utilsService.generateRandomNumber(6);
       const created = await this.verificationCodesModel.create({
         username: input.username,
-        authType: input.authType,
         type: input.type,
         verifyCode,
       });
 
+      const isEmail = this.utilsService.validateEmail(input.username);
+      const isPhone = this.utilsService.validatePhoneNumber(input.username);
+
       //! Send verification code to user (OTP via Email or Phone)
-      if (input.authType === AuthTypeEnum.PHONE) {
+      if (isEmail) {
         // const resp1 = await this.smsService.sendSms(
         //   input.email,
         //   `Your verification code is ${verifyCode}`,
         // );
         // console.log('SMS Response: ', resp1);
-      } else if (input.authType === AuthTypeEnum.EMAIL) {
+      } else if (isPhone) {
       }
 
       return {
@@ -67,16 +71,7 @@ export class OtpService {
         verifyCode,
       };
     } catch (error) {
-      // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
-      );
+      this.handleException(error);
     }
   }
 
@@ -84,6 +79,7 @@ export class OtpService {
     input: RequestOtpChangeUsernameDto,
   ): Promise<NullableType<unknown>> {
     try {
+      const i18n = I18nContext.current();
       //! Check if user registered
       const userRegistered = await this.memberModel.findAllByUsername(
         input.username,
@@ -91,7 +87,7 @@ export class OtpService {
 
       if (userRegistered.length > 0 && input.type === VerifyTypeEnum.REGISTER)
         throw new HttpException(
-          'User already registered',
+          i18n.t('otp.USER_ALREADY_REGISTERED'),
           HttpStatus.BAD_REQUEST,
         );
 
@@ -100,26 +96,28 @@ export class OtpService {
         input.type === VerifyTypeEnum.RECOVER_PASSWORD
       )
         throw new HttpException(
-          'User already registered',
+          i18n.t('otp.USER_ALREADY_REGISTERED'),
           HttpStatus.BAD_REQUEST,
         );
 
       const verifyCode = this.utilsService.generateRandomNumber(6);
       const created = await this.verificationCodesModel.create({
         username: input.username,
-        authType: input.authType,
         type: input.type,
         verifyCode,
       });
 
+      const isEmail = this.utilsService.validateEmail(input.username);
+      const isPhone = this.utilsService.validatePhoneNumber(input.username);
+
       //! Send verification code to user (OTP via Email or Phone)
-      if (input.authType === AuthTypeEnum.PHONE) {
+      if (isEmail) {
         // const resp1 = await this.smsService.sendSms(
         //   input.email,
         //   `Your verification code is ${verifyCode}`,
         // );
         // console.log('SMS Response: ', resp1);
-      } else if (input.authType === AuthTypeEnum.EMAIL) {
+      } else if (isPhone) {
       }
 
       return {
@@ -128,16 +126,7 @@ export class OtpService {
         verifyCode,
       };
     } catch (error) {
-      // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
-      );
+      this.handleException(error);
     }
   }
 
@@ -156,16 +145,19 @@ export class OtpService {
 
       return null;
     } catch (error) {
-      // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
-      );
+      this.handleException(error);
     }
+  }
+
+  private handleException(error: any): void {
+    throw new HttpException(
+      {
+        status: false,
+        statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+        data: null,
+      },
+      error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 }

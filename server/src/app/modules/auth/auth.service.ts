@@ -9,14 +9,18 @@ import {
   ResetPasswordDto,
 } from './dto';
 import { MemberModel, VerificationCodesModel } from 'src/schemas/models';
+import { Member } from 'src/schemas';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
+import { VerifyTypeEnum } from 'src/shared/enums';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly utilsService: UtilsService,
     private readonly memberModel: MemberModel,
     private readonly verificationCodesModel: VerificationCodesModel,
     private readonly jwtService: JwtService,
@@ -45,12 +49,23 @@ export class AuthService {
   }
 
   async refreshToken(decoded: JwtPayloadType): Promise<LoginResponseType> {
-    return this.generateTokens(decoded);
+    // return await this.generateTokens(decoded);
+    try {
+      return await this.generateTokens({
+        userId: decoded.userId,
+        username: decoded.username,
+        firstName: decoded.firstName,
+        lastName: decoded.lastName,
+      });
+    } catch (error) {
+      this.handleException(error);
+    }
   }
 
   async validateSocialLogin(
     socialData: SocialInterface,
-  ): Promise<LoginResponseType> {
+  ): Promise<NullableType<unknown>> {
+    // console.log('Social Data: ', socialData);
     try {
       const userRegistered = await this.memberModel.findOneBySocialId({
         facebookId: socialData.facebookId || null,
@@ -58,18 +73,22 @@ export class AuthService {
         appleId: socialData.appleId || null,
       });
 
+      // console.log(userRegistered);
+
       if (userRegistered) {
         await this.memberModel.setActive(userRegistered._id, true);
-        return this.handleExistingUser(userRegistered);
+        return this.handleExistingUser(socialData, userRegistered);
       }
-
       return this.handleNewUser(socialData);
     } catch (error) {
       this.handleException(error);
     }
   }
 
-  private async handleExistingUser(userRegistered): Promise<LoginResponseType> {
+  private async handleExistingUser(
+    socialData: SocialInterface,
+    userRegistered: Member,
+  ): Promise<NullableType<unknown>> {
     const tokensData = await this.generateTokens({
       userId: userRegistered._id,
       firstName: userRegistered.firstName,
@@ -79,30 +98,46 @@ export class AuthService {
     const statusCode = userRegistered.isRegistered
       ? HttpStatus.OK
       : HttpStatus.CREATED;
-    const responseData = {
-      ...tokensData,
-      userId: userRegistered._id,
-      firstName: userRegistered.firstName,
-      lastName: userRegistered.lastName,
-    };
+    // const responseData = {
+    //   ...tokensData,
+    //   userId: userRegistered._id,
+    //   firstName: userRegistered.firstName,
+    //   lastName: userRegistered.lastName,
+    // };
 
-    throw new HttpException(
-      {
-        status: true,
-        statusCode,
-        message:
-          statusCode === HttpStatus.OK
-            ? 'User logged in successfully'
-            : 'Social login successful, please complete your registration.',
-        data: responseData,
-      },
+    // throw new HttpException(
+    //   {
+    //     status: true,
+    //     statusCode,
+    //     message:
+    //       statusCode === HttpStatus.OK
+    //         ? 'User logged in successfully'
+    //         : 'Social login successful, please complete your registration.',
+    //     data: responseData,
+    //   },
+    //   statusCode,
+    // );
+
+    return {
+      userId: userRegistered._id,
+      firstName: socialData.firstName,
+      lastName: socialData.lastName,
+      email: socialData.email,
+      facebookId: socialData.facebookId || null,
+      googleId: socialData.googleId || null,
+      appleId: socialData.appleId || null,
       statusCode,
-    );
+      ...(await this.generateTokens({
+        userId: userRegistered._id,
+        firstName: userRegistered.firstName,
+        lastName: userRegistered.lastName,
+      })),
+    };
   }
 
   private async handleNewUser(
     socialData: SocialInterface,
-  ): Promise<LoginResponseType> {
+  ): Promise<NullableType<unknown>> {
     const newUser = await this.memberModel.createBySocial({
       firstName: socialData.firstName,
       lastName: socialData.lastName,
@@ -114,23 +149,85 @@ export class AuthService {
 
     await this.memberModel.setActive(newUser._id, true);
 
-    throw new HttpException(
-      {
-        status: true,
-        statusCode: HttpStatus.CREATED,
-        message: 'Social login successful, please complete your registration.',
-        data: {
-          userId: newUser._id,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-        },
-      },
-      HttpStatus.CREATED,
-    );
+    // throw new HttpException(
+    //   {
+    //     status: true,
+    //     statusCode: HttpStatus.CREATED,
+    //     message: 'Social login successful, please complete your registration.',
+    //     data: {
+    //       userId: newUser._id,
+    //       firstName: newUser.firstName,
+    //       lastName: newUser.lastName,
+    //     },
+    //   },
+    //   HttpStatus.CREATED,
+    // );
+
+    return {
+      userId: newUser._id,
+      firstName: socialData.firstName,
+      lastName: socialData.lastName,
+      email: socialData.email,
+      facebookId: socialData.facebookId || null,
+      googleId: socialData.googleId || null,
+      appleId: socialData.appleId || null,
+      statusCode: HttpStatus.CREATED,
+      ...(await this.generateTokens({
+        userId: newUser._id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+      })),
+    };
   }
 
   async register(input: RegisterDto): Promise<NullableType<unknown>> {
-    return null;
+    try {
+      //! Check if user verified
+      const userVerified = await this.verificationCodesModel.findById(
+        input.verifyId,
+        [true],
+      );
+      if (!userVerified)
+        throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
+      if (userVerified.verifyType !== VerifyTypeEnum.REGISTER)
+        throw new HttpException('Invalid verify type', HttpStatus.BAD_REQUEST);
+      if (userVerified.username !== input.username.toLowerCase())
+        throw new HttpException('Invalid username', HttpStatus.BAD_REQUEST);
+
+      const isEmail = this.utilsService.validateEmail(input.username);
+      const isPhoneNo = this.utilsService.validatePhoneNumber(input.username);
+      if (!(isEmail || isPhoneNo))
+        throw new HttpException('Invalid auth type', HttpStatus.BAD_REQUEST);
+
+      //! Check if user registered
+      const userRegistered = await this.memberModel.findAllByUsername(
+        input.username.toLowerCase(),
+      );
+
+      if (userRegistered.length > 0)
+        throw new HttpException(
+          'User already registered',
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const hashedPassword = await bcrypt.hash(
+        input.password,
+        bcrypt.genSaltSync(10),
+      );
+
+      const created = await this.memberModel.create({
+        ...input,
+        email: isEmail ? input.username.toLowerCase() : null,
+        phoneNo: isPhoneNo ? input.username.toLowerCase() : null,
+        password: hashedPassword,
+      });
+
+      await this.verificationCodesModel.registerAt(userVerified._id);
+
+      return await this.memberModel.findProfileById(created._id);
+    } catch (error) {
+      this.handleException(error);
+    }
   }
 
   async login(input: LoginDto): Promise<LoginResponseType> {
@@ -167,7 +264,41 @@ export class AuthService {
   }
 
   async resetPassword(input: ResetPasswordDto): Promise<NullableType<unknown>> {
-    return null;
+    try {
+      //! Check if user verified
+      const userVerified = await this.verificationCodesModel.findById(
+        input.verifyId,
+        [true],
+      );
+      if (!userVerified)
+        throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
+      if (userVerified.verifyType !== VerifyTypeEnum.REGISTER)
+        throw new HttpException('Invalid verify type', HttpStatus.BAD_REQUEST);
+
+      const isEmail = this.utilsService.validateEmail(userVerified.username);
+      const isPhoneNo = this.utilsService.validatePhoneNumber(
+        userVerified.username,
+      );
+
+      if (!(isEmail || isPhoneNo))
+        throw new HttpException('Invalid auth type', HttpStatus.BAD_REQUEST);
+
+      //! Check if user exists
+      await this.verificationCodesModel.resetAt(input.verifyId);
+
+      const hashedPassword = await bcrypt.hash(
+        input.newPassword,
+        bcrypt.genSaltSync(10),
+      );
+      await this.memberModel.updatePasswordByUsername(
+        userVerified.username,
+        hashedPassword,
+      );
+
+      return null;
+    } catch (error) {
+      this.handleException(error);
+    }
   }
 
   private async generateTokens(
@@ -181,6 +312,8 @@ export class AuthService {
       'auth.refreshExpiresIn',
       { infer: true },
     );
+
+    // console.log(jwtExpiresIn, refreshExpiresIn);
 
     const accessTokenExpiresIn =
       Date.now() + this.convertTimeStringToMs(jwtExpiresIn);

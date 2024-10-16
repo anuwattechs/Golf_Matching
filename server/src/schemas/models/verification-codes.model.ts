@@ -79,6 +79,11 @@ export class VerificationCodesModel {
   }
 
   async validate(verifyId: string, verifyCode: string): Promise<string | null> {
+    // return this.verificationCode.findOne({
+    //   _id: verifyId,
+    //   verifyCode,
+    // });
+
     const result = await this.verificationCode.findOne({
       _id: verifyId,
       verifyCode,

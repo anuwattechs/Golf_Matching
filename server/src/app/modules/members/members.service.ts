@@ -34,7 +34,7 @@ export class MembersService {
         userId: decoded.userId,
       });
 
-      return null;
+      return await this.memberModel.findProfileById(decoded.userId);
     } catch (error) {
       throw new HttpException(
         {
@@ -89,6 +89,7 @@ export class MembersService {
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     try {
+      // return await this.memberModel.findProfileById(decoded.userId);
       const member = await this.memberModel.findProfileById(decoded.userId);
 
       return !member ? null : member;

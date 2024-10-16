@@ -138,6 +138,7 @@ export class AssetsController {
    * @returns The created tag object
    */
   @Post('tags')
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('Tag created successfully')
   @UseInterceptors(FileInterceptor('file'))
