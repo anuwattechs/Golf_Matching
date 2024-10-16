@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import { GenderEnum } from 'src/shared/enums';
 
 @Schema({ collection: 'Members', timestamps: true, versionKey: false })
 export class Member extends Document {
@@ -43,7 +44,7 @@ export class Member extends Document {
   appleId: string; // May register or connect to the account later
 
   @Prop({ default: null, type: String })
-  gender: string;
+  gender: GenderEnum;
 
   @Prop({ default: null, type: String })
   country: string;

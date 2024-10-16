@@ -7,6 +7,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from '../auth.service';
+import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class JwtRefreshTokenGuard implements CanActivate {
@@ -21,7 +22,9 @@ export class JwtRefreshTokenGuard implements CanActivate {
           {
             status: false,
             statusCode: HttpStatus.UNAUTHORIZED,
-            message: 'Please provide token',
+            message: I18nContext.current().t(
+              'guard.TOKEN_NOT_PROVIDE',
+            ) as string,
             data: null,
           },
           HttpStatus.UNAUTHORIZED,
@@ -36,7 +39,9 @@ export class JwtRefreshTokenGuard implements CanActivate {
         {
           status: false,
           statusCode: HttpStatus.UNAUTHORIZED,
-          message: error.message || 'session expired! Please sign In',
+          message:
+            error.message ||
+            (I18nContext.current().t('guard.SESSION_EXPIRED') as string),
           data: null,
         },
         HttpStatus.FORBIDDEN,

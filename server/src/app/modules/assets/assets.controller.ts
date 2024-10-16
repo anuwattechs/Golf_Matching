@@ -18,7 +18,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
 import { CreateTagDto } from './dto/create-tag.dto';
-import { JwtAuthGuard } from '../auth/guard';
+import { JwtAuthGuard, BlockGuard } from '../auth/guard';
 
 @Controller('assets')
 export class AssetsController {
@@ -35,6 +35,7 @@ export class AssetsController {
    * @returns Upload result or error message
    */
   @Post('upload')
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('File uploaded successfully')
   @UseInterceptors(FileInterceptor('file'))
@@ -72,6 +73,7 @@ export class AssetsController {
    * @returns An array of file objects
    */
   @Get('files/:folder')
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   async getFiles(
     @Param('folder') folder: string,
@@ -88,6 +90,7 @@ export class AssetsController {
    * @returns Deletion result or error message
    */
   @Post('delete')
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('File deleted successfully')
   async deleteFile(@Body('key') key: string) {
@@ -103,6 +106,7 @@ export class AssetsController {
    * @returns The file to download
    */
   @Post('file')
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('File downloaded successfully')
   async downloadFile(@Body('key') key: string) {
@@ -122,6 +126,7 @@ export class AssetsController {
    * @returns An array of bucket objects
    */
   @Get('buckets')
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   async getBuckets(): Promise<AWS.S3.ListBucketsOutput> {
     return this.assetsService.getBuckets();
@@ -162,6 +167,7 @@ export class AssetsController {
    * @returns The updated tag object
    */
   @Post('tags/:id')
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('Tag updated successfully')
   @UseInterceptors(FileInterceptor('file'))
@@ -191,6 +197,7 @@ export class AssetsController {
    * @returns Deletion result or error message
    */
   @Delete('tags/:id')
+  @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('Tag deleted successfully')
   async deleteTag(@Param('id') id: string) {
