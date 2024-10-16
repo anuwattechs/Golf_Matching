@@ -11,6 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 // import { format } from 'date-fns';
 import { Reflector } from '@nestjs/core';
 import { RESPONSE_MESSAGE_METADATA } from '../decorator/response-message.decorator';
+import { I18nContext } from 'nestjs-i18n';
 
 export type Response<T> = {
   status: boolean;
@@ -51,7 +52,8 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
       status: false,
       statusCode: status,
       // path: request.url,
-      message: exception.message,
+      // message: exception.message,
+      message: I18nContext.current().t(`status-code.${status}`) as string,
       data:
         status === HttpStatus.BAD_REQUEST
           ? typeof (exception.getResponse() as any).message === 'string'
@@ -71,13 +73,17 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
       this.reflector.get<string>(
         RESPONSE_MESSAGE_METADATA,
         context.getHandler(),
-      ) || 'success';
+      ) || I18nContext.current().t('common.SUCCESS');
+
+    // console.log('message', message);
+    // console.log(i18n.translate('common.SUCCESS'));
 
     return {
       status: true,
       // path: request.url,
       statusCode,
-      message: message,
+      // message: message,
+      message: I18nContext.current().t(message) as string,
       data: res,
       // timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
     };

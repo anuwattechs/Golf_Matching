@@ -1,0 +1,5 @@
+{
+  "USER_ALREADY_REGISTERED": "User already registered",
+  "SENT_SUCCESS": "OTP sent successfully",
+  "VERIFIED_SUCCESS": "OTP verified successfully"
+}

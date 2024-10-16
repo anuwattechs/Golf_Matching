@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './core/database/mongoose-config.service';
 import { databaseConfig } from './core/database/config';
@@ -20,6 +20,10 @@ import countryConfig from './app/modules/country/config/country.config';
 import { CountryModule } from './app/modules/country/country.module';
 import { AssetsModule } from './app/modules/assets/assets.module';
 import assetsConfig from './app/modules/assets/config/assets.config';
+import { I18nModule } from 'nestjs-i18n/dist/i18n.module';
+import { HeaderResolver } from 'nestjs-i18n';
+import path from 'path';
+import { AllConfigType } from 'src/app/config/config.type';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -45,6 +49,29 @@ const environment = process.env.NODE_ENV || 'development';
       envFilePath: [`.env.${environment}`, `.env`],
     }),
     infrastructureDatabaseModule,
+    I18nModule.forRootAsync({
+      useFactory: (configService: ConfigService<AllConfigType>) => ({
+        fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
+          infer: true,
+        }),
+        loaderOptions: { path: path.join(__dirname, '../i18n/'), watch: true },
+      }),
+      resolvers: [
+        {
+          use: HeaderResolver,
+          useFactory: (configService: ConfigService<AllConfigType>) => {
+            return [
+              configService.get('app.headerLanguage', {
+                infer: true,
+              }),
+            ];
+          },
+          inject: [ConfigService],
+        },
+      ],
+      imports: [ConfigModule],
+      inject: [ConfigService],
+    }),
     AuthModule,
     AuthGoogleModule,
     AuthFacebookModule,

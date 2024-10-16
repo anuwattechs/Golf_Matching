@@ -9,6 +9,7 @@ import {
 } from './dto';
 import { NullableType } from 'src/shared/types';
 import { AuthTypeEnum, VerifyTypeEnum } from 'src/shared/enums';
+import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class OtpService {
@@ -21,6 +22,7 @@ export class OtpService {
 
   async create(input: RequestOtpDto): Promise<NullableType<unknown>> {
     try {
+      const i18n = I18nContext.current();
       //! Check if user registered
       const userRegistered = await this.memberModel.findAllByUsername(
         input.username,
@@ -28,7 +30,7 @@ export class OtpService {
 
       if (userRegistered.length > 0 && input.type === VerifyTypeEnum.REGISTER)
         throw new HttpException(
-          'User already registered',
+          await i18n.t('otp.USER_ALREADY_REGISTERED'),
           HttpStatus.BAD_REQUEST,
         );
 
@@ -37,7 +39,7 @@ export class OtpService {
         input.type === VerifyTypeEnum.RECOVER_PASSWORD
       )
         throw new HttpException(
-          'User already registered',
+          await i18n.t('otp.USER_ALREADY_REGISTERED'),
           HttpStatus.BAD_REQUEST,
         );
 
@@ -60,10 +62,10 @@ export class OtpService {
       }
 
       return {
-          verifyId: created._id,
-          referenceNo: created._id.slice(0, 6),
-          verifyCode,
-        };
+        verifyId: created._id,
+        referenceNo: created._id.slice(0, 6),
+        verifyCode,
+      };
     } catch (error) {
       // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
       throw new HttpException(
@@ -121,10 +123,10 @@ export class OtpService {
       }
 
       return {
-          verifyId: created._id,
-          referenceNo: created._id.slice(0, 6),
-          verifyCode,
-        };
+        verifyId: created._id,
+        referenceNo: created._id.slice(0, 6),
+        verifyCode,
+      };
     } catch (error) {
       // throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
       throw new HttpException(

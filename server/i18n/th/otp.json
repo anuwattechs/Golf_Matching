@@ -1,0 +1,5 @@
+{
+  "USER_ALREADY_REGISTERED": "ผู้ใช้งานได้ลงทะเบียนแล้ว",
+  "SENT_SUCCESS": "OTP ถูกส่งเรียบร้อยแล้ว",
+  "VERIFIED_SUCCESS": "OTP ถูกตรวจสอบเรียบร้อยแล้ว"
+}

@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Exclude } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 
 @Schema({ collection: 'Members', timestamps: true, versionKey: false })
@@ -17,96 +16,82 @@ export class Member extends Document {
   @Prop({ required: true, type: String })
   lastName: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   nickName: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   birthDate: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   email: string; // Email may be updated later
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   phoneNo: string; // Phone number may be updated later
 
-  @Prop({ nullable: true })
+  @Prop({ nullable: true, type: String })
   // @Exclude({ toPlainOnly: true })
   password: string;
 
-  @Exclude({ toPlainOnly: true })
-  previousPassword?: string;
-
-  loadPreviousPassword() {
-    this.previousPassword = this.password;
-  }
-
   // Remove authType and socialId, and instead define individual fields for social logins
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   facebookId: string; // May register or connect to the account later
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   googleId: string; // May register or connect to the account later
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   appleId: string; // May register or connect to the account later
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   gender: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   country: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   location: string;
 
-  @Prop({ default: '' })
+  @Prop({ default: '', type: String })
   occupation: string;
 
   @Prop({ default: [], type: [String] })
   tags: string[];
 
-  @Prop({ default: null }) // Year 4 digits
+  @Prop({ default: null, type: String }) // Year 4 digits
   yearStart: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: Number })
   avgScore: number;
 
-  @Prop({ default: null, type: [String] })
+  @Prop({ default: [], type: [String] })
   favoriteCourses: string[];
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: Number })
   countHoleInOne: number;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: Number })
   bestScore: number;
 
-  @Prop({ default: '' })
+  @Prop({ default: '', type: String })
   clubBrands: string;
 
-  @Prop({ default: '' })
+  @Prop({ default: '', type: String })
   introduction: string;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   profileImage: string;
 
-  @Prop({ default: true })
+  @Prop({ default: true, type: Boolean })
   isInviteAble: boolean;
 
-  @Prop({ default: false })
+  @Prop({ default: false, type: Boolean })
   isActived: boolean;
 
-  @Prop({ default: false })
+  @Prop({ default: false, type: Boolean })
   isRegistered: boolean;
 
-  @Prop({ default: null })
+  @Prop({ default: null, type: Date })
   activedAt: Date;
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);
-
-MemberSchema.pre('save', function (next) {
-  const user = this as Member;
-  if (!user.isModified('password')) return next();
-  user.previousPassword = user.password;
-  next();
-});
