@@ -232,6 +232,11 @@ export class AuthService {
 
   async login(input: LoginDto): Promise<LoginResponseType> {
     try {
+      const isEmail = this.utilsService.validateEmail(input.username);
+      const isPhoneNo = this.utilsService.validatePhoneNumber(input.username);
+      if (!(isEmail || isPhoneNo))
+        throw new HttpException('Invalid auth type', HttpStatus.BAD_REQUEST);
+
       const userRegistered = await this.memberModel.findOneByUsername(
         input.username,
       );
