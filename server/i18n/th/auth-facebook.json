@@ -1,0 +1,5 @@
+{
+  "ERROR_FETCHING_FACEBOOK_PROFILE:": "ข้อผิดพลาดในการดึงข้อมูลโปรไฟล์ Facebook:",
+  "USER_LOGGED_IN_SUCCESSFULLY": "ผู้ใช้เข้าสู่ระบบสำเร็จ",
+  "INVALID_TOKEN": "โทเค็นไม่ถูกต้อง"
+}
