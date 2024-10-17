@@ -86,6 +86,9 @@ export type I18nTranslations = {
         "OTP_SENT_SUCCESSFULLY": string;
         "OTP_VERIFIED_SUCCESSFULLY": string;
         "USER_DOES_NOT_EXISTS": string;
+        "VERIFICATION_CODE_IS_INVALID": string;
+        "VERIFICATION_CODE_IS_ALREADY_VERIFIED": string;
+        "VERIFICATION_CODE_IS_EXPIRED": string;
     };
     "status-code": {
         "100": string;

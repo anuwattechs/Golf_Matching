@@ -49,8 +49,8 @@ export class AuthGoogleService {
       id: data.sub,
       googleId: data.sub,
       email: data.email,
-      firstName: data.given_name,
-      lastName: data.family_name,
+      firstName: data.given_name ?? '',
+      lastName: data.family_name ?? '',
     };
   }
 }

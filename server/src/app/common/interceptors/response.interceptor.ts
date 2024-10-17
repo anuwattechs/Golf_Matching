@@ -11,7 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
 import {
   RESPONSE_MESSAGE_METADATA,
-  ResponseMessage
+  ResponseMessage,
 } from '../decorator/response-message.decorator';
 import { I18nContext } from 'nestjs-i18n';
 import { I18nPath } from 'src/generated/i18n.generated';
@@ -33,13 +33,14 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
   ): Observable<Response<T>> {
     return next.handle().pipe(
       map((res: T) => this.formatResponse(res, context)),
-      catchError((error: HttpException) =>
-        throwError(() => this.formatError(error, context)),
-      ),
+      catchError((error: any) => {
+        // Ensure the error is handled correctly
+        return throwError(() => this.formatError(error, context));
+      }),
     );
   }
 
-  private formatError(exception: HttpException, context: ExecutionContext) {
+  private formatError(exception: any, context: ExecutionContext) {
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
@@ -69,10 +70,17 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     };
   }
 
-  private getErrorMessage(exception: HttpException, status: number): string {
+  private getErrorMessage(exception: any, status: number): string {
     const i18nMessage = I18nContext.current().t(`status-code.${status}`);
     const isBadRequest = status === HttpStatus.BAD_REQUEST;
-    const responseMessage = (exception.getResponse() as any)?.message;
+    let responseMessage = '';
+
+    // Check if the exception has a getResponse method
+    if (exception instanceof HttpException) {
+      responseMessage = (exception.getResponse() as any)?.message;
+    } else {
+      responseMessage = exception?.message || null;
+    }
 
     return isBadRequest && typeof responseMessage !== 'string'
       ? i18nMessage
@@ -83,10 +91,16 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
         ) as string);
   }
 
-  private extractErrorData(exception: HttpException, status: number) {
+  private extractErrorData(exception: any, status: number) {
     if (status !== HttpStatus.BAD_REQUEST) return null;
 
-    const response = (exception.getResponse() as any)?.message;
+    let response;
+    if (exception instanceof HttpException) {
+      response = (exception.getResponse() as any)?.message;
+    } else {
+      response = exception?.message || null;
+    }
+
     return typeof response === 'string' ? null : response || null;
   }
 
