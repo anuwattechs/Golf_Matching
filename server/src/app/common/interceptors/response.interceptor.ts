@@ -11,7 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
 import {
   RESPONSE_MESSAGE_METADATA,
-  ResponseMessage as ResponseMessageType,
+  ResponseMessage
 } from '../decorator/response-message.decorator';
 import { I18nContext } from 'nestjs-i18n';
 import { I18nPath } from 'src/generated/i18n.generated';
