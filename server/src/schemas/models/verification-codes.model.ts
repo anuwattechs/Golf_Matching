@@ -89,9 +89,9 @@ export class VerificationCodesModel {
       verifyCode,
     });
 
-    if (!result) return 'Verification code is invalid';
-    if (result.isVerified) return 'Verification code is already verified';
-    if (result.expiredAt < new Date()) return 'Verification code is expired';
+    if (!result) return 'otp.VERIFICATION_CODE_IS_INVALID';
+    if (result.isVerified) return 'otp.VERIFICATION_CODE_IS_ALREADY_VERIFIED';
+    if (result.expiredAt < new Date()) return 'otp.VERIFICATION_CODE_IS_EXPIRED';
 
     return null;
   }

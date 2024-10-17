@@ -2,5 +2,8 @@
   "USER_ALREADY_REGISTERED": "ผู้ใช้ได้ลงทะเบียนแล้ว",
   "OTP_SENT_SUCCESSFULLY": "ส่งรหัส OTP สำเร็จ",
   "OTP_VERIFIED_SUCCESSFULLY": "ยืนยันรหัส OTP สำเร็จ",
-  "USER_DOES_NOT_EXISTS": "ไม่พบผู้ใช้"
+  "USER_DOES_NOT_EXISTS": "ไม่พบผู้ใช้",
+  "VERIFICATION_CODE_IS_INVALID": "รหัสยืนยันไม่ถูกต้อง",
+  "VERIFICATION_CODE_IS_ALREADY_VERIFIED": "รหัสยืนยันถูกยืนยันแล้ว",
+  "VERIFICATION_CODE_IS_EXPIRED": "รหัสยืนยันหมดอายุแล้ว"
 }
