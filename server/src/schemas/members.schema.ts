@@ -14,7 +14,7 @@ export class Member extends Document {
   @Prop({ required: true, type: String })
   firstName: string;
 
-  @Prop({ required: false, type: String })
+  @Prop({ default: null, type: String })
   lastName: string;
 
   @Prop({ default: null, type: String })

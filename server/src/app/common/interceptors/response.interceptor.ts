@@ -63,7 +63,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
       status: true,
       statusCode: resStatus ?? statusCode,
       message,
-      data: Array.isArray(res) ? res : data,
+      data: Array.isArray(res) ? res : res === null ? null : data,
     };
   }
 
