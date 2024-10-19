@@ -36,10 +36,13 @@ const i18nModule = I18nModule.forRootAsync({
       infer: true,
     }),
     loaderOptions: {
-      path: path.join(__dirname, '/i18n/'),
+      path: path.join(process.cwd(), '/i18n/'),
       watch: true,
     },
-    typesOutputPath: path.join(__dirname, '../src/generated/i18n.generated.ts'),
+    typesOutputPath: path.join(
+      process.cwd(),
+      '../src/generated/i18n.generated.ts',
+    ),
   }),
   resolvers: [
     {

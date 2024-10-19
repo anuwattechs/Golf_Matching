@@ -47,6 +47,7 @@
     "date-fns": "^4.1.0",
     "fb": "^2.0.0",
     "google-auth-library": "^9.14.1",
+    "i18next-scanner": "^4.6.0",
     "mongoose": "^8.6.4",
     "nest-winston": "^1.9.7",
     "nestjs-i18n": "^10.4.9",
