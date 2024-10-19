@@ -19,7 +19,6 @@ import {
 import { JwtAuthGuard, JwtRefreshTokenGuard } from './guard';
 import { Request } from 'express';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
-import { I18nTranslations } from 'src/generated/i18n.generated';
 
 @Controller('auth')
 export class AuthController {
