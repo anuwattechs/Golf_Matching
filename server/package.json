@@ -48,6 +48,7 @@
     "fb": "^2.0.0",
     "google-auth-library": "^9.14.1",
     "mongoose": "^8.6.4",
+    "nest-winston": "^1.9.7",
     "nestjs-i18n": "^10.4.9",
     "nestjs-twilio": "^4.4.0",
     "passport": "^0.7.0",
@@ -60,7 +61,9 @@
     "rxjs": "^7.8.1",
     "speakeasy": "^2.0.0",
     "typeorm": "^0.3.20",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "winston": "^3.15.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
