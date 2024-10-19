@@ -11,7 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
 import { RESPONSE_MESSAGE_METADATA } from '../decorator/response-message.decorator';
 import { I18nContext } from 'nestjs-i18n';
-import { I18nPath } from 'src/generated/i18n.generated';
+// import { I18nPath } from 'src/generated/i18n.generated';
 import { LoggingService } from 'src/core/logging/logging.service';
 
 export type Response<T> = {
@@ -113,7 +113,8 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
   }
 
   private getSuccessMessage(context: ExecutionContext): string {
-    const message = this.reflector.get<I18nPath>(
+    // const message = this.reflector.get<I18nPath>(
+    const message = this.reflector.get<string>(
       RESPONSE_MESSAGE_METADATA,
       context.getHandler(),
     );
