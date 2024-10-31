@@ -24,38 +24,10 @@ import { I18nModule } from 'nestjs-i18n/dist/i18n.module';
 import { HeaderResolver } from 'nestjs-i18n';
 import path from 'path';
 import { AllConfigType } from 'src/app/config/config.type';
-import { LoggingService } from './core/logging/logging.service';
+import { HealthcheckController } from './app/modules/healthcheck/healthcheck.controller';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
-});
-
-const i18nModule = I18nModule.forRootAsync({
-  useFactory: (configService: ConfigService<AllConfigType>) => ({
-    fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
-      infer: true,
-    }),
-    loaderOptions: {
-      path: path.join(__dirname, '/i18n/'),
-      watch: true,
-    },
-    typesOutputPath: path.join(__dirname, '../src/generated/i18n.generated.ts'),
-  }),
-  resolvers: [
-    {
-      use: HeaderResolver,
-      useFactory: (configService: ConfigService<AllConfigType>) => {
-        return [
-          configService.get('app.headerLanguage', {
-            infer: true,
-          }),
-        ];
-      },
-      inject: [ConfigService],
-    },
-  ],
-  imports: [ConfigModule],
-  inject: [ConfigService],
 });
 
 const environment = process.env.NODE_ENV || 'development';
@@ -75,10 +47,40 @@ const environment = process.env.NODE_ENV || 'development';
         countryConfig,
         assetsConfig,
       ],
-      envFilePath: [`.env.${environment}`, `.env`],
+      // envFilePath: [`.env.${environment}`, `.env`],
+      envFilePath: ['.env.development'],
     }),
     infrastructureDatabaseModule,
-    i18nModule,
+    I18nModule.forRootAsync({
+      useFactory: (configService: ConfigService<AllConfigType>) => ({
+        fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
+          infer: true,
+        }),
+        loaderOptions: {
+          path: path.join(__dirname, '/i18n/'),
+          watch: true,
+        },
+        typesOutputPath: path.join(
+          __dirname,
+          '../src/generated/i18n.generated.ts',
+        ),
+      }),
+      resolvers: [
+        {
+          use: HeaderResolver,
+          useFactory: (configService: ConfigService<AllConfigType>) => {
+            return [
+              configService.get('app.headerLanguage', {
+                infer: true,
+              }),
+            ];
+          },
+          inject: [ConfigService],
+        },
+      ],
+      imports: [ConfigModule],
+      inject: [ConfigService],
+    }),
     AuthModule,
     AuthGoogleModule,
     AuthFacebookModule,
@@ -89,7 +91,6 @@ const environment = process.env.NODE_ENV || 'development';
     CountryModule,
     AssetsModule,
   ],
-  providers: [LoggingService],
-  exports: [LoggingService],
+  controllers: [HealthcheckController],
 })
 export class AppModule {}

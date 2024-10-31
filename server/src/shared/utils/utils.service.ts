@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-// import { I18nPath } from 'src/generated/i18n.generated';
+import { I18nPath } from 'src/generated/i18n.generated';
 
 @Injectable()
 export class UtilsService {
@@ -107,7 +107,7 @@ export class UtilsService {
     };
   }
 
-  getMessagesTypeSafe(message: string): string {
+  getMessagesTypeSafe(message: I18nPath): string {
     return message;
   }
 }

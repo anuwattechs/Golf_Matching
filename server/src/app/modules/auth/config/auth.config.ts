@@ -29,8 +29,8 @@ export default registerAs<AuthConfig>('auth', () => {
 
   return {
     jwtSecret: '' + process.env.AUTH_JWT_SECRET,
-    jwtExpiresIn: process.env.AUTH_JWT_EXPIRES_IN || '1h',
+    jwtExpiresIn: '' + process.env.AUTH_JWT_EXPIRES_IN || '1h',
     refreshSecret: '' + process.env.AUTH_REFRESH_SECRET,
-    refreshExpiresIn: process.env.AUTH_REFRESH_EXPIRES_IN || '365d',
+    refreshExpiresIn: '' + process.env.AUTH_REFRESH_EXPIRES_IN || '3650d',
   };
 });

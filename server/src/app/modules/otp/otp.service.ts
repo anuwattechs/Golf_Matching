@@ -9,6 +9,7 @@ import {
 } from './dto';
 import { NullableType } from 'src/shared/types';
 import { VerifyTypeEnum } from 'src/shared/enums';
+import { MailService } from 'src/app/common/services/mail/mail.service';
 
 @Injectable()
 export class OtpService {
@@ -17,6 +18,7 @@ export class OtpService {
     private readonly memberModel: MemberModel,
     private readonly verificationCodesModel: VerificationCodesModel,
     private readonly smsService: SmsService,
+    private readonly mailService: MailService,
   ) {}
 
   async create(input: RequestOtpDto): Promise<NullableType<unknown>> {
@@ -54,7 +56,16 @@ export class OtpService {
       const isPhone = this.utilsService.validatePhoneNumber(input.username);
 
       if (isEmail) {
+        const resp = await this.mailService.sendVerifyCode(input.username, {
+          code: verifyCode,
+        });
+        console.log('Email Response: ', resp);
       } else if (isPhone) {
+        const resp = await this.smsService.sendSms(
+          input.username,
+          `Your verification code is ${verifyCode} (Ref:${created._id.slice(0, 6)}). Please do not share this code with anyone.`,
+        );
+        console.log('SMS Response: ', resp);
       }
 
       return {
@@ -103,12 +114,16 @@ export class OtpService {
 
       //! Send verification code to user (OTP via Email or Phone)
       if (isEmail) {
-        // const resp1 = await this.smsService.sendSms(
-        //   input.email,
-        //   `Your verification code is ${verifyCode}`,
-        // );
-        // console.log('SMS Response: ', resp1);
+        const resp = await this.mailService.sendVerifyCode(input.username, {
+          code: verifyCode,
+        });
+        console.log('Email Response: ', resp);
       } else if (isPhone) {
+        const resp = await this.smsService.sendSms(
+          input.username,
+          `Your verification code is ${verifyCode} (Ref:${created._id.slice(0, 6)}). Please do not share this code with anyone.`,
+        );
+        console.log('SMS Response: ', resp);
       }
 
       return {

@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 23 
+    commands:
+      - echo "Installing dependencies..."
+      - yum update -y
+      - echo "Dependencies installed."
+
+  build: 
+    commands:
+      - docker build --no-cache -t golinkgain/golinkgolf-api .
+      - docker tag golinkgain/golinkgolf-api:latest 455712545862.dkr.ecr.ap-southeast-1.amazonaws.com/golinkgain/golinkgolf-api:latest
+    
+  post_build:
+    commands:
+      - aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 455712545862.dkr.ecr.ap-southeast-1.amazonaws.com
+      - docker push 455712545862.dkr.ecr.ap-southeast-1.amazonaws.com/golinkgain/golinkgolf-api:latest
+      - aws ecs update-service --cluster golinkgolf-api-cluster --service golinkgolf-api --force-new-deployment
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
+
+cache:
+  paths:
+    - '/var/lib/docker'

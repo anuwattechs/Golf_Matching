@@ -11,7 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
 import { RESPONSE_MESSAGE_METADATA } from '../decorator/response-message.decorator';
 import { I18nContext } from 'nestjs-i18n';
-import { LoggingService } from 'src/core/logging/logging.service';
+import { I18nPath } from 'src/generated/i18n.generated';
 
 export type Response<T> = {
   status: boolean;
@@ -22,10 +22,7 @@ export type Response<T> = {
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly loggingService: LoggingService,
-  ) {}
+  constructor(private readonly reflector: Reflector) {}
 
   intercept(
     context: ExecutionContext,
@@ -48,13 +45,6 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
 
     const message = this.getErrorMessage(exception, status);
 
-    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.loggingService.error(
-        message,
-        exception.stack,
-        context.getClass().name,
-      );
-    }
     const response = context.switchToHttp().getResponse();
     response.status(status).json({
       status: false,
@@ -112,7 +102,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
   }
 
   private getSuccessMessage(context: ExecutionContext): string {
-    const message = this.reflector.get<string>(
+    const message = this.reflector.get<I18nPath>(
       RESPONSE_MESSAGE_METADATA,
       context.getHandler(),
     );

@@ -320,21 +320,17 @@ export class AuthService {
   private async generateTokens(
     payload: JwtPayloadType,
   ): Promise<LoginResponseType> {
-    const jwtExpiresIn = this.configService.getOrThrow<string>(
-      'auth.jwtExpiresIn',
-      { infer: true },
-    );
-    const refreshExpiresIn = this.configService.getOrThrow<string>(
-      'auth.refreshExpiresIn',
-      { infer: true },
-    );
+    const jwtExpiresIn = '1h';
+    const refreshExpiresIn = '365d';
 
     // console.log(jwtExpiresIn, refreshExpiresIn);
 
-    const accessTokenExpiresIn =
-      Date.now() + this.convertTimeStringToMs(jwtExpiresIn);
-    const refreshTokenExpiresIn =
-      Date.now() + this.convertTimeStringToMs(refreshExpiresIn);
+    const accessTokenExpiresIn = Math.floor(
+      (Date.now() + this.convertTimeStringToMs(jwtExpiresIn)) / 1000,
+    );
+    const refreshTokenExpiresIn = Math.floor(
+      (Date.now() + this.convertTimeStringToMs(refreshExpiresIn)) / 1000,
+    );
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
@@ -343,7 +339,8 @@ export class AuthService {
           secret: this.configService.getOrThrow<string>('auth.jwtSecret', {
             infer: true,
           }),
-          expiresIn: jwtExpiresIn,
+          // expiresIn: jwtExpiresIn,
+          expiresIn: '1h',
         },
       ),
       this.jwtService.signAsync(
@@ -352,7 +349,8 @@ export class AuthService {
           secret: this.configService.getOrThrow<string>('auth.refreshSecret', {
             infer: true,
           }),
-          expiresIn: refreshExpiresIn,
+          // expiresIn: refreshExpiresIn,
+          expiresIn: '365d',
         },
       ),
     ]);
