@@ -5,6 +5,7 @@ import {
   VerificationCodesModel,
   GolfCourseModel,
   TagModel,
+  GalleryModel,
 } from '.';
 import {
   Member,
@@ -15,6 +16,8 @@ import {
   GolfCourseSchema,
   Tag,
   TagSchema,
+  Gallery,
+  GallerySchema,
 } from 'src/schemas';
 
 @Module({
@@ -36,9 +39,25 @@ import {
         name: Tag.name,
         schema: TagSchema,
       },
+      {
+        name: Gallery.name,
+        schema: GallerySchema,
+      },
     ]),
   ],
-  providers: [MemberModel, VerificationCodesModel, GolfCourseModel, TagModel],
-  exports: [MemberModel, VerificationCodesModel, GolfCourseModel, TagModel],
+  providers: [
+    MemberModel,
+    VerificationCodesModel,
+    GolfCourseModel,
+    TagModel,
+    GalleryModel,
+  ],
+  exports: [
+    MemberModel,
+    VerificationCodesModel,
+    GolfCourseModel,
+    TagModel,
+    GalleryModel,
+  ],
 })
 export class ModelsModule {}

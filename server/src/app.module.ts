@@ -25,6 +25,7 @@ import { HeaderResolver } from 'nestjs-i18n';
 import path from 'path';
 import { AllConfigType } from 'src/app/config/config.type';
 import { HealthCheckModule } from './app/modules/health-check/health-check.module';
+import { GalleryModule } from './app/modules/gallery/gallery.module';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -90,6 +91,7 @@ const environment = process.env.NODE_ENV || 'development';
     CountryModule,
     AssetsModule,
     HealthCheckModule,
+    GalleryModule,
   ],
 })
 export class AppModule {}
