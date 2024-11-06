@@ -56,15 +56,22 @@ export class OtpService {
       const isPhone = this.utilsService.validatePhoneNumber(input.username);
 
       if (isEmail) {
-        const resp = await this.mailService.sendVerifyCode(input.username, {
-          code: verifyCode,
-        });
+        const resp =
+          input.type === VerifyTypeEnum.REGISTER
+            ? await this.mailService.sendVerifyCode(input.username, {
+                code: verifyCode,
+                referenceCode: created._id.slice(0, 6),
+              })
+            : await this.mailService.sendRecoveryPassword(input.username, {
+                code: verifyCode,
+                referenceCode: created._id.slice(0, 6),
+              });
         console.log('Email Response: ', resp);
       } else if (isPhone) {
-        const resp = await this.smsService.sendSms(
-          input.username,
-          `Your verification code is ${verifyCode} (Ref:${created._id.slice(0, 6)}). Please do not share this code with anyone.`,
-        );
+        const resp = await this.smsService.sendSms(input.username, input.type, {
+          code: verifyCode,
+          referenceCode: created._id.slice(0, 6),
+        });
         console.log('SMS Response: ', resp);
       }
 
@@ -114,15 +121,22 @@ export class OtpService {
 
       //! Send verification code to user (OTP via Email or Phone)
       if (isEmail) {
-        const resp = await this.mailService.sendVerifyCode(input.username, {
-          code: verifyCode,
-        });
+        const resp =
+          input.type === VerifyTypeEnum.REGISTER
+            ? await this.mailService.sendVerifyCode(input.username, {
+                code: verifyCode,
+                referenceCode: created._id.slice(0, 6),
+              })
+            : await this.mailService.sendRecoveryPassword(input.username, {
+                code: verifyCode,
+                referenceCode: created._id.slice(0, 6),
+              });
         console.log('Email Response: ', resp);
       } else if (isPhone) {
-        const resp = await this.smsService.sendSms(
-          input.username,
-          `Your verification code is ${verifyCode} (Ref:${created._id.slice(0, 6)}). Please do not share this code with anyone.`,
-        );
+        const resp = await this.smsService.sendSms(input.username, input.type, {
+          code: verifyCode,
+          referenceCode: created._id.slice(0, 6),
+        });
         console.log('SMS Response: ', resp);
       }
 

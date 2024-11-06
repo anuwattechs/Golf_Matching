@@ -24,7 +24,7 @@ import { I18nModule } from 'nestjs-i18n/dist/i18n.module';
 import { HeaderResolver } from 'nestjs-i18n';
 import path from 'path';
 import { AllConfigType } from 'src/app/config/config.type';
-import { HealthcheckController } from './app/modules/healthcheck/healthcheck.controller';
+import { HealthCheckModule } from './app/modules/health-check/health-check.module';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -47,7 +47,6 @@ const environment = process.env.NODE_ENV || 'development';
         countryConfig,
         assetsConfig,
       ],
-      // envFilePath: [`.env.${environment}`, `.env`],
       envFilePath: ['.env.development'],
     }),
     infrastructureDatabaseModule,
@@ -90,7 +89,7 @@ const environment = process.env.NODE_ENV || 'development';
     GolfCoursesModule,
     CountryModule,
     AssetsModule,
+    HealthCheckModule,
   ],
-  controllers: [HealthcheckController],
 })
 export class AppModule {}

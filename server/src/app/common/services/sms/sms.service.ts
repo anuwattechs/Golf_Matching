@@ -1,12 +1,9 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { AllConfigType } from 'src/app/config/config.type';
+import { VerifyTypeEnum } from 'src/shared/enums';
+import * as libphonenumber from 'google-libphonenumber';
 
 @Injectable()
 export class SmsService {
@@ -14,6 +11,7 @@ export class SmsService {
   private infobipApiKey: string;
   private infobipBaseUrl: string;
   private infobipFrom: string;
+  private phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
   constructor(configService: ConfigService<AllConfigType>) {
     this.infobipBaseUrl = configService.get<string>('sms.baseUrl', {
@@ -27,17 +25,35 @@ export class SmsService {
     });
   }
 
-  async sendSms(to: string, message: string): Promise<boolean> {
+  /**
+   * Sends an SMS message based on the verification type using the Infobip API.
+   * @param {string} to - The recipient's phone number.
+   * @param {VerifyTypeEnum} type - The type of verification for SMS content.
+   * @param {Object} data - Dynamic data for populating the template (e.g., code or reset link).
+   */
+  async sendSms(
+    to: string,
+    type: VerifyTypeEnum = VerifyTypeEnum.REGISTER,
+    data: {
+      code?: string;
+      referenceCode?: string;
+    } = {},
+  ): Promise<boolean> {
+    const message = this.generateMessage(type, data);
     const url = `${this.infobipBaseUrl}/sms/2/text/advanced`;
     const headers = {
       Authorization: `App ${this.infobipApiKey}`,
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    const data = {
+    const smsData = {
       messages: [
         {
-          destinations: [{ to }],
+          destinations: [
+            {
+              to: this.getCountriesFromPhone(to).phone,
+            },
+          ],
           from: this.infobipFrom,
           text: message,
         },
@@ -45,7 +61,7 @@ export class SmsService {
     };
 
     try {
-      const response = await axios.post(url, data, { headers });
+      const response = await axios.post(url, smsData, { headers });
       if (response.status === 200) {
         return true;
       } else {
@@ -60,6 +76,56 @@ export class SmsService {
         error.stack,
       );
       throw new Error(`Failed to send SMS: ${error.message}`);
+    }
+  }
+
+  /**
+   * Generates a message template based on verification type.
+   * @param {VerifyTypeEnum} type - The type of verification.
+   * @param {Object} data - Data to populate in the message.
+   * @returns {string} - The generated message.
+   */
+  private generateMessage(
+    type: VerifyTypeEnum,
+    data: {
+      code?: string;
+      referenceCode?: string;
+    },
+  ): string {
+    switch (type) {
+      case VerifyTypeEnum.REGISTER:
+        return `Your verification code is: ${data.code} (Ref: ${data.referenceCode}). for registration. Please do not share this code with anyone.`;
+      case VerifyTypeEnum.RECOVER_PASSWORD:
+        return `Your verification code is: ${data.code} (Ref: ${data.referenceCode}).  for password recovery. Please do not share this code with anyone.`;
+      default:
+        return `Your verification code is: ${data.code} (Ref: ${data.referenceCode}). Please do not share this code with anyone.`;
+    }
+  }
+
+  /**
+   * Extracts the country code and standardized phone number from a given phone number string.
+   * @param {string} phone - The phone number in local or international format.
+   * @returns {Object} - An object containing the country code and formatted phone number.
+   */
+  private getCountriesFromPhone(phone: string): {
+    country: string;
+    phone: string;
+  } {
+    try {
+      const parsedNumber = this.phoneUtil.parseAndKeepRawInput(phone, 'TH');
+      const country = this.phoneUtil.getRegionCodeForNumber(parsedNumber);
+      const internationalFormat = this.phoneUtil.format(
+        parsedNumber,
+        libphonenumber.PhoneNumberFormat.E164,
+      );
+
+      return {
+        country,
+        phone: internationalFormat?.replace('+', ''),
+      };
+    } catch (error) {
+      console.error('Error parsing phone number:', error);
+      return { country: 'Unknown', phone: phone };
     }
   }
 }
