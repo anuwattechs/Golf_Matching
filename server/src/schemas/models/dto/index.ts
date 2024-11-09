@@ -2,3 +2,6 @@ export * from './member.dto';
 export * from './verification-codes.dto';
 export * from './golf-course.dto';
 export * from './tag.dto';
+export * from './match-requests.dto';
+export * from './match.dto';
+export * from './match-players.dto';

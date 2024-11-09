@@ -5,6 +5,9 @@ import {
   VerificationCodesModel,
   GolfCourseModel,
   TagModel,
+  MatchPlayerModel,
+  MatchRequestModel,
+  MatchesModel,
 } from '.';
 import {
   Member,
@@ -15,6 +18,12 @@ import {
   GolfCourseSchema,
   Tag,
   TagSchema,
+  Matches,
+  MatchesSchema,
+  MatchRequest,
+  MatchRequestSchema,
+  MatchPlayer,
+  MatchPlayerSchema,
 } from 'src/schemas';
 
 @Module({
@@ -36,9 +45,37 @@ import {
         name: Tag.name,
         schema: TagSchema,
       },
+      {
+        name: Matches.name,
+        schema: MatchesSchema,
+      },
+      {
+        name: MatchRequest.name,
+        schema: MatchRequestSchema,
+      },
+      {
+        name: MatchPlayer.name,
+        schema: MatchPlayerSchema,
+      },
     ]),
   ],
-  providers: [MemberModel, VerificationCodesModel, GolfCourseModel, TagModel],
-  exports: [MemberModel, VerificationCodesModel, GolfCourseModel, TagModel],
+  providers: [
+    MemberModel,
+    VerificationCodesModel,
+    GolfCourseModel,
+    TagModel,
+    MatchPlayerModel,
+    MatchRequestModel,
+    MatchesModel,
+  ],
+  exports: [
+    MemberModel,
+    VerificationCodesModel,
+    GolfCourseModel,
+    TagModel,
+    MatchPlayerModel,
+    MatchRequestModel,
+    MatchesModel,
+  ],
 })
 export class ModelsModule {}

@@ -25,6 +25,9 @@ import { HeaderResolver } from 'nestjs-i18n';
 import path from 'path';
 import { AllConfigType } from 'src/app/config/config.type';
 import { HealthCheckModule } from './app/modules/health-check/health-check.module';
+import { MatchModule } from './app/modules/match/match.module';
+import { MatchRequestsModule } from './app/modules/match-requests/match-requests.module';
+import { MatchPlayerModule } from './app/modules/match-player/match-player.module';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -90,6 +93,9 @@ const environment = process.env.NODE_ENV || 'development';
     CountryModule,
     AssetsModule,
     HealthCheckModule,
+    MatchModule,
+    MatchRequestsModule,
+    MatchPlayerModule,
   ],
 })
 export class AppModule {}

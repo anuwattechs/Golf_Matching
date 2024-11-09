@@ -126,7 +126,7 @@ export class AssetsController {
    * @returns An array of bucket objects
    */
   @Get('buckets')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   async getBuckets(): Promise<AWS.S3.ListBucketsOutput> {
     return this.assetsService.getBuckets();
