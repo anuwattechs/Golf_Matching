@@ -57,7 +57,7 @@ export class Matches extends Document {
   tags: string[];
 
   @Prop({ default: null, type: String })
-  gender: GenderEnum;
+  gender: GenderEnum | null;
 }
 
 export const MatchesSchema = SchemaFactory.createForClass(Matches);

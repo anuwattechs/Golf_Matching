@@ -125,9 +125,4 @@ export class CreateGolfCourseDto {
   @IsNotEmpty()
   @IsBoolean()
   isNightAvailable: boolean;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CourseDto)
-  courses: CourseDto[];
 }

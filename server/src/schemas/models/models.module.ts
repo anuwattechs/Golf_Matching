@@ -8,6 +8,8 @@ import {
   MatchPlayerModel,
   MatchRequestModel,
   MatchesModel,
+  GolfCourseLayoutModel,
+  HoleScoresModel,
 } from '.';
 import {
   Member,
@@ -24,6 +26,10 @@ import {
   MatchRequestSchema,
   MatchPlayer,
   MatchPlayerSchema,
+  GolfCoursesLayouts,
+  GolfCoursesLayoutsSchema,
+  HoleScores,
+  HoleScoresSchema,
 } from 'src/schemas';
 
 @Module({
@@ -57,6 +63,14 @@ import {
         name: MatchPlayer.name,
         schema: MatchPlayerSchema,
       },
+      {
+        name: GolfCoursesLayouts.name,
+        schema: GolfCoursesLayoutsSchema,
+      },
+      {
+        name: HoleScores.name,
+        schema: HoleScoresSchema,
+      },
     ]),
   ],
   providers: [
@@ -67,6 +81,8 @@ import {
     MatchPlayerModel,
     MatchRequestModel,
     MatchesModel,
+    GolfCourseLayoutModel,
+    HoleScoresModel,
   ],
   exports: [
     MemberModel,
@@ -76,6 +92,8 @@ import {
     MatchPlayerModel,
     MatchRequestModel,
     MatchesModel,
+    GolfCourseLayoutModel,
+    HoleScoresModel,
   ],
 })
 export class ModelsModule {}

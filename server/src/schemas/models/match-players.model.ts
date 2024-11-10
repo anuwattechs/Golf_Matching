@@ -28,6 +28,17 @@ export class MatchPlayerModel {
     return this.matchPlayerModel.find({ matchId }).exec();
   }
 
+  // Get player by match ID and player ID
+  async getPlayerByMatchAndPlayerId(
+    matchId: string,
+    playerId: string,
+  ): Promise<MatchPlayer> {
+    return this.matchPlayerModel.findOne({
+      matchId,
+      playerId,
+    });
+  }
+
   // Update player details (e.g., caddie info, selection status)
   async updatePlayerDetails(
     updateData: Partial<UpdateMatchPlayerDto>,

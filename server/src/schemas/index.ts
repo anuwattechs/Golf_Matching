@@ -5,3 +5,5 @@ export * from './tags.schema';
 export * from './matches.schema';
 export * from './match-requests.schema';
 export * from './match-players.schema';
+export * from './golf-courses-layouts.schema';
+export * from './hole-scores.schema';

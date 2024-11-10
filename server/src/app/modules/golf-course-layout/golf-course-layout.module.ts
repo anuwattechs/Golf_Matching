@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MatchRequestsService } from './match-requests.service';
-import { MatchRequestsController } from './match-requests.controller';
+import { GolfCourseLayoutService } from './golf-course-layout.service';
+import { GolfCourseLayoutController } from './golf-course-layout.controller';
 import { PassportModule } from '@nestjs/passport';
 import { ModelsModule } from 'src/schemas/models/models.module';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { AuthModule } from '../auth/auth.module';
-import { MembersModule } from '../members/members.module';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
-import { MatchModule } from '../match/match.module';
+import { MembersModule } from '../members/members.module';
 
 @Module({
   imports: [
@@ -17,7 +16,7 @@ import { MatchModule } from '../match/match.module';
     UtilsModule,
     MembersModule,
   ],
-  controllers: [MatchRequestsController],
-  providers: [MatchRequestsService, JwtStrategy],
+  controllers: [GolfCourseLayoutController],
+  providers: [GolfCourseLayoutService, JwtStrategy],
 })
-export class MatchRequestsModule {}
+export class GolfCourseLayoutModule {}

@@ -94,8 +94,8 @@ export class GolfCourse extends Document {
   @Prop({ type: Boolean, default: false })
   isNightAvailable: boolean;
 
-  @Prop({ type: [Course], default: [] })
-  courses: Course[];
+  // @Prop({ type: [Course], default: [] })
+  // courses: Course[];
 }
 
 export const GolfCourseSchema = SchemaFactory.createForClass(GolfCourse);

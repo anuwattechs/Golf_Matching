@@ -5,3 +5,5 @@ export * from './tag.dto';
 export * from './match-requests.dto';
 export * from './match.dto';
 export * from './match-players.dto';
+export * from './golf-course-layout.dto';
+export * from './hole-scores.dto';
