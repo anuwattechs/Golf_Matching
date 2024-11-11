@@ -30,6 +30,7 @@ import { MatchRequestsModule } from './app/modules/match-requests/match-requests
 import { MatchPlayerModule } from './app/modules/match-player/match-player.module';
 import { GolfCourseLayoutModule } from './app/modules/golf-course-layout/golf-course-layout.module';
 import { HoleScoresModule } from './app/modules/hole-scores/hole-scores.module';
+import { MemberSettingsModule } from './app/modules/member-settings/member-settings.module';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -100,6 +101,7 @@ const environment = process.env.NODE_ENV || 'development';
     MatchPlayerModule,
     GolfCourseLayoutModule,
     HoleScoresModule,
+    MemberSettingsModule,
   ],
 })
 export class AppModule {}
