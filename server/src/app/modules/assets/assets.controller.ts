@@ -35,7 +35,7 @@ export class AssetsController {
    * @returns Upload result or error message
    */
   @Post('upload')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('assets.FILE_UPLOADED_SUCCESSFULLY')
   @UseInterceptors(FileInterceptor('file'))
@@ -73,7 +73,7 @@ export class AssetsController {
    * @returns An array of file objects
    */
   @Get('files/:folder')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   async getFiles(
     @Param('folder') folder: string,
@@ -90,7 +90,7 @@ export class AssetsController {
    * @returns Deletion result or error message
    */
   @Post('delete')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('assets.FILE_DELETED_SUCCESSFULLY')
   async deleteFile(@Body('key') key: string) {
@@ -106,7 +106,7 @@ export class AssetsController {
    * @returns The file to download
    */
   @Post('file')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('assets.FILE_DOWNLOADED_SUCCESSFULLY')
   async downloadFile(@Body('key') key: string) {
@@ -126,7 +126,7 @@ export class AssetsController {
    * @returns An array of bucket objects
    */
   @Get('buckets')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   async getBuckets(): Promise<AWS.S3.ListBucketsOutput> {
     return this.assetsService.getBuckets();
@@ -138,7 +138,7 @@ export class AssetsController {
    * @returns The created tag object
    */
   @Post('tags')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('assets.TAG_CREATED_SUCCESSFULLY')
   @UseInterceptors(FileInterceptor('file'))
@@ -168,7 +168,7 @@ export class AssetsController {
    * @returns The updated tag object
    */
   @Post('tags/:id')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('assets.TAG_UPDATED_SUCCESSFULLY')
   @UseInterceptors(FileInterceptor('file'))
@@ -198,7 +198,7 @@ export class AssetsController {
    * @returns Deletion result or error message
    */
   @Delete('tags/:id')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('assets.TAG_DELETED_SUCCESSFULLY')
   async deleteTag(@Param('id') id: string) {

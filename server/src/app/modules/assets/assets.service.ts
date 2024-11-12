@@ -70,10 +70,18 @@ export class AssetsService {
       ContentType: file.mimetype,
     };
 
-    return this.s3Operation(
-      () => this.s3.upload(uploadParams).promise(),
-      this.utilsService.getMessagesTypeSafe('assets.ERROR_UPLOADING_FILE'),
-    );
+    // return this.s3Operation(
+    //   () => this.s3.upload(uploadParams).promise(),
+    //   this.utilsService.getMessagesTypeSafe('assets.ERROR_UPLOADING_FILE'),
+    // );
+
+    return {
+      ...this.s3Operation(
+        () => this.s3.upload(uploadParams).promise(),
+        this.utilsService.getMessagesTypeSafe('assets.ERROR_UPLOADING_FILE'),
+      ),
+      url: this.getFileUrl(`${folder}/${file.originalname}`),
+    };
   }
 
   /**
