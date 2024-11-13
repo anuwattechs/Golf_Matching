@@ -21,6 +21,7 @@
     "release": "release-it"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.689.0",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@infobip-api/sdk": "^0.3.2",

@@ -5,9 +5,11 @@ import { AllConfigType } from 'src/app/config/config.type';
 import { CreateTagDto } from './dto';
 import { TagModel } from 'src/schemas/models/tag.model';
 import { UtilsService } from 'src/shared/utils/utils.service';
+import { S3Client } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class AssetsService {
+  private readonly client: S3Client;
   private readonly s3: AWS.S3;
   private readonly BUCKET_NAME: string;
 
@@ -29,7 +31,17 @@ export class AssetsService {
     this.s3 = new AWS.S3({
       accessKeyId: this.getConfig('assets.accessKeyId'),
       secretAccessKey: this.getConfig('assets.secretAccessKey'),
+      region: 'ap-southeast-1',
     });
+
+    this.client = new S3Client({
+      region: 'ap-southeast-1',
+      credentials: {
+        accessKeyId: this.getConfig('assets.accessKeyId'),
+        secretAccessKey: this.getConfig('assets.secretAccessKey'),
+      },
+    });
+
     this.BUCKET_NAME = this.getConfig('assets.awsDefaultS3Bucket');
   }
 
@@ -275,5 +287,9 @@ export class AssetsService {
     } finally {
       session.endSession();
     }
+  }
+
+  getBucketPermissions() {
+    return this.s3.getBucketAcl({ Bucket: this.BUCKET_NAME }).promise();
   }
 }

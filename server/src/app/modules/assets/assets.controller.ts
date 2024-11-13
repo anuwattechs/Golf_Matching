@@ -73,7 +73,7 @@ export class AssetsController {
    * @returns An array of file objects
    */
   @Get('files/:folder')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   async getFiles(
     @Param('folder') folder: string,
@@ -106,7 +106,7 @@ export class AssetsController {
    * @returns The file to download
    */
   @Post('file')
-  @UseGuards(BlockGuard)
+  // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('assets.FILE_DOWNLOADED_SUCCESSFULLY')
   async downloadFile(@Body('key') key: string) {
@@ -203,5 +203,12 @@ export class AssetsController {
   @ResponseMessage('assets.TAG_DELETED_SUCCESSFULLY')
   async deleteTag(@Param('id') id: string) {
     return this.assetsService.deleteTag(id);
+  }
+
+  // check access of s3 bucket
+  @Get('check-access')
+  @UseGuards(JwtAuthGuard)
+  async checkAccess() {
+    return this.assetsService.getBucketPermissions();
   }
 }
