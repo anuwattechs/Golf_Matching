@@ -122,7 +122,7 @@ export class MembersService {
       );
     }
 
-    const fileNames = `profile-images/${uuidv4()}`;
+    const fileNames = `profile-images/${uuidv4()}.${file.originalname.split('.').pop()}`;
 
     try {
       const member = await this.memberModel.findById(decoded.userId);
@@ -130,12 +130,12 @@ export class MembersService {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
-      if (member.profileImage) {
-        await this.awsService.deleteFile(
-          process.env.AWS_DEFAULT_S3_BUCKET,
-          member.profileImage,
-        );
-      }
+      // if (member.profileImage) {
+      //   await this.awsService.deleteFile(
+      //     process.env.AWS_DEFAULT_S3_BUCKET,
+      //     member.profileImage,
+      //   );
+      // }
 
       const uploadResult = await this.awsService.uploadFile(
         process.env.AWS_DEFAULT_S3_BUCKET,
@@ -151,9 +151,9 @@ export class MembersService {
         );
       }
 
-      const updatedMember = await this.memberModel.updateProfileImage(
+      await this.memberModel.updateProfileImage(
         decoded.userId,
-        uploadResult.Location,
+        uploadResult.Key,
       );
 
       return {
