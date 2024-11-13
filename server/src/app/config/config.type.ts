@@ -7,9 +7,11 @@ import { AppleConfig } from '../modules/auth-apple/config/apple-config.type';
 import { MailConfig } from '../common/services/mail/config/mail-config.type';
 import { SMSConfig } from '../common/services/sms/config/sms-config.type';
 import { CountryConfig } from '../modules/country/config/country-config.type';
+import { FileConfig } from '../modules/assets/config/assets-config.type';
 
 export type AllConfigType = {
   app: AppConfig;
+  assets: FileConfig;
   database: DatabaseConfig;
   auth: AuthConfig;
   google: GoogleConfig;

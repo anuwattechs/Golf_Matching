@@ -6,6 +6,11 @@ import {
   Patch,
   Req,
   UseGuards,
+  UseInterceptors,
+  FileTypeValidator,
+  MaxFileSizeValidator,
+  ParseFilePipe,
+  UploadedFile,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/app/modules/auth/guard/jwt-auth.guard';
 import { MembersService } from './members.service';
@@ -13,6 +18,7 @@ import { Request } from 'express';
 import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payload.type';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { UpdateProfileDto, ChangeInviteModeDto } from './dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('members')
 export class MembersController {
@@ -45,5 +51,28 @@ export class MembersController {
     @Req() req: Request & { decoded: JwtPayloadType },
   ) /*: Promise<LoginResponseDto> */ {
     return await this.membersService.changeInviteMode(body, req.decoded);
+  }
+
+  // update profile picture
+  @Patch('profile-picture')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('picture'))
+  async updateProfilePicture(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+          new MaxFileSizeValidator({
+            maxSize: 30 * 1024 * 1024, // 5MB limit
+            message: `File is too large. Max file size is 30MB`,
+          }),
+        ],
+        fileIsRequired: true,
+      }),
+    )
+    file: Express.Multer.File,
+    @Req() req: Request & { decoded: JwtPayloadType },
+  ) {
+    return await this.membersService.updateProfilePicture(file, req.decoded);
   }
 }

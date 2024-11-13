@@ -11,17 +11,44 @@ export class MemberSettingsModel {
     private readonly memberSettingsModel: Model<MemberSettings>,
   ) {}
 
+  // async update(
+  //   memberId: string,
+  //   input: UpdateMemberSettingsDto,
+  // ): Promise<MemberSettings> {
+  //   const settings = await this.memberSettingsModel.findOneAndUpdate(
+  //     { memberId },
+  //     { $set: input },
+  //     { new: true, upsert: true },
+  //   );
+
+  //   return settings;
+  // }
+
   async update(
     memberId: string,
     input: UpdateMemberSettingsDto,
   ): Promise<MemberSettings> {
-    const settings = await this.memberSettingsModel.findOneAndUpdate(
-      { memberId },
-      { $set: input },
-      { new: true, upsert: true }, // upsert: true creates a new document if it doesn't exist
-    );
+    const existingSettings = await this.memberSettingsModel.findOne({
+      memberId,
+    });
 
-    return settings;
+    const updatedData = {
+      ...existingSettings?.toObject(),
+      preferences: {
+        ...(existingSettings?.preferences || {}),
+        ...input.preferences,
+      },
+    };
+
+    if (existingSettings) {
+      existingSettings.set(updatedData);
+      return await existingSettings.save();
+    }
+
+    return await this.memberSettingsModel.create({
+      memberId,
+      preferences: input.preferences,
+    });
   }
 
   async findByMemberId(memberId: string): Promise<MemberSettings> {

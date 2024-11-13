@@ -154,4 +154,15 @@ export class MemberModel {
       { $set: { password } },
     );
   }
+
+  async updateProfileImage(
+    userId: string,
+    profileImage: string,
+  ): Promise<Member | null> {
+    const result = await this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { profileImage } },
+    );
+    return result.modifiedCount > 0 ? this.findById(userId) : null;
+  }
 }

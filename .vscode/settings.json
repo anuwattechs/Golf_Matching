@@ -9,6 +9,7 @@
         "Indentity",
         "infile",
         "infobip",
+        "libphonenumber",
         "nestjs",
         "Signin",
         "typeorm",
