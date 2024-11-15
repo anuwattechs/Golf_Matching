@@ -9,7 +9,7 @@ import {
   MatchRequestModel,
   MatchesModel,
   GolfCourseLayoutModel,
-  HoleScoresModel,
+  ScoresModel,
   MemberSettingsModel,
 } from '.';
 import {
@@ -29,8 +29,8 @@ import {
   MatchPlayerSchema,
   GolfCoursesLayouts,
   GolfCoursesLayoutsSchema,
-  HoleScores,
-  HoleScoresSchema,
+  Scores,
+  ScoresSchema,
   MemberSettings,
   MemberSettingsSchema,
 } from 'src/schemas';
@@ -71,8 +71,8 @@ import {
         schema: GolfCoursesLayoutsSchema,
       },
       {
-        name: HoleScores.name,
-        schema: HoleScoresSchema,
+        name: Scores.name,
+        schema: ScoresSchema,
       },
       {
         name: MemberSettings.name,
@@ -89,7 +89,7 @@ import {
     MatchRequestModel,
     MatchesModel,
     GolfCourseLayoutModel,
-    HoleScoresModel,
+    ScoresModel,
     MemberSettingsModel,
   ],
   exports: [
@@ -101,7 +101,7 @@ import {
     MatchRequestModel,
     MatchesModel,
     GolfCourseLayoutModel,
-    HoleScoresModel,
+    ScoresModel,
     MemberSettingsModel,
   ],
 })

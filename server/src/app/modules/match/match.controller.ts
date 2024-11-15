@@ -10,6 +10,7 @@ export class MatchController {
   constructor(private readonly matchService: MatchService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getAllMatches() {
     return await this.matchService.getAllMatches();
   }

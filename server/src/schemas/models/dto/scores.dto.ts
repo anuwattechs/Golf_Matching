@@ -6,7 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 
-export class CreateHoleScoresDto {
+export class CreateScoresDto {
   @IsNotEmpty()
   @IsString()
   matchId: string;
@@ -40,7 +40,7 @@ export class CreateHoleScoresDto {
   caddieIds: string[];
 }
 
-export class UpdateHoleScoresDto {
+export class UpdateScoresDto {
   @IsNotEmpty()
   @IsString()
   matchId: string;
@@ -72,4 +72,46 @@ export class UpdateHoleScoresDto {
   @IsArray()
   @IsString({ each: true })
   caddieIds: string[];
+}
+
+export class ScoreCardDto {
+  @IsNotEmpty()
+  @IsString()
+  matchId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  playerId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  date: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  courseId: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  maxPlayers: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  myScore: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  overScore: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  fairways: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  PuttsRound: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  puttsHole: number;
 }

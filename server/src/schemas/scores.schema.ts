@@ -3,11 +3,11 @@ import { Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 @Schema({
-  collection: 'HoleScores',
+  collection: 'Scores',
   timestamps: true,
   versionKey: false,
 })
-export class HoleScores extends Document {
+export class Scores extends Document {
   @Prop({
     type: String,
     default: uuidv4,
@@ -39,4 +39,4 @@ export class HoleScores extends Document {
   caddieIds: string[]; // Array of caddie ids that helped the player on this hole
 }
 
-export const HoleScoresSchema = SchemaFactory.createForClass(HoleScores);
+export const ScoresSchema = SchemaFactory.createForClass(Scores);

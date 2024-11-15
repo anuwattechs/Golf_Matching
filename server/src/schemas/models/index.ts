@@ -6,5 +6,5 @@ export * from './match-players.model';
 export * from './match-requests.model';
 export * from './matches.model';
 export * from './golf-course-layout.model';
-export * from './hole-scores.model';
+export * from './scores.model';
 export * from './member-settings.model';

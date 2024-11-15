@@ -7,6 +7,7 @@ import { JwtPayloadType } from '../auth/strategies/types';
 import { UtilsService } from 'src/shared/utils/utils.service';
 import { MemberModel } from 'src/schemas/models';
 import { MatchPlayerModel } from '../../../schemas/models/match-players.model';
+import { omit } from 'lodash';
 
 @Injectable()
 export class MatchService {

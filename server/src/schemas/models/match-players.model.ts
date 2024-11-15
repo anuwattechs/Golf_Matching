@@ -18,9 +18,9 @@ export class MatchPlayerModel {
     return createdPlayer.save();
   }
 
-  // Get match player by ID
-  async getMatchPlayerById(playerId: string): Promise<MatchPlayer> {
-    return this.matchPlayerModel.findById(playerId).exec();
+  // Get all match by player ID
+  async getMatchPlayerById(playerId: string): Promise<MatchPlayer[]> {
+    return this.matchPlayerModel.find({ playerId }).populate('matchId').exec();
   }
 
   // Get all players for a match

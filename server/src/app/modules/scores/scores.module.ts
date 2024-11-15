@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { HoleScoresService } from './hole-scores.service';
-import { HoleScoresController } from './hole-scores.controller';
+import { ScoresService } from './scores.service';
+import { ScoresController } from './scores.controller';
 import { PassportModule } from '@nestjs/passport';
 import { ModelsModule } from 'src/schemas/models/models.module';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { AuthModule } from '../auth/auth.module';
-import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { MembersModule } from '../members/members.module';
+import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { MembersModule } from '../members/members.module';
     UtilsModule,
     MembersModule,
   ],
-  controllers: [HoleScoresController],
-  providers: [HoleScoresService, JwtStrategy],
+  controllers: [ScoresController],
+  providers: [ScoresService, JwtStrategy],
 })
-export class HoleScoresModule {}
+export class ScoresModule {}

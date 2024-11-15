@@ -6,5 +6,5 @@ export * from './matches.schema';
 export * from './match-requests.schema';
 export * from './match-players.schema';
 export * from './golf-courses-layouts.schema';
-export * from './hole-scores.schema';
+export * from './scores.schema';
 export * from './member-settings.schema';

@@ -1,26 +1,35 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { omit } from 'lodash';
 import {
   MemberModel,
   GolfCourseLayoutModel,
-  HoleScoresModel,
   MatchPlayerModel,
+  ScoresModel,
 } from 'src/schemas/models';
-import { CreateHoleScoresDto } from 'src/schemas/models/dto';
 import { NullableType } from 'src/shared/types';
 import { UtilsService } from 'src/shared/utils/utils.service';
 import { JwtPayloadType } from '../auth/strategies/types';
-import { omit } from 'lodash';
-import { HoleScores } from 'src/schemas';
+import { CreateScoresDto } from 'src/schemas/models/dto';
 
 @Injectable()
-export class HoleScoresService {
+export class ScoresService {
   constructor(
     private readonly memberModel: MemberModel,
     private readonly utilsService: UtilsService,
     private readonly golfCourseLayoutModel: GolfCourseLayoutModel,
     private readonly matchPlayerModel: MatchPlayerModel,
-    private readonly holeScoresModel: HoleScoresModel,
+    private readonly scoresModel: ScoresModel,
   ) {}
+
+  async getScoreCardByPlayerId(
+    playerId: string,
+  ): Promise<NullableType<unknown>> {
+    try {
+      return this.scoresModel.getScoreCardByPlayerId(playerId);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
 
   async getHoleScores(
     matchId: string,
@@ -31,7 +40,7 @@ export class HoleScoresService {
 
       const [players, holeScores] = await Promise.all([
         this.matchPlayerModel.getPlayersForMatch(matchId),
-        this.holeScoresModel.getHoleScoresForMatch(matchId),
+        this.scoresModel.getHoleScoresForMatch(matchId),
       ]);
 
       // สร้าง cache สำหรับ golf course layout เพื่อใช้ซ้ำ
@@ -91,18 +100,17 @@ export class HoleScoresService {
 
   // Create hole scores
   async createHoleScores(
-    input: CreateHoleScoresDto,
+    input: CreateScoresDto,
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     try {
       await this.validateUserAndMatch(input.matchId, decoded.userId);
       await this.validateGolfCourseLayout(input.golfCourseLayoutId, input.hole);
-      const existingScore =
-        await this.holeScoresModel.getHoleScoreByMatchAndHole(
-          input.matchId,
-          input.hole,
-          input.playerId,
-        );
+      const existingScore = await this.scoresModel.getHoleScoreByMatchAndHole(
+        input.matchId,
+        input.hole,
+        input.playerId,
+      );
       if (existingScore) {
         throw new HttpException(
           'Hole score already exists',
@@ -110,7 +118,7 @@ export class HoleScoresService {
         );
       }
 
-      return this.holeScoresModel.addHoleScore(input);
+      return this.scoresModel.addHoleScore(input);
     } catch (error) {
       this.handleError(error);
     }
