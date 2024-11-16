@@ -11,6 +11,7 @@ import {
   MaxFileSizeValidator,
   ParseFilePipe,
   UploadedFile,
+  Param,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/app/modules/auth/guard/jwt-auth.guard';
 import { MembersService } from './members.service';
@@ -19,18 +20,37 @@ import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payloa
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { UpdateProfileDto, ChangeInviteModeDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ProfileAccessGuard } from '../auth/guard/profile-access.guard';
 
 @Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
+  @Get('profile/details')
+  @UseGuards(JwtAuthGuard)
+  @ResponseMessage('members.PERSONAL_INFO_RETRIEVED_SUCCESSFULLY')
+  async findOnePersonalInfo(@Req() req: Request & { decoded: JwtPayloadType }) {
+    return await this.membersService.findOnePersonalInfo(req.decoded);
+  }
+
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('members.PERSONAL_INFO_RETRIEVED_SUCCESSFULLY')
-  async findOnePersonalInfo(
+  async findOneProfile(@Req() req: Request & { decoded: JwtPayloadType }) {
+    return await this.membersService.findOneProfile(
+      req.decoded,
+      req.decoded.userId,
+    );
+  }
+
+  @Get(':memberId/profile')
+  @UseGuards(JwtAuthGuard, ProfileAccessGuard)
+  @ResponseMessage('members.PERSONAL_INFO_RETRIEVED_SUCCESSFULLY')
+  async findOneProfileById(
+    @Param('memberId') memberId: string,
     @Req() req: Request & { decoded: JwtPayloadType },
-  ) /*: Promise<LoginResponseDto> */ {
-    return await this.membersService.findOnePersonalInfo(req.decoded);
+  ) {
+    return await this.membersService.findOneProfile(req.decoded, memberId);
   }
 
   @Put()

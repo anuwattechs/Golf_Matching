@@ -273,22 +273,22 @@ export class ScoresModel {
         }
       }
 
-      console.table([
-        {
-          match: score.matchId,
-          hole: score.hole,
-          strokes: score.strokes,
-          chipIns: score.chipIns,
-          putts: score.putts,
-          par: hole.par,
-          isFairway: score.strokes === 1 && score.chipIns === 0,
-          totalFairways,
-          fairwaysPercentage:
-            totalPar4AndPar5Holes > 0
-              ? Math.max(0, (totalFairways / totalPar4AndPar5Holes) * 100)
-              : 0,
-        },
-      ]);
+      // console.table([
+      //   {
+      //     match: score.matchId,
+      //     hole: score.hole,
+      //     strokes: score.strokes,
+      //     chipIns: score.chipIns,
+      //     putts: score.putts,
+      //     par: hole.par,
+      //     isFairway: score.strokes === 1 && score.chipIns === 0,
+      //     totalFairways,
+      //     fairwaysPercentage:
+      //       totalPar4AndPar5Holes > 0
+      //         ? Math.max(0, (totalFairways / totalPar4AndPar5Holes) * 100)
+      //         : 0,
+      //   },
+      // ]);
     }
 
     // Calculate Fairway Hit percentage

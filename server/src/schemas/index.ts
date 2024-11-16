@@ -8,3 +8,4 @@ export * from './match-players.schema';
 export * from './golf-courses-layouts.schema';
 export * from './scores.schema';
 export * from './member-settings.schema';
+export * from './friends.schema';

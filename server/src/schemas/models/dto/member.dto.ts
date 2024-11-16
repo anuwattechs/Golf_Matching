@@ -1,3 +1,11 @@
+import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { GenderEnum } from 'src/shared/enums';
 
 export class CreateMemberDto {
@@ -54,4 +62,78 @@ export class FindBySocialIdDto {
   facebookId?: string | null; // Optional
   googleId?: string | null; // Optional
   appleId?: string | null; // Optional
+}
+
+export class AvgScore {
+  @IsNotEmpty()
+  @IsNumber()
+  min: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  max: number;
+}
+
+export class Stats {
+  @IsNotEmpty()
+  @IsString()
+  yearStart: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  handicap: number;
+
+  @ValidateNested()
+  @Type(() => AvgScore)
+  avgScoreMinMax: AvgScore;
+}
+
+/**
+ * Profile DTO
+ * @description Profile DTO for member profile
+ */
+export class Profile {
+  @IsNotEmpty()
+  @IsString()
+  memberId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  ranking: string;
+
+  @IsNotEmpty()
+  @IsString()
+  introduction: string;
+
+  @IsNotEmpty()
+  @IsString()
+  location: string;
+
+  @IsNotEmpty()
+  @IsString()
+  country: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  friendsCount: number;
+
+  @IsNotEmpty()
+  @IsString({ each: true })
+  tags: string[];
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isInviteAble: boolean;
+
+  @ValidateNested()
+  @Type(() => Stats)
+  stats: Stats;
 }

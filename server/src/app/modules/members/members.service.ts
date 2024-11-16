@@ -7,6 +7,7 @@ import { UtilsService } from 'src/shared/utils/utils.service';
 import { v4 as uuidv4 } from 'uuid';
 import { AwsService } from 'src/app/common/services/aws/aws.service';
 import { ServerSideEncryption } from '@aws-sdk/client-s3';
+import { Profile } from 'src/schemas/models/dto';
 
 @Injectable()
 export class MembersService {
@@ -77,7 +78,9 @@ export class MembersService {
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     try {
-      const member = await this.memberModel.findProfileById(decoded.userId);
+      const member = await this.memberModel.findProfileDetailById(
+        decoded.userId,
+      );
 
       return !member ? null : member;
     } catch (error) {
@@ -167,6 +170,39 @@ export class MembersService {
           status: false,
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
           message: error.message || 'An unexpected error occurred',
+          data: null,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findOneProfile(
+    jwtPayload: JwtPayloadType,
+    userId: string,
+  ): Promise<Profile> {
+    try {
+      const member = await this.memberModel.findProfileById(userId);
+
+      if (!member) {
+        throw new HttpException(
+          {
+            status: false,
+            statusCode: HttpStatus.NOT_FOUND,
+            message: 'User not found',
+            data: null,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return member;
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: false,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message,
           data: null,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,

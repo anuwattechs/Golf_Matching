@@ -11,6 +11,7 @@ import {
   GolfCourseLayoutModel,
   ScoresModel,
   MemberSettingsModel,
+  FriendsModel,
 } from '.';
 import {
   Member,
@@ -33,6 +34,8 @@ import {
   ScoresSchema,
   MemberSettings,
   MemberSettingsSchema,
+  Friends,
+  FriendsSchema,
 } from 'src/schemas';
 
 @Module({
@@ -78,6 +81,10 @@ import {
         name: MemberSettings.name,
         schema: MemberSettingsSchema,
       },
+      {
+        name: Friends.name,
+        schema: FriendsSchema,
+      },
     ]),
   ],
   providers: [
@@ -91,6 +98,7 @@ import {
     GolfCourseLayoutModel,
     ScoresModel,
     MemberSettingsModel,
+    FriendsModel,
   ],
   exports: [
     MemberModel,
@@ -103,6 +111,7 @@ import {
     GolfCourseLayoutModel,
     ScoresModel,
     MemberSettingsModel,
+    FriendsModel,
   ],
 })
 export class ModelsModule {}

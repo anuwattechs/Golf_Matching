@@ -7,16 +7,20 @@ import {
   CreateMemberBySocialDto,
   UpdateMemberDto,
   FindBySocialIdDto,
+  Stats,
+  Profile,
 } from './dto';
+import { ScoresModel } from './scores.model';
 
 @Injectable()
 export class MemberModel {
   constructor(
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    private readonly scoresModel: ScoresModel,
   ) {}
 
   // Fetch profile details by user ID excluding sensitive information
-  async findProfileById(userId: string): Promise<unknown> {
+  async findProfileDetailById(userId: string): Promise<unknown> {
     const result = await this.memberModel
       .findOne({ _id: userId })
       .select('-_id -password -isActived -activedAt -updatedAt -__v')
@@ -169,5 +173,64 @@ export class MemberModel {
   async checkUserRegistration(userId: string): Promise<boolean> {
     const user = await this.findById(userId);
     return !!user;
+  }
+
+  async getStats(userId: string): Promise<Stats> {
+    const avgScoreMinMax = await this.getAvgScoreMinMax(userId);
+    const member = await this.findById(userId);
+    return {
+      yearStart: member?.yearStart || '',
+      handicap: 25,
+      avgScoreMinMax: avgScoreMinMax,
+    };
+  }
+
+  async getAvgScoreMinMax(
+    userId: string,
+  ): Promise<{ min: number; max: number }> {
+    const score = await this.scoresModel.getScoreCardByPlayerId(userId);
+    const member = await this.findById(userId);
+
+    if (!score || !member) return null;
+
+    const min = Math.min(...score.map((s) => s.myScore));
+    const max = Math.max(...score.map((s) => s.myScore));
+
+    return {
+      min: min || 0,
+      max: max || 0,
+    };
+  }
+
+  async findProfileById(userId: string): Promise<Profile> {
+    const member = await this.findById(userId);
+    const stats = await this.getStats(userId);
+
+    if (!member) return null;
+
+    const {
+      _id: memberId,
+      firstName,
+      lastName,
+      introduction,
+      location,
+      country,
+      tags,
+      isInviteAble,
+    } = member;
+
+    return {
+      memberId: memberId,
+      firstName: firstName,
+      lastName: lastName,
+      ranking: 'Rookie',
+      introduction: introduction,
+      location: location,
+      country: country,
+      friendsCount: 25,
+      tags: tags,
+      isInviteAble: isInviteAble,
+      stats: stats,
+    };
   }
 }

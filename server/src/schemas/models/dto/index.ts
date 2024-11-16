@@ -8,3 +8,4 @@ export * from './match-players.dto';
 export * from './golf-course-layout.dto';
 export * from './scores.dto';
 export * from './member-settings.dto';
+export * from './friend.dto';
