@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDate,
@@ -6,8 +7,10 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { GenderEnum } from 'src/shared/enums';
+import { AddressDto } from '.';
 
 export class CreateMatchDto {
   @IsString()
@@ -36,7 +39,7 @@ export class CreateMatchDto {
 
   @IsString()
   @IsOptional()
-  coverImageUrl?: string;
+  coverImageUrl?: File;
 
   @IsNumber()
   @IsOptional()
@@ -90,8 +93,6 @@ export class UpdateMatchDto {
   @IsOptional()
   matchesType?: string;
 
-  @IsString()
-  @IsOptional()
   coverImageUrl?: string;
 
   @IsNumber()
@@ -125,4 +126,50 @@ export class UpdateMatchDto {
   @IsEnum(GenderEnum)
   @IsOptional()
   gender: GenderEnum;
+}
+
+export class MatchesHistoryDto {
+  @IsString()
+  @IsNotEmpty()
+  matchId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  courseId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  courseName: string;
+
+  @ValidateNested()
+  @Type(() => AddressDto)
+  address: AddressDto;
+
+  @IsString()
+  @IsNotEmpty()
+  coverImageUrl: string;
+
+  @IsString()
+  @IsNotEmpty()
+  date: Date;
+
+  @IsEnum(['SOLO', 'GROUP'])
+  @IsNotEmpty()
+  matchesType: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  maxPlayers: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  myScore: number;
 }

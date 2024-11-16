@@ -52,4 +52,13 @@ export class MatchPlayerModel {
   async deletePlayerFromMatch(playerId: string): Promise<MatchPlayer> {
     return this.matchPlayerModel.findByIdAndDelete(playerId).exec();
   }
+
+  // ใน MatchPlayerModel
+  async checkPlayerInMatchExists(
+    matchId: string,
+    playerId: string,
+  ): Promise<boolean> {
+    const player = await this.getPlayerByMatchAndPlayerId(matchId, playerId);
+    return !!player;
+  }
 }

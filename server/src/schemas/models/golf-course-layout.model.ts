@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GolfCoursesLayouts } from '..';
@@ -50,5 +50,27 @@ export class GolfCourseLayoutModel {
   // Delete a golf course layout
   async deleteGolfCourseLayout(layoutId: string): Promise<GolfCoursesLayouts> {
     return this.golfCourseLayoutModel.findByIdAndDelete(layoutId).exec();
+  }
+
+  // ใน GolfCourseLayoutModel
+  async validateGolfCourseLayout(
+    golfCourseLayoutId: string,
+    holeNumber: number,
+  ): Promise<void> {
+    const golfCourseLayout =
+      await this.getGolfCourseLayoutById(golfCourseLayoutId);
+    if (!golfCourseLayout) {
+      throw new HttpException(
+        'Golf course layout not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const holeExists = golfCourseLayout.holes.some(
+      (hole) => hole.hole === holeNumber.toString(),
+    );
+    if (!holeExists) {
+      throw new HttpException('Hole number not found', HttpStatus.BAD_REQUEST);
+    }
   }
 }

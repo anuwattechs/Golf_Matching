@@ -34,6 +34,15 @@ export class ScoresController {
     return this.scoresService.getScoreCardByPlayerId(userId);
   }
 
+  @Get('player/scorecard/:matchId')
+  async getScorecardByMatch(
+    @Param('matchId') matchId: string,
+    @Req() req: Request & { decoded: JwtPayloadType },
+  ) {
+    const userId = req.decoded.userId;
+    return this.scoresService.getScoreCardByPlayerIdAndMatch(userId, matchId);
+  }
+
   // Create new hole scores
   @Post()
   async createHoleScores(

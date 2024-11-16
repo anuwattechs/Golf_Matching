@@ -54,4 +54,15 @@ export class MatchesModel {
   async delete(matchId: string): Promise<Matches> {
     return await this.matchesModel.findOneAndDelete({ _id: matchId }).exec();
   }
+
+  async getMathHistory(userId: string): Promise<Matches[]> {
+    const playerInMatch = await this.matchesPlayerModel
+      .find({ playerId: userId })
+      .exec();
+
+    const matchIds = playerInMatch.map((match) => match.matchId);
+    const matches = await this.matchesModel.find({ _id: { $in: matchIds } });
+
+    return matches;
+  }
 }

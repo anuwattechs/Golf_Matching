@@ -165,4 +165,9 @@ export class MemberModel {
     );
     return result.modifiedCount > 0 ? this.findById(userId) : null;
   }
+
+  async checkUserRegistration(userId: string): Promise<boolean> {
+    const user = await this.findById(userId);
+    return !!user;
+  }
 }

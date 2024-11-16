@@ -1,13 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateMatchDto, UpdateMatchDto } from 'src/schemas/models/dto';
+import {
+  CreateMatchDto,
+  MatchesHistoryDto,
+  UpdateMatchDto,
+} from 'src/schemas/models/dto';
 import { MatchesModel } from '../../../schemas/models/matches.model';
 import { NullableType } from 'src/shared/types';
 import { Matches } from 'src/schemas';
 import { JwtPayloadType } from '../auth/strategies/types';
 import { UtilsService } from 'src/shared/utils/utils.service';
-import { MemberModel } from 'src/schemas/models';
+import { GolfCourseModel, MemberModel, ScoresModel } from 'src/schemas/models';
 import { MatchPlayerModel } from '../../../schemas/models/match-players.model';
-import { omit } from 'lodash';
 
 @Injectable()
 export class MatchService {
@@ -15,7 +18,9 @@ export class MatchService {
     private readonly memberModel: MemberModel,
     private readonly matchesModel: MatchesModel,
     private readonly matchPlayerModel: MatchPlayerModel,
+    private readonly scoresModel: ScoresModel,
     private readonly utilsService: UtilsService,
+    private readonly golfCourseModel: GolfCourseModel,
   ) {}
 
   // Create a match
@@ -52,7 +57,13 @@ export class MatchService {
   // Get a match by ID
   async getMatchById(matchId: string): Promise<Matches> {
     try {
-      return await this.matchesModel.findById(matchId);
+      const match = await this.matchesModel.findById(matchId);
+      const { _id: id, ...rest } = match.toObject();
+
+      return {
+        matchId: id,
+        ...rest,
+      };
     } catch (error) {
       this.handleError(error);
     }
@@ -116,5 +127,65 @@ export class MatchService {
       },
       error.status || HttpStatus.INTERNAL_SERVER_ERROR,
     );
+  }
+
+  // Get the match history of the logged-in user
+  async getMatchHistory(decoded: JwtPayloadType): Promise<MatchesHistoryDto[]> {
+    const matchesByMemberId = await this.matchesModel.getMathHistory(
+      decoded.userId,
+    );
+
+    if (!matchesByMemberId || matchesByMemberId.length === 0) {
+      return [];
+    }
+
+    const result = await Promise.all(
+      matchesByMemberId.map(async (match: Matches) => {
+        const {
+          _id: matchId,
+          courseId,
+          title,
+          description,
+          coverImageUrl,
+          date,
+          matchesType,
+          maxPlayers,
+        } = match.toObject();
+
+        const scores = await this.scoresModel.getScoreCardByPlayerId(
+          decoded.userId,
+        );
+        const playerScore = scores?.find(
+          (score) => score.matchId.toString() === matchId.toString(),
+        );
+
+        const course = await this.golfCourseModel.findById(courseId);
+        const courseName = course?.name || '';
+        const address = {
+          street1: course?.address?.street1 || '',
+          street2: course?.address?.street2 || '',
+          city: course?.address?.city || '',
+          state: course?.address?.state || '',
+          country: course?.address?.country || '',
+          postalCode: course?.address?.postalCode || '',
+        };
+
+        return {
+          matchId,
+          title: title || '',
+          description: description || '',
+          courseId: courseId || '',
+          courseName,
+          address,
+          coverImageUrl: coverImageUrl || course.coverImage[0],
+          date,
+          matchesType: matchesType || '',
+          maxPlayers: maxPlayers || 0,
+          myScore: playerScore?.myScore || 0,
+        };
+      }),
+    );
+
+    return result;
   }
 }

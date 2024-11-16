@@ -7,7 +7,6 @@ import {
   ScoresModel,
 } from 'src/schemas/models';
 import { NullableType } from 'src/shared/types';
-import { UtilsService } from 'src/shared/utils/utils.service';
 import { JwtPayloadType } from '../auth/strategies/types';
 import { CreateScoresDto } from 'src/schemas/models/dto';
 
@@ -15,7 +14,6 @@ import { CreateScoresDto } from 'src/schemas/models/dto';
 export class ScoresService {
   constructor(
     private readonly memberModel: MemberModel,
-    private readonly utilsService: UtilsService,
     private readonly golfCourseLayoutModel: GolfCourseLayoutModel,
     private readonly matchPlayerModel: MatchPlayerModel,
     private readonly scoresModel: ScoresModel,
@@ -26,6 +24,21 @@ export class ScoresService {
   ): Promise<NullableType<unknown>> {
     try {
       return this.scoresModel.getScoreCardByPlayerId(playerId);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async getScoreCardByPlayerIdAndMatch(
+    playerId: string,
+    matchId: string,
+  ): Promise<NullableType<unknown>> {
+    try {
+      const score = await this.getHoleScores(matchId, { userId: playerId });
+      const scoreDetail = (score as any[])?.find(
+        (s) => s.playerId.toString() === playerId,
+      );
+      return scoreDetail;
     } catch (error) {
       this.handleError(error);
     }
@@ -43,9 +56,7 @@ export class ScoresService {
         this.scoresModel.getHoleScoresForMatch(matchId),
       ]);
 
-      // สร้าง cache สำหรับ golf course layout เพื่อใช้ซ้ำ
       const layoutCache = new Map();
-
       const results = await Promise.all(
         players.map(async (player) => {
           const filteredPlayer = omit(player.toObject(), [
@@ -54,21 +65,14 @@ export class ScoresService {
             'updatedAt',
           ]);
 
-          // กรองคะแนนของผู้เล่นคนนี้
           const playerScores = holeScores.filter(
             (score) => score.playerId.toString() === player.playerId.toString(),
           );
 
           const filteredScores = playerScores.map((score) =>
-            omit(score.toObject(), [
-              '_id',
-              'createdAt',
-              'updatedAt',
-              'playerId',
-            ]),
+            omit(score, ['_id', 'createdAt', 'updatedAt', 'playerId']),
           );
 
-          // คำนวณ totalScore โดยไม่ใช้ reduce ที่เป็น async
           let totalScore = 0;
           for (const score of filteredScores) {
             const hole = await this.getHoleFromCache(
@@ -98,14 +102,16 @@ export class ScoresService {
     }
   }
 
-  // Create hole scores
   async createHoleScores(
     input: CreateScoresDto,
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     try {
       await this.validateUserAndMatch(input.matchId, decoded.userId);
-      await this.validateGolfCourseLayout(input.golfCourseLayoutId, input.hole);
+      await this.golfCourseLayoutModel.validateGolfCourseLayout(
+        input.golfCourseLayoutId,
+        input.hole,
+      );
       const existingScore = await this.scoresModel.getHoleScoreByMatchAndHole(
         input.matchId,
         input.hole,
@@ -124,36 +130,19 @@ export class ScoresService {
     }
   }
 
-  // Validate user registration and player participation in the match
   private async validateUserAndMatch(
     matchId: string,
     userId: string,
   ): Promise<void> {
-    await this.checkUserRegistration(userId);
-    await this.checkPlayerInMatchExists(matchId, userId);
-  }
-
-  // Check if the user is registered
-  private async checkUserRegistration(userId: string): Promise<void> {
-    const user = await this.memberModel.findById(userId);
-    if (!user) {
-      throw new HttpException(
-        this.utilsService.getMessagesTypeSafe('members.USER_NOT_REGISTERED'),
-        HttpStatus.BAD_REQUEST,
-      );
+    const isUserRegistered =
+      await this.memberModel.checkUserRegistration(userId);
+    if (!isUserRegistered) {
+      throw new HttpException('User not registered', HttpStatus.BAD_REQUEST);
     }
-  }
 
-  // Check if the player exists in the match
-  private async checkPlayerInMatchExists(
-    matchId: string,
-    playerId: string,
-  ): Promise<void> {
-    const player = await this.matchPlayerModel.getPlayerByMatchAndPlayerId(
-      matchId,
-      playerId,
-    );
-    if (!player) {
+    const isPlayerInMatch =
+      await this.matchPlayerModel.checkPlayerInMatchExists(matchId, userId);
+    if (!isPlayerInMatch) {
       throw new HttpException(
         'Player in match not found',
         HttpStatus.BAD_REQUEST,
@@ -161,31 +150,6 @@ export class ScoresService {
     }
   }
 
-  // Validate the golf course layout and hole number
-  private async validateGolfCourseLayout(
-    golfCourseLayoutId: string,
-    holeNumber: number,
-  ): Promise<void> {
-    const golfCourseLayout =
-      await this.golfCourseLayoutModel.getGolfCourseLayoutById(
-        golfCourseLayoutId,
-      );
-    if (!golfCourseLayout) {
-      throw new HttpException(
-        'Golf course layout not found',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const holeExists = golfCourseLayout.holes.some(
-      (hole) => hole.hole === holeNumber.toString(),
-    );
-    if (!holeExists) {
-      throw new HttpException('Hole number not found', HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  // Centralized error handling
   private handleError(error: any): void {
     const status = error.status || HttpStatus.INTERNAL_SERVER_ERROR;
     throw new HttpException(
@@ -199,7 +163,6 @@ export class ScoresService {
     );
   }
 
-  // ฟังก์ชันสำหรับดึงข้อมูลหลุมจาก cache หรือ database
   private async getHoleFromCache(
     holeNumber: number,
     golfLayoutId: string,
