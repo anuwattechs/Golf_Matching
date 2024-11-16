@@ -58,6 +58,11 @@ export class MatchService {
   async getMatchById(matchId: string): Promise<Matches> {
     try {
       const match = await this.matchesModel.findById(matchId);
+
+      if (!match) {
+        throw new HttpException("Match doesn't exist", HttpStatus.NOT_FOUND);
+      }
+
       const { _id: id, ...rest } = match.toObject();
 
       return {
@@ -155,6 +160,9 @@ export class MatchService {
         const scores = await this.scoresModel.getScoreCardByPlayerId(
           decoded.userId,
         );
+
+        const players = await this.matchPlayerModel.getPlayersForMatch(matchId);
+
         const playerScore = scores?.find(
           (score) => score.matchId.toString() === matchId.toString(),
         );
@@ -181,6 +189,7 @@ export class MatchService {
           date,
           matchesType: matchesType || '',
           maxPlayers: maxPlayers || 0,
+          currentPlayers: players.length || 0,
           myScore: playerScore?.myScore || 0,
         };
       }),

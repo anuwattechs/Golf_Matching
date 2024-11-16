@@ -56,7 +56,7 @@ export class ScoresService {
         this.scoresModel.getHoleScoresForMatch(matchId),
       ]);
 
-      const layoutCache = new Map();
+      const layoutCache = new Map<string, any>();
       const results = await Promise.all(
         players.map(async (player) => {
           const filteredPlayer = omit(player.toObject(), [

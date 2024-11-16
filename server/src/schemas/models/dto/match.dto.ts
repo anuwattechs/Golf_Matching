@@ -7,12 +7,14 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { GenderEnum } from 'src/shared/enums';
 import { AddressDto } from '.';
 
 export class CreateMatchDto {
+  @ValidateIf((o) => o.matchesType === 'SOLO')
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -61,10 +63,12 @@ export class CreateMatchDto {
   @IsNotEmpty()
   maxPlayers: number;
 
+  @ValidateIf((o) => o.matchesType === 'GROUP')
   @IsArray()
   @IsOptional()
   tags: string[];
 
+  @ValidateIf((o) => o.matchesType === 'GROUP')
   @IsEnum(GenderEnum)
   @IsOptional()
   gender?: GenderEnum;
@@ -168,6 +172,10 @@ export class MatchesHistoryDto {
   @IsNumber()
   @IsNotEmpty()
   maxPlayers: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  currentPlayers: number;
 
   @IsNumber()
   @IsNotEmpty()
