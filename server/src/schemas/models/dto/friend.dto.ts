@@ -20,7 +20,7 @@ export class UpdateFriendStatusDto {
   friendId: string;
 
   @IsEnum(FriendStatusEnum)
-  status: FriendStatusEnum; // สามารถใช้ enum เพื่อกำหนดสถานะต่างๆ
+  status: FriendStatusEnum;
 }
 
 export class AddFriendInteractionDto {
@@ -28,7 +28,7 @@ export class AddFriendInteractionDto {
   action: FriendInteractionActionEnum;
 }
 
-export class GetFriendsBymemberIdDto {
+export class GetFriendsByMemberIdDto {
   @IsString()
   @IsNotEmpty()
   memberId: string;
@@ -41,5 +41,13 @@ export class RemoveFriendDto {
 
   @IsString()
   @IsNotEmpty()
+  friendId: string;
+}
+
+export class FollowDto {
+  friendId: string;
+}
+
+export class UnFollowDto {
   friendId: string;
 }
