@@ -33,17 +33,17 @@ export class FriendsService {
     return this.friendsModel.getFriendsByUserId(userId, statuses);
   }
 
-  async getPendingRequests(memberId: string): Promise<Friends[]> {
-    return this.friendsModel.getPendingRequests(memberId);
+  async getPendingRequests(senderId: string): Promise<Friends[]> {
+    return this.friendsModel.getPendingRequests(senderId);
   }
 
   private async checkBlockedStatus(
-    memberId: string,
-    friendId: string,
+    senderId: string,
+    receiverId: string,
   ): Promise<void> {
     const [memberStatus, friendStatus] = await Promise.all([
-      this.friendsModel.findExistingFriend(memberId, friendId),
-      this.friendsModel.findExistingFriend(friendId, memberId),
+      this.friendsModel.findExistingFriend(senderId, receiverId),
+      this.friendsModel.findExistingFriend(receiverId, senderId),
     ]);
 
     if (
@@ -61,38 +61,38 @@ export class FriendsService {
     }
   }
 
-  private async getFriendStatus(memberId: string, friendId: string) {
-    return await this.friendsModel.findExistingFriend(memberId, friendId);
+  private async getFriendStatus(senderId: string, receiverId: string) {
+    return await this.friendsModel.findExistingFriend(senderId, receiverId);
   }
 
   private throwHttpException(message: string, statusCode: HttpStatus) {
     throw new HttpException({ status: false, statusCode, message }, statusCode);
   }
 
-  async toggleFollow(memberId: string, friendId: string): Promise<Friends> {
-    await this.checkBlockedStatus(memberId, friendId);
+  async toggleFollow(senderId: string, receiverId: string): Promise<Friends> {
+    await this.checkBlockedStatus(senderId, receiverId);
 
-    const existingFriend = await this.getFriendStatus(memberId, friendId);
+    const existingFriend = await this.getFriendStatus(senderId, receiverId);
     const newStatus =
       existingFriend?.status === FriendStatusEnum.FOLLOWING
         ? FriendStatusEnum.REMOVED
         : FriendStatusEnum.FOLLOWING;
 
     return this.friendsModel.updateFriendStatus({
-      memberId,
-      friendId,
+      senderId,
+      receiverId,
       status: newStatus,
     });
   }
 
   async sendFollowRequest(
-    memberId: string,
-    friendId: string,
+    senderId: string,
+    receiverId: string,
     isPrivate = true,
   ): Promise<Friends> {
-    await this.checkBlockedStatus(memberId, friendId);
+    await this.checkBlockedStatus(senderId, receiverId);
 
-    const existingFriend = await this.getFriendStatus(memberId, friendId);
+    const existingFriend = await this.getFriendStatus(senderId, receiverId);
     if (existingFriend) {
       switch (existingFriend.status) {
         case FriendStatusEnum.FOLLOWING:
@@ -107,8 +107,8 @@ export class FriendsService {
           );
         case FriendStatusEnum.REMOVED:
           return this.friendsModel.updateFriendStatus({
-            memberId,
-            friendId,
+            senderId,
+            receiverId,
             status: isPrivate
               ? FriendStatusEnum.PENDING
               : FriendStatusEnum.FOLLOWING,
@@ -119,16 +119,20 @@ export class FriendsService {
     const status = isPrivate
       ? FriendStatusEnum.PENDING
       : FriendStatusEnum.FOLLOWING;
-    return this.friendsModel.createNewFriendRequest(memberId, friendId, status);
+    return this.friendsModel.createNewFriendRequest(
+      senderId,
+      receiverId,
+      status,
+    );
   }
 
   async acceptFollowRequest(
-    memberId: string,
-    friendId: string,
+    senderId: string,
+    receiverId: string,
   ): Promise<Friends> {
     const existingFriend = await this.friendsModel.findExistingFriend(
-      memberId,
-      friendId,
+      receiverId,
+      senderId,
       FriendStatusEnum.PENDING,
     );
 
@@ -139,22 +143,26 @@ export class FriendsService {
       );
     }
 
-    if (memberId !== existingFriend.friendId) {
+    if (senderId !== existingFriend.receiverId) {
       this.throwHttpException(ErrorMessages.UNAUTHORIZED, HttpStatus.FORBIDDEN);
     }
 
     return this.friendsModel.updateFriendStatus({
-      memberId,
-      friendId,
+      senderId: receiverId,
+      receiverId: senderId,
       status: FriendStatusEnum.FOLLOWING,
     });
   }
 
   async declineFollowRequest(
-    memberId: string,
-    friendId: string,
+    senderId: string,
+    receiverId: string,
   ): Promise<Friends> {
-    const existingFriend = await this.getFriendStatus(memberId, friendId);
+    const existingFriend = await this.friendsModel.findExistingFriend(
+      receiverId,
+      senderId,
+      FriendStatusEnum.PENDING,
+    );
 
     if (!existingFriend || existingFriend.status !== FriendStatusEnum.PENDING) {
       this.throwHttpException(
@@ -163,21 +171,21 @@ export class FriendsService {
       );
     }
 
-    if (memberId !== existingFriend.friendId) {
+    if (senderId !== existingFriend.receiverId) {
       this.throwHttpException(ErrorMessages.UNAUTHORIZED, HttpStatus.FORBIDDEN);
     }
 
     return this.friendsModel.removeFriend({
-      memberId: friendId,
-      friendId: memberId,
+      senderId: receiverId,
+      receiverId: senderId,
     });
   }
 
   async toggleBlockStatus(
-    memberId: string,
-    friendId: string,
+    senderId: string,
+    receiverId: string,
   ): Promise<Friends> {
-    const existingFriend = await this.getFriendStatus(memberId, friendId);
+    const existingFriend = await this.getFriendStatus(senderId, receiverId);
 
     if (!existingFriend) {
       this.throwHttpException(
@@ -192,23 +200,22 @@ export class FriendsService {
         : FriendStatusEnum.BLOCKED;
 
     return this.friendsModel.updateFriendStatus({
-      memberId,
-      friendId,
+      senderId,
+      receiverId,
       status: newStatus,
     });
   }
 
   async searchFriends(
-    memberId: string,
+    senderId: string,
     input: SearchFriendsDto,
   ): Promise<ResultsPaginatedFriendsDto> {
     const filterQuery = {
-      _id: { $ne: memberId },
+      _id: { $ne: senderId },
       ...this.buildFilterQuery(input),
     };
     const { result: allProfile, pagination } =
       await this.memberModel.findAllProfilesWithPagination(
-        memberId,
         input.page,
         input.limit,
         filterQuery,
@@ -217,15 +224,15 @@ export class FriendsService {
     return {
       result: await Promise.all(
         allProfile
-          ?.filter((profile) => profile.memberId !== memberId)
+          ?.filter((profile) => profile.memberId !== senderId)
           ?.map(async (profile) => {
-            const friends = await this.getFriendsByUserId(memberId, [
+            const friends = await this.getFriendsByUserId(senderId, [
               FriendStatusEnum.FOLLOWING,
               FriendStatusEnum.PENDING,
             ]);
 
             const statusProfile = friends.find(
-              (f) => f.friendId === profile.memberId,
+              (f) => f.receiverId === profile.memberId,
             )?.status;
 
             return {

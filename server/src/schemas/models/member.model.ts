@@ -305,15 +305,10 @@ export class MemberModel {
   // }
 
   async findAllProfilesWithPagination(
-    memberId: string,
     page: number,
     limit: number,
     filterQuery: Record<string, unknown>,
   ): Promise<ResultsPaginatedFriendsDto> {
-    // const filterQuery = {
-    //   _id: { $ne: memberId },
-    // };
-
     const {
       data,
       total,

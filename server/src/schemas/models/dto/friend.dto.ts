@@ -24,17 +24,17 @@ import { ProfileForSearch } from './member.dto';
 export class AddFriendRequestDto {
   @IsString()
   @IsNotEmpty()
-  friendId: string;
+  receiverId: string;
 }
 
 export class UpdateFriendStatusDto {
   @IsString()
   @IsNotEmpty()
-  memberId: string;
+  senderId: string;
 
   @IsString()
   @IsNotEmpty()
-  friendId: string;
+  receiverId: string;
 
   @IsEnum(FriendStatusEnum)
   status: FriendStatusEnum;
@@ -48,25 +48,25 @@ export class AddFriendInteractionDto {
 export class GetFriendsByMemberIdDto {
   @IsString()
   @IsNotEmpty()
-  memberId: string;
+  senderId: string;
 }
 
 export class RemoveFriendDto {
   @IsString()
   @IsNotEmpty()
-  memberId: string;
+  senderId: string;
 
   @IsString()
   @IsNotEmpty()
-  friendId: string;
+  receiverId: string;
 }
 
 export class FollowDto {
-  friendId: string;
+  receiverId: string;
 }
 
 export class UnFollowDto {
-  friendId: string;
+  receiverId: string;
 }
 
 export class RangeDto {

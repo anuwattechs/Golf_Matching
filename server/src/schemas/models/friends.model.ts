@@ -13,39 +13,37 @@ export class FriendsModel {
   ) {}
 
   async getFriendsByUserId(
-    memberId: string,
+    senderId: string,
     statuses?: FriendStatusEnum | FriendStatusEnum[],
   ): Promise<Friends[]> {
     if (statuses && statuses.length) {
       return this.friendsModel.find({
-        memberId,
+        senderId,
         status: { $in: statuses },
       });
     }
 
-    return this.friendsModel.find({ memberId });
+    return this.friendsModel.find({ senderId });
   }
 
   async findExistingFriend(
-    memberId: string,
-    friendId: string,
+    senderId: string,
+    receiverId: string,
     status?: FriendStatusEnum,
   ): Promise<Friends | null> {
-    console.log('memberId', memberId);
-    console.log('friendId', friendId);
-    const query = { memberId, friendId };
+    const query = { senderId, receiverId };
     if (status) query['status'] = status;
     return this.friendsModel.findOne(query);
   }
 
   async createNewFriendRequest(
-    memberId: string,
-    friendId: string,
+    senderId: string,
+    receiverId: string,
     status = FriendStatusEnum.FOLLOWING,
   ): Promise<Friends> {
     const newFriend = new this.friendsModel({
-      memberId,
-      friendId,
+      senderId,
+      receiverId,
       status,
     });
 
@@ -54,7 +52,7 @@ export class FriendsModel {
 
   async updateFriendStatus(dto: UpdateFriendStatusDto): Promise<Friends> {
     return this.friendsModel.findOneAndUpdate(
-      { memberId: dto.memberId, friendId: dto.friendId },
+      { senderId: dto.senderId, receiverId: dto.receiverId },
       { $set: { status: dto.status } },
       { new: true, lean: true },
     );
@@ -71,8 +69,8 @@ export class FriendsModel {
   ): Promise<Friends[]> {
     const searchQuery = {
       $or: [
-        { memberId: userId, friendId: { $regex: query, $options: 'i' } },
-        { friendId: userId, memberId: { $regex: query, $options: 'i' } },
+        { senderId: userId, receiverId: { $regex: query, $options: 'i' } },
+        { receiverId: userId, senderId: { $regex: query, $options: 'i' } },
       ],
     };
 
@@ -83,9 +81,9 @@ export class FriendsModel {
     return this.friendsModel.find(searchQuery);
   }
 
-  async getPendingRequests(memberId: string): Promise<Friends[]> {
+  async getPendingRequests(senderId: string): Promise<Friends[]> {
     return this.friendsModel.find({
-      friendId: memberId,
+      receiverId: senderId,
       status: FriendStatusEnum.PENDING,
     });
   }

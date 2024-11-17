@@ -16,21 +16,21 @@ export class Friends extends Document {
   })
   _id: string;
 
-  // ID of the user who initiated the friend request
+  // ID of the user who initiated the friend request (sender)
   @Prop({
     required: true,
     type: String,
     index: true,
   })
-  memberId: string;
+  senderId: string;
 
-  // ID of the user who is the target of the friend request
+  // ID of the user who is the target of the friend request (receiver)
   @Prop({
     required: true,
     type: String,
     index: true,
   })
-  friendId: string;
+  receiverId: string;
 
   // Status of the friendship (e.g., FOLLOWING, FOLLOWED, BLOCKED)
   @Prop({
@@ -44,6 +44,6 @@ export class Friends extends Document {
 
 // Create a unique index to prevent duplicate friend relationships
 const friendsSchema = SchemaFactory.createForClass(Friends);
-friendsSchema.index({ memberId: 1, friendId: 1 }, { unique: true });
+friendsSchema.index({ senderId: 1, receiverId: 1 }, { unique: true });
 
 export const FriendsSchema = friendsSchema;

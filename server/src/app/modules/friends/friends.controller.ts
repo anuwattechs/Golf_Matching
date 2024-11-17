@@ -23,49 +23,49 @@ import { SearchFriendsDto } from 'src/schemas/models/dto';
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
-  @Put('follow/:friendId')
+  @Put('follow/:receiverId')
   async follow(
-    @Param('friendId') friendId: string,
+    @Param('receiverId') receiverId: string,
     @Request() req: { decoded: JwtPayloadType },
   ) {
     const { userId } = req.decoded;
-    return await this.friendsService.sendFollowRequest(userId, friendId);
+    return await this.friendsService.sendFollowRequest(userId, receiverId);
   }
 
-  @Delete('unfollow/:friendId')
+  @Delete('unfollow/:receiverId')
   async unFollow(
-    @Param('friendId') friendId: string,
+    @Param('receiverId') receiverId: string,
     @Request() req: { decoded: JwtPayloadType },
   ) {
     const { userId } = req.decoded;
-    return await this.friendsService.toggleFollow(userId, friendId);
+    return await this.friendsService.toggleFollow(userId, receiverId);
   }
 
-  @Put('requests/:friendId/accept')
+  @Put('requests/:senderId/accept')
   async acceptRequest(
-    @Param('friendId') friendId: string,
+    @Param('senderId') senderId: string,
     @Request() req: { decoded: JwtPayloadType },
   ) {
     const { userId } = req.decoded;
-    return await this.friendsService.acceptFollowRequest(userId, friendId);
+    return await this.friendsService.acceptFollowRequest(userId, senderId);
   }
 
-  @Put('requests/:friendId/decline')
+  @Put('requests/:senderId/decline')
   async declineRequest(
-    @Param('friendId') friendId: string,
+    @Param('senderId') senderId: string,
     @Request() req: { decoded: JwtPayloadType },
   ) {
     const { userId } = req.decoded;
-    return await this.friendsService.declineFollowRequest(userId, friendId);
+    return await this.friendsService.declineFollowRequest(userId, senderId);
   }
 
-  @Put('block/:friendId')
+  @Put('block/:receiverId')
   async block(
-    @Param('friendId') friendId: string,
+    @Param('receiverId') receiverId: string,
     @Request() req: { decoded: JwtPayloadType },
   ) {
     const { userId } = req.decoded;
-    return this.friendsService.toggleBlockStatus(userId, friendId);
+    return this.friendsService.toggleBlockStatus(userId, receiverId);
   }
 
   @Get()
