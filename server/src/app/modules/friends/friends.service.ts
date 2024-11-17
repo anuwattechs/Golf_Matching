@@ -6,7 +6,6 @@ import {
   ResultsPaginatedFriendsDto,
   SearchFriendsDto,
 } from 'src/schemas/models/dto';
-import { UtilsService } from 'src/shared/utils/utils.service';
 
 enum ErrorMessages {
   BLOCKED = 'You are blocked by this user or have blocked this user',
@@ -32,6 +31,10 @@ export class FriendsService {
     }
 
     return this.friendsModel.getFriendsByUserId(userId, statuses);
+  }
+
+  async getPendingRequests(memberId: string): Promise<Friends[]> {
+    return this.friendsModel.getPendingRequests(memberId);
   }
 
   private async checkBlockedStatus(
@@ -123,7 +126,11 @@ export class FriendsService {
     memberId: string,
     friendId: string,
   ): Promise<Friends> {
-    const existingFriend = await this.getFriendStatus(memberId, friendId);
+    const existingFriend = await this.friendsModel.findExistingFriend(
+      memberId,
+      friendId,
+      FriendStatusEnum.PENDING,
+    );
 
     if (!existingFriend || existingFriend.status !== FriendStatusEnum.PENDING) {
       this.throwHttpException(
@@ -231,6 +238,11 @@ export class FriendsService {
     };
   }
 
+  /**
+   * Build filter query for searching friends based on filter object provided by user input in search
+   * @param filter - Filter object
+   * @returns Filter query
+   */
   private buildFilterQuery = (filter: any) => {
     const {
       query,

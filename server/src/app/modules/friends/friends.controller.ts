@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '../auth/guard';
 import { JwtPayloadType } from '../auth/strategies/types';
 import { FriendStatusEnum } from 'src/shared/enums';
 import { SearchFriendsDto } from 'src/schemas/models/dto';
-import { UserRegisteredGuard } from 'src/app/common/guard';
+// import { UserRegisteredGuard } from 'src/app/common/guard';
 
 @Controller('friends')
 @UseGuards(JwtAuthGuard)
@@ -87,6 +87,12 @@ export class FriendsController {
       userId,
       enumStatuses.length ? enumStatuses : undefined,
     );
+  }
+
+  @Get('requests')
+  async getPendingRequests(@Request() req: { decoded: JwtPayloadType }) {
+    const { userId } = req.decoded;
+    return this.friendsService.getPendingRequests(userId);
   }
 
   @Post('search')

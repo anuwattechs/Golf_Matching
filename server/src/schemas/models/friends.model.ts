@@ -31,6 +31,8 @@ export class FriendsModel {
     friendId: string,
     status?: FriendStatusEnum,
   ): Promise<Friends | null> {
+    console.log('memberId', memberId);
+    console.log('friendId', friendId);
     const query = { memberId, friendId };
     if (status) query['status'] = status;
     return this.friendsModel.findOne(query);
@@ -79,5 +81,12 @@ export class FriendsModel {
     }
 
     return this.friendsModel.find(searchQuery);
+  }
+
+  async getPendingRequests(memberId: string): Promise<Friends[]> {
+    return this.friendsModel.find({
+      friendId: memberId,
+      status: FriendStatusEnum.PENDING,
+    });
   }
 }
