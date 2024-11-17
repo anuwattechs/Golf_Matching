@@ -1,13 +1,4 @@
 {
   "singleQuote": true,
-  "trailingComma": "all",
-  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx"],
-      "options": {
-        "plugins": ["@ianvs/prettier-plugin-sort-imports"]
-      }
-    }
-  ]
+  "trailingComma": "all"
 }

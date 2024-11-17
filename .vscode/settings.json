@@ -14,6 +14,7 @@
         "nestjs",
         "Signin",
         "typeorm",
+        "unfollow",
         "uuidv"
     ],
     "nuxt.isNuxtApp": false

@@ -37,6 +37,8 @@ import {
   Friends,
   FriendsSchema,
 } from 'src/schemas';
+import { UtilsModule } from 'src/shared/utils/utils.module';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Module({
   imports: [
@@ -99,6 +101,7 @@ import {
     ScoresModel,
     MemberSettingsModel,
     FriendsModel,
+    UtilsService,
   ],
   exports: [
     MemberModel,

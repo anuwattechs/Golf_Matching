@@ -9,13 +9,18 @@ import {
   FindBySocialIdDto,
   Stats,
   Profile,
+  ProfileForSearch,
+  ResultsPaginatedFriendsDto,
 } from './dto';
 import { ScoresModel } from './scores.model';
+import { FriendStatusEnum } from 'src/shared/enums';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
 export class MemberModel {
   constructor(
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    private readonly utilsService: UtilsService,
     private readonly scoresModel: ScoresModel,
   ) {}
 
@@ -204,9 +209,9 @@ export class MemberModel {
 
   async findProfileById(userId: string): Promise<Profile> {
     const member = await this.findById(userId);
-    const stats = await this.getStats(userId);
-
     if (!member) return null;
+
+    const stats = await this.getStats(userId);
 
     const {
       _id: memberId,
@@ -231,6 +236,134 @@ export class MemberModel {
       tags: tags,
       isInviteAble: isInviteAble,
       stats: stats,
+    };
+  }
+
+  async findAllProfiles(): Promise<ProfileForSearch[]> {
+    const members = await this.memberModel.find().exec();
+    if (!members) return null;
+    return members?.map((member) => {
+      const {
+        _id,
+        firstName,
+        lastName,
+        location,
+        country,
+        tags,
+        introduction,
+        isInviteAble,
+      } = member;
+      return {
+        memberId: _id,
+        firstName: firstName,
+        lastName: lastName,
+        ranking: 'Rookie',
+        introduction: introduction,
+        location: location,
+        country: country,
+        tags: tags,
+        isInviteAble: isInviteAble,
+        status: null,
+      };
+    });
+  }
+
+  // async findAllProfilesWithPagination(
+  //   page: number,
+  //   limit: number,
+  // ): Promise<ProfileForSearch[]> {
+  //   const members = await this.memberModel
+  //     .find()
+  //     .skip((page - 1) * limit)
+  //     .limit(limit)
+  //     .exec();
+  //   if (!members) return null;
+  //   return members?.map((member) => {
+  //     const {
+  //       _id,
+  //       firstName,
+  //       lastName,
+  //       location,
+  //       country,
+  //       tags,
+  //       introduction,
+  //       isInviteAble,
+  //     } = member;
+  //     return {
+  //       memberId: _id,
+  //       firstName: firstName,
+  //       lastName: lastName,
+  //       ranking: 'Rookie',
+  //       introduction: introduction,
+  //       location: location,
+  //       country: country,
+  //       tags: tags,
+  //       isInviteAble: isInviteAble,
+  //       status: null,
+  //     };
+  //   });
+  // }
+
+  async findAllProfilesWithPagination(
+    memberId: string,
+    page: number,
+    limit: number,
+    filterQuery: Record<string, unknown>,
+  ): Promise<ResultsPaginatedFriendsDto> {
+    // const filterQuery = {
+    //   _id: { $ne: memberId },
+    // };
+
+    const {
+      data,
+      total,
+      page: currentPage,
+      limit: currentLimit,
+      totalPages,
+      hasNextPage,
+      hasPrevPage,
+    } = await this.utilsService.findAllWithPaginationAndFilter(
+      this.memberModel,
+      page,
+      limit,
+      filterQuery,
+    );
+
+    const result = data?.map((member) => {
+      const {
+        _id,
+        firstName,
+        lastName,
+        location,
+        country,
+        tags,
+        introduction,
+        isInviteAble,
+      } = member;
+      return {
+        memberId: _id,
+        firstName: firstName,
+        lastName: lastName,
+        ranking: 'Rookie',
+        introduction: introduction,
+        location: location,
+        country: country,
+        tags: tags,
+        isInviteAble: isInviteAble,
+        status: null,
+      };
+    });
+
+    return {
+      result: result,
+      pagination: {
+        total: total,
+        page: currentPage,
+        limit: currentLimit,
+        totalPages: totalPages,
+        hasNextPage: hasNextPage,
+        hasPrevPage: hasPrevPage,
+      },
     };
   }
 }

@@ -1,12 +1,13 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { GenderEnum } from 'src/shared/enums';
+import { FriendStatusEnum, GenderEnum } from 'src/shared/enums';
 
 export class CreateMemberDto {
   firstName: string;
@@ -136,4 +137,45 @@ export class Profile {
   @ValidateNested()
   @Type(() => Stats)
   stats: Stats;
+}
+
+export class ProfileForSearch {
+  @IsNotEmpty()
+  @IsString()
+  memberId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  ranking: string;
+
+  @IsNotEmpty()
+  @IsString()
+  introduction: string;
+
+  @IsNotEmpty()
+  @IsString()
+  location: string;
+
+  @IsNotEmpty()
+  @IsString()
+  country: string;
+
+  @IsNotEmpty()
+  @IsString({ each: true })
+  tags: string[];
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isInviteAble: boolean;
+
+  @IsEnum(FriendStatusEnum)
+  status: FriendStatusEnum | null;
 }
