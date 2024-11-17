@@ -1,7 +1,7 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './app/common/interceptors';
-import { ValidationPipe } from '@nestjs/common';
 import validationOptions from './shared/validators/validation-options';
 
 async function bootstrap() {
