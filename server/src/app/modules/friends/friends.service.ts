@@ -246,11 +246,6 @@ export class FriendsService {
     };
   }
 
-  /**
-   * Build filter query for searching friends based on filter object provided by user input in search
-   * @param filter - Filter object
-   * @returns Filter query
-   */
   private buildFilterQuery = (filter: any) => {
     const {
       query,
