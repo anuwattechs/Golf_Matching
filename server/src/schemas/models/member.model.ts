@@ -236,6 +236,8 @@ export class MemberModel {
       tags: tags,
       isInviteAble: isInviteAble,
       stats: stats,
+      followings: [],
+      followers: [],
     };
   }
 
@@ -360,5 +362,59 @@ export class MemberModel {
         hasPrevPage: hasPrevPage,
       },
     };
+  }
+
+  async buildProfileForSearch(member: Member): Promise<ProfileForSearch> {
+    const {
+      _id,
+      firstName,
+      lastName,
+      location,
+      country,
+      tags,
+      introduction,
+      isInviteAble,
+    } = member;
+    return {
+      memberId: _id,
+      firstName: firstName,
+      lastName: lastName,
+      ranking: 'Rookie',
+      introduction: introduction,
+      location: location,
+      country: country,
+      tags: tags,
+      isInviteAble: isInviteAble,
+      status: null,
+    };
+  }
+
+  async getProfilesByIds(ids: string[]): Promise<ProfileForSearch[]> {
+    const members = await this.memberModel.find({ _id: { $in: ids } }).exec();
+    if (!members) return null;
+    return members?.map((member) => {
+      const {
+        _id,
+        firstName,
+        lastName,
+        location,
+        country,
+        tags,
+        introduction,
+        isInviteAble,
+      } = member;
+      return {
+        memberId: _id,
+        firstName: firstName,
+        lastName: lastName,
+        ranking: 'Rookie',
+        introduction: introduction,
+        location: location,
+        country: country,
+        tags: tags,
+        isInviteAble: isInviteAble,
+        status: null,
+      };
+    });
   }
 }

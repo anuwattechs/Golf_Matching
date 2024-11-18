@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -137,6 +138,19 @@ export class Profile {
   @ValidateNested()
   @Type(() => Stats)
   stats: Stats;
+
+  @ValidateNested()
+  @Type(() => ProfileForSearch)
+  followings: ProfileForSearch[];
+
+  @ValidateNested()
+  @Type(() => ProfileForSearch)
+  followers: ProfileForSearch[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ProfileForSearch)
+  pendingRequests?: ProfileForSearch[];
 }
 
 export class ProfileForSearch {

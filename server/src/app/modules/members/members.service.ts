@@ -1,13 +1,13 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { NullableType } from 'src/shared/types';
 import { UpdateProfileDto, ChangeInviteModeDto } from './dto';
-import { MemberModel } from 'src/schemas/models';
+import { FriendsModel, MemberModel } from 'src/schemas/models';
 import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payload.type';
 import { UtilsService } from 'src/shared/utils/utils.service';
 import { v4 as uuidv4 } from 'uuid';
 import { AwsService } from 'src/app/common/services/aws/aws.service';
-import { ServerSideEncryption } from '@aws-sdk/client-s3';
 import { Profile } from 'src/schemas/models/dto';
+import { FriendStatusEnum } from 'src/shared/enums';
 
 @Injectable()
 export class MembersService {
@@ -15,6 +15,7 @@ export class MembersService {
     private readonly memberModel: MemberModel,
     private readonly utilsService: UtilsService,
     private readonly awsService: AwsService,
+    private readonly friendsModel: FriendsModel,
   ) {}
 
   async updateProfile(
@@ -178,11 +179,37 @@ export class MembersService {
   }
 
   async findOneProfile(
-    jwtPayload: JwtPayloadType,
+    _: JwtPayloadType,
     userId: string,
+    isShowPendingRequests: boolean,
   ): Promise<Profile> {
     try {
-      const member = await this.memberModel.findProfileById(userId);
+      const [member, members, followings, followers, pendingRequests] =
+        await Promise.all([
+          this.memberModel.findProfileById(userId),
+          this.memberModel.findAllProfiles(),
+          this.friendsModel
+            .getFriendsByUserId(userId, FriendStatusEnum.FOLLOWING)
+            .then((res) =>
+              res
+                ?.filter((r) => r.senderId === userId)
+                ?.map((r) => r.receiverId),
+            ),
+          this.friendsModel
+            .getFollowersByUserId(userId, FriendStatusEnum.FOLLOWING)
+            .then((res) =>
+              res
+                ?.filter((r) => r.receiverId === userId)
+                ?.map((r) => r.senderId),
+            ),
+          this.friendsModel
+            .getFriendRequests(userId)
+            .then((res) =>
+              res
+                ?.filter((r) => r.receiverId === userId)
+                ?.map((r) => r.senderId),
+            ),
+        ]);
 
       if (!member) {
         throw new HttpException(
@@ -196,7 +223,25 @@ export class MembersService {
         );
       }
 
-      return member;
+      const mapMembers = (ids: string[]) =>
+        members.filter((m) => ids.includes(m.memberId));
+
+      const mappedFollowings = mapMembers(followings);
+      const mappedFollowers = mapMembers(followers);
+      const mappedPendingRequests = mapMembers(pendingRequests);
+
+      const result: Profile = {
+        ...member,
+        followings: mappedFollowings,
+        followers: mappedFollowers,
+        ...(isShowPendingRequests && {
+          pendingRequests: mappedPendingRequests,
+        }),
+      };
+
+      console.log('result', result);
+
+      return result;
     } catch (error) {
       throw new HttpException(
         {

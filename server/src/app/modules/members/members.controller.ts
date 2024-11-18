@@ -40,6 +40,7 @@ export class MembersController {
     return await this.membersService.findOneProfile(
       req.decoded,
       req.decoded.userId,
+      true,
     );
   }
 
@@ -50,7 +51,11 @@ export class MembersController {
     @Param('memberId') memberId: string,
     @Req() req: Request & { decoded: JwtPayloadType },
   ) {
-    return await this.membersService.findOneProfile(req.decoded, memberId);
+    return await this.membersService.findOneProfile(
+      req.decoded,
+      memberId,
+      false,
+    );
   }
 
   @Put()

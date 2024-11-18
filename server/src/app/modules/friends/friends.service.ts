@@ -3,6 +3,7 @@ import { FriendsModel, MemberModel } from 'src/schemas/models';
 import { Friends } from 'src/schemas';
 import { FriendStatusEnum } from 'src/shared/enums';
 import {
+  ProfileForSearch,
   ResultsPaginatedFriendsDto,
   SearchFriendsDto,
 } from 'src/schemas/models/dto';
@@ -312,4 +313,25 @@ export class FriendsService {
 
     return filterQuery;
   };
+
+  async getFollowings(userId: string): Promise<ProfileForSearch[]> {
+    const friends = await this.getFriendsByUserId(userId, [
+      FriendStatusEnum.FOLLOWING,
+    ]);
+
+    return this.memberModel.getProfilesByIds(
+      friends?.filter((r) => r.senderId === userId).map((f) => f.receiverId),
+    );
+  }
+
+  async getFollowers(userId: string): Promise<ProfileForSearch[]> {
+    const friends = await this.friendsModel.getFollowersByUserId(
+      userId,
+      FriendStatusEnum.FOLLOWING,
+    );
+
+    return this.memberModel.getProfilesByIds(
+      friends?.filter((r) => r.receiverId === userId).map((f) => f.senderId),
+    );
+  }
 }

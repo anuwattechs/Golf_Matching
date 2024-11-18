@@ -12,6 +12,7 @@ export class FriendsModel {
     private readonly friendsModel: Model<Friends>,
   ) {}
 
+  // Following methods are used in the service layer
   async getFriendsByUserId(
     senderId: string,
     statuses?: FriendStatusEnum | FriendStatusEnum[],
@@ -24,6 +25,21 @@ export class FriendsModel {
     }
 
     return this.friendsModel.find({ senderId });
+  }
+
+  // Follower is the user who is following the receiver
+  async getFollowersByUserId(
+    receiverId: string,
+    statuses?: FriendStatusEnum | FriendStatusEnum[],
+  ): Promise<Friends[]> {
+    if (statuses && statuses.length) {
+      return this.friendsModel.find({
+        receiverId,
+        status: { $in: statuses },
+      });
+    }
+
+    return this.friendsModel.find({ receiverId });
   }
 
   async findExistingFriend(
@@ -84,6 +100,13 @@ export class FriendsModel {
   async getPendingRequests(senderId: string): Promise<Friends[]> {
     return this.friendsModel.find({
       receiverId: senderId,
+      status: FriendStatusEnum.PENDING,
+    });
+  }
+
+  async getFriendRequests(receiverId: string): Promise<Friends[]> {
+    return this.friendsModel.find({
+      receiverId,
       status: FriendStatusEnum.PENDING,
     });
   }
