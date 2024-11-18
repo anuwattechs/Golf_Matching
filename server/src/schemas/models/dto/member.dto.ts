@@ -99,6 +99,9 @@ export class Profile {
   @IsString()
   memberId: string;
 
+  @IsString()
+  profileImage: string;
+
   @IsNotEmpty()
   @IsString()
   firstName: string;
@@ -157,6 +160,9 @@ export class ProfileForSearch {
   @IsNotEmpty()
   @IsString()
   memberId: string;
+
+  @IsString()
+  profileImage: string;
 
   @IsNotEmpty()
   @IsString()

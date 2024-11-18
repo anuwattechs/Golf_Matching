@@ -222,10 +222,12 @@ export class MemberModel {
       country,
       tags,
       isInviteAble,
+      profileImage,
     } = member;
 
     return {
       memberId: memberId,
+      profileImage: profileImage,
       firstName: firstName,
       lastName: lastName,
       ranking: 'Rookie',
@@ -244,67 +246,33 @@ export class MemberModel {
   async findAllProfiles(): Promise<ProfileForSearch[]> {
     const members = await this.memberModel.find().exec();
     if (!members) return null;
-    return members?.map((member) => {
-      const {
-        _id,
-        firstName,
-        lastName,
-        location,
-        country,
-        tags,
-        introduction,
-        isInviteAble,
-      } = member;
-      return {
-        memberId: _id,
-        firstName: firstName,
-        lastName: lastName,
-        ranking: 'Rookie',
-        introduction: introduction,
-        location: location,
-        country: country,
-        tags: tags,
-        isInviteAble: isInviteAble,
-        status: null,
-      };
-    });
+    return members.map((member) => this.buildProfileForSearch(member));
+    //   const {
+    //     _id,
+    //     firstName,
+    //     lastName,
+    //     location,
+    //     country,
+    //     tags,
+    //     introduction,
+    //     isInviteAble,
+    //     profileImage,
+    //   } = member;
+    //   return {
+    //     memberId: _id,
+    //     profileImage: profileImage,
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //     ranking: 'Rookie',
+    //     introduction: introduction,
+    //     location: location,
+    //     country: country,
+    //     tags: tags,
+    //     isInviteAble: isInviteAble,
+    //     status: null,
+    //   };
+    // });
   }
-
-  // async findAllProfilesWithPagination(
-  //   page: number,
-  //   limit: number,
-  // ): Promise<ProfileForSearch[]> {
-  //   const members = await this.memberModel
-  //     .find()
-  //     .skip((page - 1) * limit)
-  //     .limit(limit)
-  //     .exec();
-  //   if (!members) return null;
-  //   return members?.map((member) => {
-  //     const {
-  //       _id,
-  //       firstName,
-  //       lastName,
-  //       location,
-  //       country,
-  //       tags,
-  //       introduction,
-  //       isInviteAble,
-  //     } = member;
-  //     return {
-  //       memberId: _id,
-  //       firstName: firstName,
-  //       lastName: lastName,
-  //       ranking: 'Rookie',
-  //       introduction: introduction,
-  //       location: location,
-  //       country: country,
-  //       tags: tags,
-  //       isInviteAble: isInviteAble,
-  //       status: null,
-  //     };
-  //   });
-  // }
 
   async findAllProfilesWithPagination(
     page: number,
@@ -326,30 +294,7 @@ export class MemberModel {
       filterQuery,
     );
 
-    const result = data?.map((member) => {
-      const {
-        _id,
-        firstName,
-        lastName,
-        location,
-        country,
-        tags,
-        introduction,
-        isInviteAble,
-      } = member;
-      return {
-        memberId: _id,
-        firstName: firstName,
-        lastName: lastName,
-        ranking: 'Rookie',
-        introduction: introduction,
-        location: location,
-        country: country,
-        tags: tags,
-        isInviteAble: isInviteAble,
-        status: null,
-      };
-    });
+    const result = data.map((member) => this.buildProfileForSearch(member));
 
     return {
       result: result,
@@ -364,7 +309,7 @@ export class MemberModel {
     };
   }
 
-  async buildProfileForSearch(member: Member): Promise<ProfileForSearch> {
+  buildProfileForSearch(member: Member): ProfileForSearch {
     const {
       _id,
       firstName,
@@ -374,9 +319,11 @@ export class MemberModel {
       tags,
       introduction,
       isInviteAble,
+      profileImage,
     } = member;
     return {
       memberId: _id,
+      profileImage: profileImage,
       firstName: firstName,
       lastName: lastName,
       ranking: 'Rookie',
@@ -392,29 +339,31 @@ export class MemberModel {
   async getProfilesByIds(ids: string[]): Promise<ProfileForSearch[]> {
     const members = await this.memberModel.find({ _id: { $in: ids } }).exec();
     if (!members) return null;
-    return members?.map((member) => {
-      const {
-        _id,
-        firstName,
-        lastName,
-        location,
-        country,
-        tags,
-        introduction,
-        isInviteAble,
-      } = member;
-      return {
-        memberId: _id,
-        firstName: firstName,
-        lastName: lastName,
-        ranking: 'Rookie',
-        introduction: introduction,
-        location: location,
-        country: country,
-        tags: tags,
-        isInviteAble: isInviteAble,
-        status: null,
-      };
-    });
+    return members.map((member) => this.buildProfileForSearch(member));
+    //   const {
+    //     _id,
+    //     firstName,
+    //     lastName,
+    //     location,
+    //     country,
+    //     tags,
+    //     introduction,
+    //     isInviteAble,
+    //     profileImage,
+    //   } = member;
+    //   return {
+    //     memberId: _id,
+    //     profileImage: profileImage,
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //     ranking: 'Rookie',
+    //     introduction: introduction,
+    //     location: location,
+    //     country: country,
+    //     tags: tags,
+    //     isInviteAble: isInviteAble,
+    //     status: null,
+    //   };
+    // });
   }
 }
