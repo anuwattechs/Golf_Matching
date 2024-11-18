@@ -2,8 +2,8 @@ export enum FriendStatusEnum {
   BLOCKED = 'BLOCKED',
   REMOVED = 'REMOVED',
   FOLLOWING = 'FOLLOWING',
-  FOLLOWED = 'FOLLOWED',
   PENDING = 'PENDING',
+  FRIENDS = 'FRIENDS',
 }
 
 export enum FriendInteractionActionEnum {
