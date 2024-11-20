@@ -90,6 +90,10 @@ import { UtilsService } from 'src/shared/utils/utils.service';
         name: Friends.name,
         schema: FriendsSchema,
       },
+      {
+        name: Matches.name,
+        schema: MatchesSchema,
+      },
     ]),
   ],
   providers: [
