@@ -7,23 +7,19 @@ import {
   CreateMemberBySocialDto,
   UpdateMemberDto,
   FindBySocialIdDto,
-  Stats,
   Profile,
   ProfileForSearch,
-  ResultsPaginatedFriendsDto,
 } from './dto';
-import { ScoresModel } from './scores.model';
-import { UtilsService } from 'src/shared/utils/utils.service';
-import { AssetsService } from 'src/app/modules/assets/assets.service';
 
 @Injectable()
 export class MemberModel {
   constructor(
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
-    private readonly utilsService: UtilsService,
-    private readonly scoresModel: ScoresModel,
-    private readonly assetsService: AssetsService,
   ) {}
+
+  rootMemberModel(): Model<Member> {
+    return this.memberModel;
+  }
 
   // Fetch profile details by user ID excluding sensitive information
   async findProfileDetailById(userId: string): Promise<unknown> {
@@ -181,38 +177,11 @@ export class MemberModel {
     return !!user;
   }
 
-  async getStats(userId: string): Promise<Stats> {
-    const avgScoreMinMax = await this.getAvgScoreMinMax(userId);
-    const member = await this.findById(userId);
-    return {
-      yearStart: member?.yearStart || '',
-      handicap: 25,
-      avgScoreMinMax: avgScoreMinMax,
-    };
-  }
-
-  async getAvgScoreMinMax(
-    userId: string,
-  ): Promise<{ min: number; max: number }> {
-    const score = await this.scoresModel.getScoreCardByPlayerId(userId);
-    const member = await this.findById(userId);
-
-    if (!score || !member) return null;
-
-    const min = Math.min(...score.map((s) => s.myScore));
-    const max = Math.max(...score.map((s) => s.myScore));
-
-    return {
-      min: min || 0,
-      max: max || 0,
-    };
-  }
-
   async findProfileById(userId: string): Promise<Profile> {
     const member = await this.findById(userId);
     if (!member) return null;
 
-    const stats = await this.getStats(userId);
+    // const stats = await this.scoresService.getStats(userId);
 
     const {
       _id: memberId,
@@ -229,8 +198,7 @@ export class MemberModel {
 
     return {
       memberId: memberId,
-      profileImage:
-        (await this.assetsService.getPresignedSignedUrl(profileImage)) || '',
+      profileImage: profileImage,
       firstName: firstName,
       lastName: lastName,
       nickName: nickName,
@@ -240,9 +208,16 @@ export class MemberModel {
       country: country,
       tags: tags,
       isInviteAble: isInviteAble,
-      stats: stats,
-      followings: [],
-      followers: [],
+      stats: {
+        yearStart: '2021',
+        handicap: 0,
+        avgScoreMinMax: {
+          min: 0,
+          max: 0,
+        },
+      },
+      followersCount: 0,
+      followingsCount: 0,
     };
   }
 
@@ -250,66 +225,6 @@ export class MemberModel {
     const members = await this.memberModel.find().exec();
     if (!members) return null;
     return members.map((member) => this.buildProfileForSearch(member));
-    //   const {
-    //     _id,
-    //     firstName,
-    //     lastName,
-    //     location,
-    //     country,
-    //     tags,
-    //     introduction,
-    //     isInviteAble,
-    //     profileImage,
-    //   } = member;
-    //   return {
-    //     memberId: _id,
-    //     profileImage: profileImage,
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //     ranking: 'Rookie',
-    //     introduction: introduction,
-    //     location: location,
-    //     country: country,
-    //     tags: tags,
-    //     isInviteAble: isInviteAble,
-    //     status: null,
-    //   };
-    // });
-  }
-
-  async findAllProfilesWithPagination(
-    page: number,
-    limit: number,
-    filterQuery: Record<string, unknown>,
-  ): Promise<ResultsPaginatedFriendsDto> {
-    const {
-      data,
-      total,
-      page: currentPage,
-      limit: currentLimit,
-      totalPages,
-      hasNextPage,
-      hasPrevPage,
-    } = await this.utilsService.findAllWithPaginationAndFilter(
-      this.memberModel,
-      page,
-      limit,
-      filterQuery,
-    );
-
-    const result = data.map((member) => this.buildProfileForSearch(member));
-
-    return {
-      result: result,
-      pagination: {
-        total: total,
-        page: currentPage,
-        limit: currentLimit,
-        totalPages: totalPages,
-        hasNextPage: hasNextPage,
-        hasPrevPage: hasPrevPage,
-      },
-    };
   }
 
   buildProfileForSearch(member: Member): ProfileForSearch {
@@ -343,30 +258,5 @@ export class MemberModel {
     const members = await this.memberModel.find({ _id: { $in: ids } }).exec();
     if (!members) return null;
     return members.map((member) => this.buildProfileForSearch(member));
-    //   const {
-    //     _id,
-    //     firstName,
-    //     lastName,
-    //     location,
-    //     country,
-    //     tags,
-    //     introduction,
-    //     isInviteAble,
-    //     profileImage,
-    //   } = member;
-    //   return {
-    //     memberId: _id,
-    //     profileImage: profileImage,
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //     ranking: 'Rookie',
-    //     introduction: introduction,
-    //     location: location,
-    //     country: country,
-    //     tags: tags,
-    //     isInviteAble: isInviteAble,
-    //     status: null,
-    //   };
-    // });
   }
 }

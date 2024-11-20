@@ -13,11 +13,10 @@ import { JwtPayloadType } from '../auth/strategies/types';
 import { CreateScoresDto } from 'src/schemas/models/dto';
 
 @Controller('scores')
-@UseGuards(JwtAuthGuard) // Apply the JwtAuthGuard globally to the controller
+@UseGuards(JwtAuthGuard)
 export class ScoresController {
   constructor(private readonly scoresService: ScoresService) {}
 
-  // Fetch hole scores by match ID
   @Get(':matchId')
   async getHoleScores(
     @Param('matchId') matchId: string,
@@ -27,7 +26,6 @@ export class ScoresController {
     return this.scoresService.getHoleScores(matchId, decoded);
   }
 
-  // Fetch scorecard for the authenticated player
   @Get('player/scorecard')
   async getScorecard(@Req() req: Request & { decoded: JwtPayloadType }) {
     const userId = req.decoded.userId;
@@ -43,7 +41,6 @@ export class ScoresController {
     return this.scoresService.getScoreCardByPlayerIdAndMatch(userId, matchId);
   }
 
-  // Create new hole scores
   @Post()
   async createHoleScores(
     @Body() createHoleScoresDto: CreateScoresDto,

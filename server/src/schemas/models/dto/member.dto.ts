@@ -141,18 +141,13 @@ export class Profile {
   @Type(() => Stats)
   stats: Stats;
 
-  @ValidateNested()
-  @Type(() => ProfileForSearch)
-  followings: ProfileForSearch[];
+  @IsNotEmpty()
+  @IsNumber()
+  followersCount: number;
 
-  @ValidateNested()
-  @Type(() => ProfileForSearch)
-  followers: ProfileForSearch[];
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => ProfileForSearch)
-  pendingRequests?: ProfileForSearch[];
+  @IsNotEmpty()
+  @IsNumber()
+  followingsCount: number;
 }
 
 export class ProfileForSearch {

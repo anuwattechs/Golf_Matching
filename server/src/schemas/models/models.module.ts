@@ -37,9 +37,6 @@ import {
   Friends,
   FriendsSchema,
 } from 'src/schemas';
-import { UtilsModule } from 'src/shared/utils/utils.module';
-import { UtilsService } from 'src/shared/utils/utils.service';
-import { AssetsService } from 'src/app/modules/assets/assets.service';
 
 @Module({
   imports: [
@@ -102,8 +99,8 @@ import { AssetsService } from 'src/app/modules/assets/assets.service';
     ScoresModel,
     MemberSettingsModel,
     FriendsModel,
-    UtilsService,
-    AssetsService,
+    // UtilsService,
+    // AssetsService,
   ],
   exports: [
     MemberModel,

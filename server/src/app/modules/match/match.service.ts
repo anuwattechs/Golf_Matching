@@ -9,8 +9,9 @@ import { NullableType } from 'src/shared/types';
 import { Matches } from 'src/schemas';
 import { JwtPayloadType } from '../auth/strategies/types';
 import { UtilsService } from 'src/shared/utils/utils.service';
-import { GolfCourseModel, MemberModel, ScoresModel } from 'src/schemas/models';
+import { GolfCourseModel, MemberModel } from 'src/schemas/models';
 import { MatchPlayerModel } from '../../../schemas/models/match-players.model';
+import { ScoresService } from '../scores/scores.service';
 
 @Injectable()
 export class MatchService {
@@ -18,7 +19,7 @@ export class MatchService {
     private readonly memberModel: MemberModel,
     private readonly matchesModel: MatchesModel,
     private readonly matchPlayerModel: MatchPlayerModel,
-    private readonly scoresModel: ScoresModel,
+    private readonly scoresService: ScoresService,
     private readonly utilsService: UtilsService,
     private readonly golfCourseModel: GolfCourseModel,
   ) {}
@@ -157,7 +158,7 @@ export class MatchService {
           maxPlayers,
         } = match.toObject();
 
-        const scores = await this.scoresModel.getScoreCardByPlayerId(
+        const scores = await this.scoresService.getScoreCardByPlayerId(
           decoded.userId,
         );
 

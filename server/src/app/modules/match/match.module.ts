@@ -7,6 +7,7 @@ import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { AuthModule } from '../auth/auth.module';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { MembersModule } from '../members/members.module';
+import { ScoresModule } from '../scores/scores.module';
 
 @Module({
   imports: [
@@ -15,8 +16,10 @@ import { MembersModule } from '../members/members.module';
     AuthModule,
     UtilsModule,
     MembersModule,
+    ScoresModule,
   ],
   controllers: [MatchController],
   providers: [MatchService, JwtStrategy],
+  exports: [MatchService],
 })
 export class MatchModule {}

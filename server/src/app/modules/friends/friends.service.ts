@@ -7,6 +7,7 @@ import {
   ResultsPaginatedFriendsDto,
   SearchFriendsDto,
 } from 'src/schemas/models/dto';
+import { MembersService } from '../members/members.service';
 
 enum ErrorMessages {
   BLOCKED = 'You are blocked by this user or have blocked this user',
@@ -21,6 +22,7 @@ export class FriendsService {
   constructor(
     private readonly friendsModel: FriendsModel,
     private readonly memberModel: MemberModel,
+    private readonly memberService: MembersService,
   ) {}
 
   async getFriendsByUserId(
@@ -215,8 +217,9 @@ export class FriendsService {
       _id: { $ne: senderId },
       ...this.buildFilterQuery(input),
     };
+
     const { result: allProfile, pagination } =
-      await this.memberModel.findAllProfilesWithPagination(
+      await this.memberService.findAllProfilesWithPagination(
         input.page,
         input.limit,
         filterQuery,

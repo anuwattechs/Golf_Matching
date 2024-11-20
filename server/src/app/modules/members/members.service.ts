@@ -6,8 +6,9 @@ import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payloa
 import { UtilsService } from 'src/shared/utils/utils.service';
 import { v4 as uuidv4 } from 'uuid';
 import { AwsService } from 'src/app/common/services/aws/aws.service';
-import { Profile } from 'src/schemas/models/dto';
+import { Profile, ResultsPaginatedFriendsDto } from 'src/schemas/models/dto';
 import { FriendStatusEnum } from 'src/shared/enums';
+import { ScoresService } from '../scores/scores.service';
 
 @Injectable()
 export class MembersService {
@@ -16,6 +17,7 @@ export class MembersService {
     private readonly utilsService: UtilsService,
     private readonly awsService: AwsService,
     private readonly friendsModel: FriendsModel,
+    private readonly scoresService: ScoresService,
   ) {}
 
   async updateProfile(
@@ -228,15 +230,19 @@ export class MembersService {
 
       const mappedFollowings = mapMembers(followings);
       const mappedFollowers = mapMembers(followers);
-      const mappedPendingRequests = mapMembers(pendingRequests);
+
+      const stats = await this.scoresService.getStats(userId);
+
+      // const mappedPendingRequests = mapMembers(pendingRequests);
 
       const result: Profile = {
         ...member,
-        followings: mappedFollowings,
-        followers: mappedFollowers,
-        ...(isShowPendingRequests && {
-          pendingRequests: mappedPendingRequests,
-        }),
+        stats: stats,
+        followingsCount: mappedFollowings?.length || 0,
+        followersCount: mappedFollowers?.length || 0,
+        // ...(isShowPendingRequests && {
+        //   pendingRequests: mappedPendingRequests,
+        // }),
       };
 
       return result;
@@ -251,5 +257,42 @@ export class MembersService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async findAllProfilesWithPagination(
+    page: number,
+    limit: number,
+    filterQuery: Record<string, unknown>,
+  ): Promise<ResultsPaginatedFriendsDto> {
+    const {
+      data,
+      total,
+      page: currentPage,
+      limit: currentLimit,
+      totalPages,
+      hasNextPage,
+      hasPrevPage,
+    } = await this.utilsService.findAllWithPaginationAndFilter(
+      this.memberModel.rootMemberModel(),
+      page,
+      limit,
+      filterQuery,
+    );
+
+    const result = data.map((member) =>
+      this.memberModel.buildProfileForSearch(member),
+    );
+
+    return {
+      result: result,
+      pagination: {
+        total: total,
+        page: currentPage,
+        limit: currentLimit,
+        totalPages: totalPages,
+        hasNextPage: hasNextPage,
+        hasPrevPage: hasPrevPage,
+      },
+    };
   }
 }
