@@ -39,6 +39,7 @@ import {
 } from 'src/schemas';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { UtilsService } from 'src/shared/utils/utils.service';
+import { AssetsService } from 'src/app/modules/assets/assets.service';
 
 @Module({
   imports: [
@@ -102,6 +103,7 @@ import { UtilsService } from 'src/shared/utils/utils.service';
     MemberSettingsModel,
     FriendsModel,
     UtilsService,
+    AssetsService,
   ],
   exports: [
     MemberModel,

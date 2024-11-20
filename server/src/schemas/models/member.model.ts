@@ -13,8 +13,8 @@ import {
   ResultsPaginatedFriendsDto,
 } from './dto';
 import { ScoresModel } from './scores.model';
-import { FriendStatusEnum } from 'src/shared/enums';
 import { UtilsService } from 'src/shared/utils/utils.service';
+import { AssetsService } from 'src/app/modules/assets/assets.service';
 
 @Injectable()
 export class MemberModel {
@@ -22,6 +22,7 @@ export class MemberModel {
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
     private readonly utilsService: UtilsService,
     private readonly scoresModel: ScoresModel,
+    private readonly assetsService: AssetsService,
   ) {}
 
   // Fetch profile details by user ID excluding sensitive information
@@ -228,7 +229,8 @@ export class MemberModel {
 
     return {
       memberId: memberId,
-      profileImage: profileImage,
+      profileImage:
+        (await this.assetsService.getPresignedSignedUrl(profileImage)) || '',
       firstName: firstName,
       lastName: lastName,
       nickName: nickName,
