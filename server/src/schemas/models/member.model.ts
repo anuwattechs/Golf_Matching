@@ -223,6 +223,7 @@ export class MemberModel {
       tags,
       isInviteAble,
       profileImage,
+      nickName,
     } = member;
 
     return {
@@ -230,11 +231,11 @@ export class MemberModel {
       profileImage: profileImage,
       firstName: firstName,
       lastName: lastName,
+      nickName: nickName,
       ranking: 'Rookie',
       introduction: introduction,
       location: location,
       country: country,
-      friendsCount: 25,
       tags: tags,
       isInviteAble: isInviteAble,
       stats: stats,

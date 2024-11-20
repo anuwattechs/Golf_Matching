@@ -239,8 +239,6 @@ export class MembersService {
         }),
       };
 
-      console.log('result', result);
-
       return result;
     } catch (error) {
       throw new HttpException(

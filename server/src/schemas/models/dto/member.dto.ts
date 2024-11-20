@@ -110,6 +110,9 @@ export class Profile {
   @IsString()
   lastName: string;
 
+  @IsString()
+  nickName: string;
+
   @IsNotEmpty()
   @IsString()
   ranking: string;
@@ -125,10 +128,6 @@ export class Profile {
   @IsNotEmpty()
   @IsString()
   country: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  friendsCount: number;
 
   @IsNotEmpty()
   @IsString({ each: true })
