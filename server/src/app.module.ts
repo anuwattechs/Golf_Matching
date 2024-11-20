@@ -26,6 +26,13 @@ import path from 'path';
 import { AllConfigType } from 'src/app/config/config.type';
 import { HealthCheckModule } from './app/modules/health-check/health-check.module';
 import { GalleryModule } from './app/modules/gallery/gallery.module';
+import { MatchModule } from './app/modules/match/match.module';
+import { MatchRequestsModule } from './app/modules/match-requests/match-requests.module';
+import { MatchPlayerModule } from './app/modules/match-player/match-player.module';
+import { GolfCourseLayoutModule } from './app/modules/golf-course-layout/golf-course-layout.module';
+import { MemberSettingsModule } from './app/modules/member-settings/member-settings.module';
+import { ScoresModule } from './app/modules/scores/scores.module';
+import { FriendsModule } from './app/modules/friends/friends.module';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -48,7 +55,7 @@ const environment = process.env.NODE_ENV || 'development';
         countryConfig,
         assetsConfig,
       ],
-      envFilePath: ['.env.development'],
+      envFilePath: [`.env.${environment}`, '.env'],
     }),
     infrastructureDatabaseModule,
     I18nModule.forRootAsync({
@@ -92,6 +99,13 @@ const environment = process.env.NODE_ENV || 'development';
     AssetsModule,
     HealthCheckModule,
     GalleryModule,
+    MatchModule,
+    MatchRequestsModule,
+    MatchPlayerModule,
+    GolfCourseLayoutModule,
+    MemberSettingsModule,
+    ScoresModule,
+    FriendsModule,
   ],
 })
 export class AppModule {}

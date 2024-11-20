@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
 import { I18nPath } from 'src/generated/i18n.generated';
 
 @Injectable()
@@ -109,5 +110,58 @@ export class UtilsService {
 
   getMessagesTypeSafe(message: I18nPath): string {
     return message;
+  }
+
+  findAllWithPagination<T>(
+    data: T[],
+    page: number,
+    limit: number,
+  ): { data: T[]; total: number } {
+    const start = (page - 1) * limit;
+    const end = page * limit;
+    return {
+      data: data.slice(start, end),
+      total: data.length,
+    };
+  }
+
+  async findAllWithPaginationAndFilter<T>(
+    model: Model<T>,
+    page: number,
+    limit: number,
+    filterQuery: Record<string, any>,
+  ): Promise<{
+    data: T[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  }> {
+    const skip = (page - 1) * limit;
+
+    const documents = await model
+      .find(filterQuery)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    const total = await model.countDocuments(filterQuery).exec();
+
+    const totalPages = Math.ceil(total / limit);
+
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return {
+      data: documents,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage,
+      hasPrevPage,
+    };
   }
 }

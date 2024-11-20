@@ -7,6 +7,7 @@ import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UtilsModule } from 'src/shared/utils/utils.module';
+import { AWSModule } from 'src/app/common/services/aws/aws.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UtilsModule } from 'src/shared/utils/utils.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     AuthModule,
     UtilsModule,
+    AWSModule,
   ],
   controllers: [MembersController],
   providers: [MembersService, JwtStrategy],

@@ -204,4 +204,11 @@ export class AssetsController {
   async deleteTag(@Param('id') id: string) {
     return this.assetsService.deleteTag(id);
   }
+
+  // check access of s3 bucket
+  @Get('check-access')
+  @UseGuards(JwtAuthGuard)
+  async checkAccess() {
+    return this.assetsService.getBucketPermissions();
+  }
 }

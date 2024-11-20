@@ -10,13 +10,13 @@ import {
 import { Type } from 'class-transformer';
 
 // Address DTO
-class AddressDto {
+export class AddressDto {
   @IsNotEmpty()
   @IsString()
   street1: string; // Changed from line1 to street1
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   street2: string; // Changed from line2 to street2
 
   @IsNotEmpty()
@@ -125,9 +125,4 @@ export class CreateGolfCourseDto {
   @IsNotEmpty()
   @IsBoolean()
   isNightAvailable: boolean;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CourseDto)
-  courses: CourseDto[];
 }

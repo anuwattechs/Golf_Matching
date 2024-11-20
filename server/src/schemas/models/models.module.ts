@@ -6,6 +6,13 @@ import {
   GolfCourseModel,
   TagModel,
   GalleryModel,
+  MatchPlayerModel,
+  MatchRequestModel,
+  MatchesModel,
+  GolfCourseLayoutModel,
+  ScoresModel,
+  MemberSettingsModel,
+  FriendsModel,
 } from '.';
 import {
   Member,
@@ -18,7 +25,23 @@ import {
   TagSchema,
   Gallery,
   GallerySchema,
+  Matches,
+  MatchesSchema,
+  MatchRequest,
+  MatchRequestSchema,
+  MatchPlayer,
+  MatchPlayerSchema,
+  GolfCoursesLayouts,
+  GolfCoursesLayoutsSchema,
+  Scores,
+  ScoresSchema,
+  MemberSettings,
+  MemberSettingsSchema,
+  Friends,
+  FriendsSchema,
 } from 'src/schemas';
+import { UtilsModule } from 'src/shared/utils/utils.module';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Module({
   imports: [
@@ -43,6 +66,30 @@ import {
         name: Gallery.name,
         schema: GallerySchema,
       },
+      {
+        name: MatchRequest.name,
+        schema: MatchRequestSchema,
+      },
+      {
+        name: MatchPlayer.name,
+        schema: MatchPlayerSchema,
+      },
+      {
+        name: GolfCoursesLayouts.name,
+        schema: GolfCoursesLayoutsSchema,
+      },
+      {
+        name: Scores.name,
+        schema: ScoresSchema,
+      },
+      {
+        name: MemberSettings.name,
+        schema: MemberSettingsSchema,
+      },
+      {
+        name: Friends.name,
+        schema: FriendsSchema,
+      },
     ]),
   ],
   providers: [
@@ -51,6 +98,14 @@ import {
     GolfCourseModel,
     TagModel,
     GalleryModel,
+    MatchPlayerModel,
+    MatchRequestModel,
+    MatchesModel,
+    GolfCourseLayoutModel,
+    ScoresModel,
+    MemberSettingsModel,
+    FriendsModel,
+    UtilsService,
   ],
   exports: [
     MemberModel,
@@ -58,6 +113,13 @@ import {
     GolfCourseModel,
     TagModel,
     GalleryModel,
+    MatchPlayerModel,
+    MatchRequestModel,
+    MatchesModel,
+    GolfCourseLayoutModel,
+    ScoresModel,
+    MemberSettingsModel,
+    FriendsModel,
   ],
 })
 export class ModelsModule {}

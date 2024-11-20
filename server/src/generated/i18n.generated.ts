@@ -90,6 +90,10 @@ export type I18nTranslations = {
         "VERIFICATION_CODE_IS_ALREADY_VERIFIED": string;
         "VERIFICATION_CODE_IS_EXPIRED": string;
     };
+    "settings": {
+        "UPDATE_SETTINGS_SUCCESSFULLY": string;
+        "UPDATE_SETTINGS_FAILED": string;
+    };
     "status-code": {
         "100": string;
         "101": string;

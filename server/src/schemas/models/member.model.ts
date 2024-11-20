@@ -7,16 +7,25 @@ import {
   CreateMemberBySocialDto,
   UpdateMemberDto,
   FindBySocialIdDto,
+  Stats,
+  Profile,
+  ProfileForSearch,
+  ResultsPaginatedFriendsDto,
 } from './dto';
+import { ScoresModel } from './scores.model';
+import { FriendStatusEnum } from 'src/shared/enums';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
 export class MemberModel {
   constructor(
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    private readonly utilsService: UtilsService,
+    private readonly scoresModel: ScoresModel,
   ) {}
 
   // Fetch profile details by user ID excluding sensitive information
-  async findProfileById(userId: string): Promise<unknown> {
+  async findProfileDetailById(userId: string): Promise<unknown> {
     const result = await this.memberModel
       .findOne({ _id: userId })
       .select('-_id -password -isActived -activedAt -updatedAt -__v')
@@ -153,5 +162,208 @@ export class MemberModel {
       },
       { $set: { password } },
     );
+  }
+
+  async updateProfileImage(
+    userId: string,
+    profileImage: string,
+  ): Promise<Member | null> {
+    const result = await this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { profileImage } },
+    );
+    return result.modifiedCount > 0 ? this.findById(userId) : null;
+  }
+
+  async checkUserRegistration(userId: string): Promise<boolean> {
+    const user = await this.findById(userId);
+    return !!user;
+  }
+
+  async getStats(userId: string): Promise<Stats> {
+    const avgScoreMinMax = await this.getAvgScoreMinMax(userId);
+    const member = await this.findById(userId);
+    return {
+      yearStart: member?.yearStart || '',
+      handicap: 25,
+      avgScoreMinMax: avgScoreMinMax,
+    };
+  }
+
+  async getAvgScoreMinMax(
+    userId: string,
+  ): Promise<{ min: number; max: number }> {
+    const score = await this.scoresModel.getScoreCardByPlayerId(userId);
+    const member = await this.findById(userId);
+
+    if (!score || !member) return null;
+
+    const min = Math.min(...score.map((s) => s.myScore));
+    const max = Math.max(...score.map((s) => s.myScore));
+
+    return {
+      min: min || 0,
+      max: max || 0,
+    };
+  }
+
+  async findProfileById(userId: string): Promise<Profile> {
+    const member = await this.findById(userId);
+    if (!member) return null;
+
+    const stats = await this.getStats(userId);
+
+    const {
+      _id: memberId,
+      firstName,
+      lastName,
+      introduction,
+      location,
+      country,
+      tags,
+      isInviteAble,
+      profileImage,
+    } = member;
+
+    return {
+      memberId: memberId,
+      profileImage: profileImage,
+      firstName: firstName,
+      lastName: lastName,
+      ranking: 'Rookie',
+      introduction: introduction,
+      location: location,
+      country: country,
+      friendsCount: 25,
+      tags: tags,
+      isInviteAble: isInviteAble,
+      stats: stats,
+      followings: [],
+      followers: [],
+    };
+  }
+
+  async findAllProfiles(): Promise<ProfileForSearch[]> {
+    const members = await this.memberModel.find().exec();
+    if (!members) return null;
+    return members.map((member) => this.buildProfileForSearch(member));
+    //   const {
+    //     _id,
+    //     firstName,
+    //     lastName,
+    //     location,
+    //     country,
+    //     tags,
+    //     introduction,
+    //     isInviteAble,
+    //     profileImage,
+    //   } = member;
+    //   return {
+    //     memberId: _id,
+    //     profileImage: profileImage,
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //     ranking: 'Rookie',
+    //     introduction: introduction,
+    //     location: location,
+    //     country: country,
+    //     tags: tags,
+    //     isInviteAble: isInviteAble,
+    //     status: null,
+    //   };
+    // });
+  }
+
+  async findAllProfilesWithPagination(
+    page: number,
+    limit: number,
+    filterQuery: Record<string, unknown>,
+  ): Promise<ResultsPaginatedFriendsDto> {
+    const {
+      data,
+      total,
+      page: currentPage,
+      limit: currentLimit,
+      totalPages,
+      hasNextPage,
+      hasPrevPage,
+    } = await this.utilsService.findAllWithPaginationAndFilter(
+      this.memberModel,
+      page,
+      limit,
+      filterQuery,
+    );
+
+    const result = data.map((member) => this.buildProfileForSearch(member));
+
+    return {
+      result: result,
+      pagination: {
+        total: total,
+        page: currentPage,
+        limit: currentLimit,
+        totalPages: totalPages,
+        hasNextPage: hasNextPage,
+        hasPrevPage: hasPrevPage,
+      },
+    };
+  }
+
+  buildProfileForSearch(member: Member): ProfileForSearch {
+    const {
+      _id,
+      firstName,
+      lastName,
+      location,
+      country,
+      tags,
+      introduction,
+      isInviteAble,
+      profileImage,
+    } = member;
+    return {
+      memberId: _id,
+      profileImage: profileImage,
+      firstName: firstName,
+      lastName: lastName,
+      ranking: 'Rookie',
+      introduction: introduction,
+      location: location,
+      country: country,
+      tags: tags,
+      isInviteAble: isInviteAble,
+      status: null,
+    };
+  }
+
+  async getProfilesByIds(ids: string[]): Promise<ProfileForSearch[]> {
+    const members = await this.memberModel.find({ _id: { $in: ids } }).exec();
+    if (!members) return null;
+    return members.map((member) => this.buildProfileForSearch(member));
+    //   const {
+    //     _id,
+    //     firstName,
+    //     lastName,
+    //     location,
+    //     country,
+    //     tags,
+    //     introduction,
+    //     isInviteAble,
+    //     profileImage,
+    //   } = member;
+    //   return {
+    //     memberId: _id,
+    //     profileImage: profileImage,
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //     ranking: 'Rookie',
+    //     introduction: introduction,
+    //     location: location,
+    //     country: country,
+    //     tags: tags,
+    //     isInviteAble: isInviteAble,
+    //     status: null,
+    //   };
+    // });
   }
 }
