@@ -6,9 +6,15 @@ import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payloa
 import { UtilsService } from 'src/shared/utils/utils.service';
 import { v4 as uuidv4 } from 'uuid';
 import { AwsService } from 'src/app/common/services/aws/aws.service';
-import { Profile, ResultsPaginatedFriendsDto } from 'src/schemas/models/dto';
+import {
+  Profile,
+  ProfileForSearch,
+  ResultsPaginatedFriendsDto,
+} from 'src/schemas/models/dto';
 import { FriendStatusEnum } from 'src/shared/enums';
 import { ScoresService } from '../scores/scores.service';
+import { AssetsService } from '../assets/assets.service';
+import { Member } from 'src/schemas';
 
 @Injectable()
 export class MembersService {
@@ -18,6 +24,7 @@ export class MembersService {
     private readonly awsService: AwsService,
     private readonly friendsModel: FriendsModel,
     private readonly scoresService: ScoresService,
+    private readonly assetsService: AssetsService,
   ) {}
 
   async updateProfile(
@@ -183,35 +190,28 @@ export class MembersService {
   async findOneProfile(
     _: JwtPayloadType,
     userId: string,
-    isShowPendingRequests: boolean,
+    isShowPrivateInfo: boolean = false,
   ): Promise<Profile> {
     try {
-      const [member, members, followings, followers, pendingRequests] =
-        await Promise.all([
-          this.memberModel.findProfileById(userId),
-          this.memberModel.findAllProfiles(),
-          this.friendsModel
-            .getFriendsByUserId(userId, FriendStatusEnum.FOLLOWING)
-            .then((res) =>
-              res
-                ?.filter((r) => r.senderId === userId)
-                ?.map((r) => r.receiverId),
-            ),
-          this.friendsModel
-            .getFollowersByUserId(userId, FriendStatusEnum.FOLLOWING)
-            .then((res) =>
-              res
-                ?.filter((r) => r.receiverId === userId)
-                ?.map((r) => r.senderId),
-            ),
-          this.friendsModel
-            .getFriendRequests(userId)
-            .then((res) =>
-              res
-                ?.filter((r) => r.receiverId === userId)
-                ?.map((r) => r.senderId),
-            ),
-        ]);
+      const [member, members, followings, followers] = await Promise.all([
+        this.memberModel.findProfileById(userId),
+        this.memberModel.findAllProfiles(),
+        this.friendsModel
+          .getFriendsByUserId(userId, FriendStatusEnum.FOLLOWING)
+          .then((res) =>
+            res?.filter((r) => r.senderId === userId)?.map((r) => r.receiverId),
+          ),
+        this.friendsModel
+          .getFollowersByUserId(userId, FriendStatusEnum.FOLLOWING)
+          .then((res) =>
+            res?.filter((r) => r.receiverId === userId)?.map((r) => r.senderId),
+          ),
+        // this.friendsModel
+        //   .getFriendRequests(userId)
+        //   .then((res) =>
+        //     res?.filter((r) => r.receiverId === userId)?.map((r) => r.senderId),
+        //   ),
+      ]);
 
       if (!member) {
         throw new HttpException(
@@ -226,23 +226,23 @@ export class MembersService {
       }
 
       const mapMembers = (ids: string[]) =>
-        members.filter((m) => ids.includes(m.memberId));
+        members
+          ?.map((member) => this.buildProfileForSearch(member))
+          ?.filter((m) => ids.includes(m.memberId));
 
       const mappedFollowings = mapMembers(followings);
       const mappedFollowers = mapMembers(followers);
 
       const stats = await this.scoresService.getStats(userId);
 
-      // const mappedPendingRequests = mapMembers(pendingRequests);
-
       const result: Profile = {
         ...member,
+        profileImage: await this.assetsService.getPresignedSignedUrl(
+          member.profileImage,
+        ),
         stats: stats,
         followingsCount: mappedFollowings?.length || 0,
         followersCount: mappedFollowers?.length || 0,
-        // ...(isShowPendingRequests && {
-        //   pendingRequests: mappedPendingRequests,
-        // }),
       };
 
       return result;
@@ -250,11 +250,11 @@ export class MembersService {
       throw new HttpException(
         {
           status: false,
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
           message: error.message,
           data: null,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -279,9 +279,7 @@ export class MembersService {
       filterQuery,
     );
 
-    const result = data.map((member) =>
-      this.memberModel.buildProfileForSearch(member),
-    );
+    const result = data.map((member) => this.buildProfileForSearch(member));
 
     return {
       result: result,
@@ -293,6 +291,18 @@ export class MembersService {
         hasNextPage: hasNextPage,
         hasPrevPage: hasPrevPage,
       },
+    };
+  }
+
+  buildProfileForSearch(member: Member): ProfileForSearch {
+    const { _id, firstName, lastName, introduction, profileImage } = member;
+    return {
+      memberId: _id,
+      profileImage: profileImage,
+      firstName: firstName,
+      lastName: lastName,
+      introduction: introduction,
+      status: null,
     };
   }
 }

@@ -317,9 +317,19 @@ export class FriendsService {
       FriendStatusEnum.FOLLOWING,
     ]);
 
-    return this.memberModel.getProfilesByIds(
-      friends?.filter((r) => r.senderId === userId).map((f) => f.receiverId),
-    );
+    return this.memberModel
+      ?.getProfilesByIds(
+        friends?.filter((r) => r.senderId === userId).map((f) => f.receiverId),
+      )
+      ?.then((profiles) =>
+        profiles.map((profile) =>
+          this.memberService.buildProfileForSearch(profile),
+        ),
+      )
+      .catch((e) => {
+        console.log(e);
+        return [];
+      });
   }
 
   async getFollowers(userId: string): Promise<ProfileForSearch[]> {
@@ -328,8 +338,14 @@ export class FriendsService {
       FriendStatusEnum.FOLLOWING,
     );
 
-    return this.memberModel.getProfilesByIds(
-      friends?.filter((r) => r.receiverId === userId).map((f) => f.senderId),
-    );
+    return this.memberModel
+      .getProfilesByIds(
+        friends?.filter((r) => r.receiverId === userId).map((f) => f.senderId),
+      )
+      ?.then((profiles) => {
+        return profiles.map((profile) =>
+          this.memberService.buildProfileForSearch(profile),
+        );
+      });
   }
 }

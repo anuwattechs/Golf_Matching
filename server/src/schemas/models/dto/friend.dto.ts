@@ -20,6 +20,7 @@ import {
   GenderEnum,
 } from 'src/shared/enums';
 import { ProfileForSearch } from './member.dto';
+import { PaginationDto, ResultPaginationDto } from 'src/shared/dto';
 
 export class AddFriendRequestDto {
   @IsString()
@@ -137,38 +138,16 @@ export class SearchFriendsDto {
   limit: number;
 }
 
-export class PaginationDto {
-  @IsInt()
-  @IsPositive()
-  total: number;
+// export class ResultsPaginatedFriendsDto {
+//   @IsArray()
+//   @ValidateNested({ each: true })
+//   @Type(() => ProfileForSearch)
+//   result: ProfileForSearch[];
 
-  @IsInt()
-  @IsPositive()
-  page: number;
+//   @IsObject()
+//   @ValidateNested()
+//   @Type(() => PaginationDto)
+//   pagination: PaginationDto;
+// }
 
-  @IsInt()
-  @IsPositive()
-  limit: number;
-
-  @IsInt()
-  @IsPositive()
-  totalPages: number;
-
-  @IsBoolean()
-  hasNextPage: boolean;
-
-  @IsBoolean()
-  hasPrevPage: boolean;
-}
-
-export class ResultsPaginatedFriendsDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ProfileForSearch)
-  result: ProfileForSearch[];
-
-  @IsObject()
-  @ValidateNested()
-  @Type(() => PaginationDto)
-  pagination: PaginationDto;
-}
+export class ResultsPaginatedFriendsDto extends ResultPaginationDto<ProfileForSearch> {}

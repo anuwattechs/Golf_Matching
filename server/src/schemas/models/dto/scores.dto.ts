@@ -8,6 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { AddressDto } from './golf-course.dto';
+import { ResultPaginationDto } from 'src/shared/dto';
 
 export class CreateScoresDto {
   @IsNotEmpty()
@@ -126,3 +127,5 @@ export class ScoreCardDto {
   @IsNotEmpty()
   puttsHole: number;
 }
+
+export class ResultsPaginatedScoreCardsDto extends ResultPaginationDto<ScoreCardDto> {}

@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { AWSModule } from 'src/app/common/services/aws/aws.module';
 import { ScoresModule } from '../scores/scores.module';
+import { AssetsModule } from '../assets/assets.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ScoresModule } from '../scores/scores.module';
     UtilsModule,
     AWSModule,
     ScoresModule,
+    AssetsModule,
   ],
   controllers: [MembersController],
   providers: [MembersService, JwtStrategy],

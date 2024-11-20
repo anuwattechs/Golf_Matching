@@ -13,6 +13,10 @@ export class MatchesModel {
     private readonly matchesPlayerModel: Model<MatchPlayer>,
   ) {}
 
+  rootMatchModel() {
+    return this.matchesModel;
+  }
+
   async create(
     input: CreateMatchDto,
     decodedUser: JwtPayloadType,

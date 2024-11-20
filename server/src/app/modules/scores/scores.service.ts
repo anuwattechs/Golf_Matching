@@ -10,8 +10,15 @@ import {
 } from 'src/schemas/models';
 import { NullableType } from 'src/shared/types';
 import { JwtPayloadType } from '../auth/strategies/types';
-import { CreateScoresDto, ScoreCardDto, Stats } from 'src/schemas/models/dto';
+import {
+  CreateScoresDto,
+  ResultsPaginatedScoreCardsDto,
+  ScoreCardDto,
+  Stats,
+} from 'src/schemas/models/dto';
 import { Scores } from 'src/schemas';
+import { ResultPaginationDto } from 'src/shared/dto';
+import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
 export class ScoresService {
@@ -22,6 +29,7 @@ export class ScoresService {
     private readonly scoresModel: ScoresModel,
     private readonly matchesModel: MatchesModel,
     private readonly golfCourseModel: GolfCourseModel,
+    private readonly utilsService: UtilsService,
   ) {}
 
   async getScoreCardByPlayerIdAndMatch(
@@ -329,9 +337,21 @@ export class ScoresService {
         await this.matchPlayerModel.getMatchPlayerById(playerId);
       const matchIds = allMatchByPlayer.map((player) => player.matchId);
 
+      const playerMatchesWithPagination =
+        await this.utilsService.findAllWithPaginationAndFilter(
+          this.matchesModel.rootMatchModel(),
+          1,
+          100,
+          {
+            _id: { $in: matchIds },
+          },
+        );
+
       const playerMatches = (await this.matchesModel.findAll()).filter(
         (match) => matchIds.includes(match._id.toString()),
       );
+
+      console.log('playerMatchesWithPagination:', playerMatchesWithPagination);
 
       const layoutCache = new Map<string, any>();
       const courseCache = new Map<string, any>();
@@ -411,12 +431,11 @@ export class ScoresService {
   }
 
   async getStats(userId: string): Promise<Stats> {
-    const avgScoreMinMax = await this.getAvgScoreMinMax(userId);
     const member = await this.memberModel.findById(userId);
     return {
       yearStart: member?.yearStart || '',
       handicap: 25,
-      avgScoreMinMax: avgScoreMinMax,
+      avgScore: 0,
     };
   }
 }

@@ -85,9 +85,13 @@ export class Stats {
   @IsNumber()
   handicap: number;
 
-  @ValidateNested()
-  @Type(() => AvgScore)
-  avgScoreMinMax: AvgScore;
+  // @ValidateNested()
+  // @Type(() => AvgScore)
+  // avgScoreMinMax: AvgScore;
+
+  @IsNotEmpty()
+  @IsNumber()
+  avgScore: number;
 }
 
 /**
@@ -121,21 +125,21 @@ export class Profile {
   @IsString()
   introduction: string;
 
-  @IsNotEmpty()
   @IsString()
-  location: string;
+  @IsOptional()
+  location?: string;
 
   @IsNotEmpty()
   @IsString()
-  country: string;
+  country?: string;
 
   @IsNotEmpty()
   @IsString({ each: true })
   tags: string[];
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
-  isInviteAble: boolean;
+  isInviteAble?: boolean;
 
   @ValidateNested()
   @Type(() => Stats)
@@ -166,29 +170,29 @@ export class ProfileForSearch {
   @IsString()
   lastName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  ranking: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // ranking: string;
 
   @IsNotEmpty()
   @IsString()
   introduction: string;
 
-  @IsNotEmpty()
-  @IsString()
-  location: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // location: string;
 
-  @IsNotEmpty()
-  @IsString()
-  country: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // country: string;
 
-  @IsNotEmpty()
-  @IsString({ each: true })
-  tags: string[];
+  // @IsNotEmpty()
+  // @IsString({ each: true })
+  // tags: string[];
 
-  @IsNotEmpty()
-  @IsBoolean()
-  isInviteAble: boolean;
+  // @IsNotEmpty()
+  // @IsBoolean()
+  // isInviteAble: boolean;
 
   @IsEnum(FriendStatusEnum)
   status: FriendStatusEnum | null;

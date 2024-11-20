@@ -181,8 +181,6 @@ export class MemberModel {
     const member = await this.findById(userId);
     if (!member) return null;
 
-    // const stats = await this.scoresService.getStats(userId);
-
     const {
       _id: memberId,
       firstName,
@@ -194,6 +192,7 @@ export class MemberModel {
       isInviteAble,
       profileImage,
       nickName,
+      yearStart,
     } = member;
 
     return {
@@ -204,59 +203,28 @@ export class MemberModel {
       nickName: nickName,
       ranking: 'Rookie',
       introduction: introduction,
-      location: location,
-      country: country,
       tags: tags,
-      isInviteAble: isInviteAble,
       stats: {
-        yearStart: '2021',
+        yearStart: yearStart,
         handicap: 0,
-        avgScoreMinMax: {
-          min: 0,
-          max: 0,
-        },
+        avgScore: 0,
       },
       followersCount: 0,
       followingsCount: 0,
     };
   }
 
-  async findAllProfiles(): Promise<ProfileForSearch[]> {
+  async findAllProfiles(): Promise<Member[]> {
     const members = await this.memberModel.find().exec();
     if (!members) return null;
-    return members.map((member) => this.buildProfileForSearch(member));
+    return members;
+    // return members.map((member) => this.buildProfileForSearch(member));
   }
 
-  buildProfileForSearch(member: Member): ProfileForSearch {
-    const {
-      _id,
-      firstName,
-      lastName,
-      location,
-      country,
-      tags,
-      introduction,
-      isInviteAble,
-      profileImage,
-    } = member;
-    return {
-      memberId: _id,
-      profileImage: profileImage,
-      firstName: firstName,
-      lastName: lastName,
-      ranking: 'Rookie',
-      introduction: introduction,
-      location: location,
-      country: country,
-      tags: tags,
-      isInviteAble: isInviteAble,
-      status: null,
-    };
-  }
-
-  async getProfilesByIds(ids: string[]): Promise<ProfileForSearch[]> {
+  async getProfilesByIds(ids: string[]): Promise<Member[]> {
     const members = await this.memberModel.find({ _id: { $in: ids } }).exec();
     if (!members) return null;
-    return members.map((member) => this.buildProfileForSearch(member));
+    return members;
+    // return members.map((member) => this.buildProfileForSearch(member));
   }
 }
