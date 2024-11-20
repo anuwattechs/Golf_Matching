@@ -3,28 +3,26 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({
-  collection: 'Gallery',
+  collection: 'GalleryComments',
   timestamps: true,
   versionKey: false,
 })
-export class Gallery extends Document {
+export class GalleryComment extends Document {
   @Prop({
     type: String,
     default: uuidv4,
   })
   _id: string;
 
-  @Prop({ default: false, type: Boolean })
-  isPinned: boolean;
+  @Prop({ required: true, type: String })
+  galleryId: string;
 
-  @Prop({ default: null, type: Date })
-  pinnedAt: Date;
-
-  @Prop({ required: true, type: Boolean })
-  isPublic: boolean;
+  @Prop({ default: null, type: String })
+  message: string;
 
   @Prop({ required: true, type: String })
   createdBy: string;
 }
 
-export const GallerySchema = SchemaFactory.createForClass(Gallery);
+export const GalleryCommentSchema =
+  SchemaFactory.createForClass(GalleryComment);
