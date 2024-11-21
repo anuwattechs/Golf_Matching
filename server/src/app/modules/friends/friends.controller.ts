@@ -14,7 +14,14 @@ import { FriendsService } from './friends.service';
 import { JwtAuthGuard } from '../auth/guard';
 import { JwtPayloadType } from '../auth/strategies/types';
 import { FriendStatusEnum } from 'src/shared/enums';
-import { ProfileForSearch, SearchFriendsDto } from 'src/schemas/models/dto';
+import {
+  ProfileForSearch,
+  QueryFriendsDto,
+  SearchFriendsDto,
+} from 'src/schemas/models/dto';
+import { infinityPagination } from 'src/shared/dto/infinity-pagination';
+import { InfinityPaginationResponseDto } from 'src/shared/dto';
+import { Friends } from 'src/schemas';
 // import { UserRegisteredGuard } from 'src/app/common/guard';
 
 @Controller('friends')
@@ -88,7 +95,26 @@ export class FriendsController {
     );
   }
 
-  // Following
+  @Get('demo-friends')
+  async getDemoFriends(
+    @Request() req: { decoded: JwtPayloadType },
+    @Query() query: QueryFriendsDto,
+  ): Promise<InfinityPaginationResponseDto<Friends>> {
+    const page = query?.page ?? 1;
+    const limit = query?.limit ?? 10;
+
+    const friends = await this.friendsService.findManyWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+
+    return infinityPagination(friends, { page, limit });
+  }
+
   @Get('followings')
   async getFollowings(
     @Request() req: { decoded: JwtPayloadType },
@@ -97,7 +123,6 @@ export class FriendsController {
     return this.friendsService.getFollowings(userId);
   }
 
-  // Followers
   @Get('followers')
   async getFollowers(
     @Request() req: { decoded: JwtPayloadType },

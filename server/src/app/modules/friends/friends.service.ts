@@ -3,11 +3,14 @@ import { FriendsModel, MemberModel } from 'src/schemas/models';
 import { Friends } from 'src/schemas';
 import { FriendStatusEnum } from 'src/shared/enums';
 import {
+  FilterFriendDto,
   ProfileForSearch,
   ResultsPaginatedFriendsDto,
   SearchFriendsDto,
+  SortFriendDto,
 } from 'src/schemas/models/dto';
 import { MembersService } from '../members/members.service';
+import { IPaginationOptions } from 'src/shared/types';
 
 enum ErrorMessages {
   BLOCKED = 'You are blocked by this user or have blocked this user',
@@ -347,5 +350,22 @@ export class FriendsService {
           this.memberService.buildProfileForSearch(profile),
         );
       });
+  }
+
+  findManyWithPagination({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterFriendDto | null;
+    sortOptions?: SortFriendDto[] | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<Friends[]> {
+    console.log(filterOptions, sortOptions, paginationOptions);
+    return this.friendsModel.findManyWithPagination({
+      filterOptions,
+      sortOptions,
+      paginationOptions,
+    });
   }
 }

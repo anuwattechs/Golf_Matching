@@ -433,21 +433,9 @@ export class ScoresService {
         await this.matchPlayerModel.getMatchPlayerById(playerId);
       const matchIds = allMatchByPlayer.map((player) => player.matchId);
 
-      const playerMatchesWithPagination =
-        await this.utilsService.findAllWithPaginationAndFilter(
-          this.matchesModel.rootMatchModel(),
-          1,
-          100,
-          {
-            _id: { $in: matchIds },
-          },
-        );
-
       const playerMatches = (await this.matchesModel.findAll()).filter(
         (match) => matchIds.includes(match._id.toString()),
       );
-
-      console.log('playerMatchesWithPagination:', playerMatchesWithPagination);
 
       const layoutCache = new Map<string, any>();
       const courseCache = new Map<string, any>();

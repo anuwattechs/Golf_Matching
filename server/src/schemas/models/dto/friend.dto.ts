@@ -13,7 +13,7 @@ import {
   IsObject,
   IsPositive,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   FriendInteractionActionEnum,
   FriendStatusEnum,
@@ -138,16 +138,78 @@ export class SearchFriendsDto {
   limit: number;
 }
 
-// export class ResultsPaginatedFriendsDto {
-//   @IsArray()
-//   @ValidateNested({ each: true })
-//   @Type(() => ProfileForSearch)
-//   result: ProfileForSearch[];
-
-//   @IsObject()
-//   @ValidateNested()
-//   @Type(() => PaginationDto)
-//   pagination: PaginationDto;
-// }
-
 export class ResultsPaginatedFriendsDto extends ResultPaginationDto<ProfileForSearch> {}
+
+export class FilterFriendDto {
+  @IsString()
+  @IsOptional()
+  query: string;
+
+  @IsString()
+  @IsOptional()
+  customUserId: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  tags: string[];
+
+  @ValidateNested()
+  @Type(() => RangeDto)
+  @IsOptional()
+  yearExperience: RangeDto;
+
+  @ValidateNested()
+  @Type(() => RangeDto)
+  @IsOptional()
+  averageScore: RangeDto;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  handicap: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  bestScore: number;
+}
+
+export class SortFriendDto {
+  @Type(() => String)
+  @IsString()
+  orderBy: keyof ProfileForSearch;
+
+  @IsString()
+  order: string;
+}
+
+export class QueryFriendsDto {
+  @Transform(({ value }) => (value ? Number(value) : 1))
+  @IsNumber()
+  @IsOptional()
+  page?: number;
+
+  @Transform(({ value }) => (value ? Number(value) : 10))
+  @IsNumber()
+  @IsOptional()
+  limit?: number;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    value ? plainToInstance(FilterFriendDto, JSON.parse(value)) : undefined,
+  )
+  @ValidateNested()
+  @Type(() => FilterFriendDto)
+  filters?: FilterFriendDto | null;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    return value
+      ? plainToInstance(SortFriendDto, JSON.parse(value))
+      : undefined;
+  })
+  @ValidateNested({ each: true })
+  @Type(() => SortFriendDto)
+  sort?: SortFriendDto[] | null;
+}

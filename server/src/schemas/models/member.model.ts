@@ -10,6 +10,7 @@ import {
   Profile,
   ProfileForSearch,
 } from './dto';
+import { omit } from 'lodash';
 
 @Injectable()
 export class MemberModel {
@@ -25,37 +26,51 @@ export class MemberModel {
   async findProfileDetailById(userId: string): Promise<unknown> {
     const result = await this.memberModel
       .findOne({ _id: userId })
-      .select('-_id -password -isActived -activedAt -updatedAt -__v')
-      .exec();
+      // .select('-_id -password -isActived -activedAt -updatedAt -__v')
+      .exec()
+      .then((res) => res.toObject());
 
     if (!result) return null;
 
+    const selectedFields = omit(result, [
+      '_id',
+      'password',
+      'isActived',
+      'activedAt',
+      'updatedAt',
+      '__v',
+    ]);
+
     return {
-      firstName: result.firstName,
-      lastName: result.lastName,
-      nickName: result.nickName,
-      birthDate: result.birthDate,
-      email: result.email,
-      phoneNo: result.phoneNo,
-      facebookId: result.facebookId,
-      googleId: result.googleId,
-      appleId: result.appleId,
-      gender: result.gender,
-      country: result.country,
-      location: result.location,
-      occupation: result.occupation,
-      tags: result.tags,
-      yearStart: result.yearStart,
-      avgScore: result.avgScore,
-      favoriteCourses: result.favoriteCourses,
-      countHoleInOne: result.countHoleInOne,
-      bestScore: result.bestScore,
-      clubBrands: result.clubBrands,
-      introduction: result.introduction,
-      profileImage: result.profileImage,
-      isInviteAble: result.isInviteAble,
-      isRegistered: result.isRegistered,
+      ...selectedFields,
     };
+
+    // return {
+    //   firstName: result.firstName,
+    //   lastName: result.lastName,
+    //   nickName: result.nickName,
+    //   birthDate: result.birthDate,
+    //   email: result.email,
+    //   phoneNo: result.phoneNo,
+    //   facebookId: result.facebookId,
+    //   googleId: result.googleId,
+    //   appleId: result.appleId,
+    //   gender: result.gender,
+    //   country: result.country,
+    //   location: result.location,
+    //   occupation: result.occupation,
+    //   tags: result.tags,
+    //   yearStart: result.yearStart,
+    //   avgScore: result.avgScore,
+    //   favoriteCourses: result.favoriteCourses,
+    //   countHoleInOne: result.countHoleInOne,
+    //   bestScore: result.bestScore,
+    //   clubBrands: result.clubBrands,
+    //   introduction: result.introduction,
+    //   profileImage: result.profileImage,
+    //   isInviteAble: result.isInviteAble,
+    //   isRegistered: result.isRegistered,
+    // };
 
     // return await this.memberModel.findOne({ _id: userId }).exec();
   }
