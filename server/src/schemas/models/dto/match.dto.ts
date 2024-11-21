@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { GenderEnum } from 'src/shared/enums';
 import { AddressDto } from '.';
+import { ResultPaginationDto } from 'src/shared/dto';
 
 export class CreateMatchDto {
   @ValidateIf((o) => o.matchesType === 'SOLO')
@@ -180,4 +181,11 @@ export class MatchesHistoryDto {
   @IsNumber()
   @IsNotEmpty()
   myScore: number;
+}
+
+export class ResultPaginationMatchesHistoryDto extends ResultPaginationDto<MatchesHistoryDto> {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MatchesHistoryDto)
+  result: MatchesHistoryDto[];
 }

@@ -4,13 +4,17 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { ScoresService } from './scores.service';
 import { JwtAuthGuard } from '../auth/guard';
 import { JwtPayloadType } from '../auth/strategies/types';
-import { CreateScoresDto } from 'src/schemas/models/dto';
+import {
+  CreateScoresDto,
+  ResultsPaginatedScoreCardsDto,
+} from 'src/schemas/models/dto';
 
 @Controller('scores')
 @UseGuards(JwtAuthGuard)
@@ -27,9 +31,17 @@ export class ScoresController {
   }
 
   @Get('player/scorecard')
-  async getScorecard(@Req() req: Request & { decoded: JwtPayloadType }) {
+  async getScorecard(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Req() req: Request & { decoded: JwtPayloadType },
+  ): Promise<ResultsPaginatedScoreCardsDto> {
     const userId = req.decoded.userId;
-    return this.scoresService.getScoreCardByPlayerId(userId);
+    return this.scoresService.getScoreCardByPlayerIdWithPagination(
+      userId,
+      page,
+      limit,
+    );
   }
 
   @Get('player/scorecard/:matchId')

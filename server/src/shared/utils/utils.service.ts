@@ -116,12 +116,30 @@ export class UtilsService {
     data: T[],
     page: number,
     limit: number,
-  ): { data: T[]; total: number } {
-    const start = (page - 1) * limit;
-    const end = page * limit;
+  ): {
+    data: T[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  } {
+    const skip = (page - 1) * limit;
+    const total = data.length;
+    const totalPages = Math.ceil(total / limit);
+
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
     return {
-      data: data.slice(start, end),
-      total: data.length,
+      data: data.slice(skip, skip + limit),
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage,
+      hasPrevPage,
     };
   }
 
@@ -141,13 +159,10 @@ export class UtilsService {
   }> {
     const skip = (page - 1) * limit;
 
-    const documents = await model
-      .find(filterQuery)
-      .skip(skip)
-      .limit(limit)
-      .exec();
-
-    const total = await model.countDocuments(filterQuery).exec();
+    const [documents, total] = await Promise.all([
+      model.find(filterQuery).skip(skip).limit(limit).lean().exec(),
+      model.countDocuments(filterQuery).exec(),
+    ]);
 
     const totalPages = Math.ceil(total / limit);
 
@@ -155,7 +170,7 @@ export class UtilsService {
     const hasPrevPage = page > 1;
 
     return {
-      data: documents,
+      data: documents as T[],
       total,
       page,
       limit,

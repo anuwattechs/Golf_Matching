@@ -17,7 +17,6 @@ import {
   Stats,
 } from 'src/schemas/models/dto';
 import { Scores } from 'src/schemas';
-import { ResultPaginationDto } from 'src/shared/dto';
 import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
@@ -331,7 +330,104 @@ export class ScoresService {
     return fairwayHitPercentage;
   }
 
-  async getScoreCardByPlayerId(playerId: string): Promise<ScoreCardDto[]> {
+  async getScoreCardByPlayerIdWithPagination(
+    playerId: string,
+    page: number,
+    limit: number,
+  ): Promise<ResultsPaginatedScoreCardsDto> {
+    try {
+      const allMatchByPlayer =
+        await this.matchPlayerModel.getMatchPlayerById(playerId);
+      const matchIds = allMatchByPlayer.map((player) => player.matchId);
+
+      const playerMatchesWithPagination =
+        await this.utilsService.findAllWithPaginationAndFilter(
+          this.matchesModel.rootMatchModel(),
+          page,
+          limit,
+          { _id: { $in: matchIds } },
+        );
+
+      const {
+        data: paginatedMatches,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      } = playerMatchesWithPagination;
+
+      const layoutCache = new Map<string, any>();
+      const courseCache = new Map<string, any>();
+
+      const scoreCards: ScoreCardDto[] = await Promise.all(
+        paginatedMatches.map(async (match) => {
+          const { courseId, _id: matchId, date, maxPlayers } = match;
+
+          const scores =
+            await this.scoresModel.findHoleScoreByMatchIdAndPlayerId(
+              matchId,
+              playerId,
+            );
+
+          const { myScore, overScore, fairways, puttsRound, puttsHole } =
+            await this.calculateTotalScore(scores, layoutCache);
+
+          let course = courseCache.get(courseId);
+          if (!course) {
+            course = await this.golfCourseModel.findById(courseId);
+            courseCache.set(courseId, course);
+          }
+
+          const courseName = course?.name || '';
+          const address = {
+            street1: course?.address?.street1 || '',
+            street2: course?.address?.street2 || '',
+            city: course?.address?.city || '',
+            state: course?.address?.state || '',
+            country: course?.address?.country || '',
+            postalCode: course?.address?.postalCode || '',
+          };
+
+          return {
+            matchId,
+            playerId,
+            date,
+            courseId,
+            courseName,
+            address,
+            maxPlayers,
+            myScore,
+            overScore,
+            fairways,
+            puttsRound,
+            puttsHole,
+          };
+        }),
+      );
+
+      return {
+        result: scoreCards,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        },
+      };
+    } catch (error) {
+      console.error('Error in getScoreCardByPlayerId:', error.message);
+      throw new HttpException(
+        'Failed to get score card',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getScoreCardByPlayerIdWithOldPagination(
+    playerId: string,
+  ): Promise<ScoreCardDto[]> {
     try {
       const allMatchByPlayer =
         await this.matchPlayerModel.getMatchPlayerById(playerId);
@@ -410,24 +506,6 @@ export class ScoresService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-  }
-
-  async getAvgScoreMinMax(
-    userId: string,
-  ): Promise<{ min: number; max: number }> {
-    // const score = await this.scoresModel.getScoreCardByPlayerId(userId);
-    const score = await this.getScoreCardByPlayerId(userId);
-    const member = await this.memberModel.findById(userId);
-
-    if (!score || !member) return null;
-
-    const min = Math.min(...score.map((s) => s.myScore));
-    const max = Math.max(...score.map((s) => s.myScore));
-
-    return {
-      min: min || 0,
-      max: max || 0,
-    };
   }
 
   async getStats(userId: string): Promise<Stats> {

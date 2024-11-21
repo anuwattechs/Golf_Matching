@@ -54,13 +54,10 @@ export class PaginationDto {
  * @class ResultPaginationDto The paginated result set.
  */
 export abstract class ResultPaginationDto<T> {
-  /** The result array. */
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => Object)
   result: T[];
 
-  /** Pagination metadata. */
   @IsObject()
   @ValidateNested()
   @Type(() => PaginationDto)

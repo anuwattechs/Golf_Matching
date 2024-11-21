@@ -128,4 +128,8 @@ export class ScoreCardDto {
   puttsHole: number;
 }
 
-export class ResultsPaginatedScoreCardsDto extends ResultPaginationDto<ScoreCardDto> {}
+export class ResultsPaginatedScoreCardsDto extends ResultPaginationDto<ScoreCardDto> {
+  @ValidateNested()
+  @Type(() => ScoreCardDto)
+  result: ScoreCardDto[];
+}
