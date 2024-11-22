@@ -1,97 +1,98 @@
 import { Type } from 'class-transformer';
 import {
-  IsBoolean,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested,
+    IsBoolean,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    ValidateNested,
 } from 'class-validator';
 import { FriendStatusEnum, GenderEnum } from 'src/shared/enums';
 
 export class CreateMemberDto {
-  firstName: string;
-  lastName: string;
-  birthDate: string;
-  gender: GenderEnum;
-  email?: string | null; // Optional or required based on your application logic
-  phoneNo?: string | null; // Optional or required based on your application logic
-  password: string; // Required
-  country: string;
-  location: string;
-  nickName?: string; // Optional
-  occupation?: string; // Optional
-  tags?: string[]; // Optional
-  yearStart?: string; // Optional
-  avgScore?: number; // Optional
-  favoriteCourses?: string[]; // Optional
-  countHoleInOne?: number; // Optional
-  bestScore?: number; // Optional
-  clubBrands?: string; // Optional
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    customUserId: string;
+    gender: GenderEnum;
+    email?: string | null; // Optional or required based on your application logic
+    phoneNo?: string | null; // Optional or required based on your application logic
+    password: string; // Required
+    country: string;
+    location: string;
+    nickName?: string; // Optional
+    occupation?: string; // Optional
+    tags?: string[]; // Optional
+    yearStart?: string; // Optional
+    avgScore?: number; // Optional
+    favoriteCourses?: string[]; // Optional
+    countHoleInOne?: number; // Optional
+    bestScore?: number; // Optional
+    clubBrands?: string; // Optional
 }
 
 export class UpdateMemberDto {
-  userId: string; // Required
-  firstName?: string; // Optional, in case of partial updates
-  lastName?: string; // Optional, in case of partial updates
-  birthDate?: string; // Optional, in case of partial updates
-  gender?: GenderEnum; // Optional, in case of partial updates
-  country?: string; // Optional
-  location?: string; // Optional
-  nickName?: string; // Optional
-  occupation?: string; // Optional
-  tags?: string[]; // Optional
-  yearStart?: string; // Optional
-  avgScore?: number; // Optional
-  favoriteCourses?: string[]; // Optional
-  countHoleInOne?: number; // Optional
-  bestScore?: number; // Optional
-  clubBrands?: string; // Optional
-  introduction?: string; // Optional
+    userId: string; // Required
+    firstName?: string; // Optional, in case of partial updates
+    lastName?: string; // Optional, in case of partial updates
+    birthDate?: string; // Optional, in case of partial updates
+    gender?: GenderEnum; // Optional, in case of partial updates
+    country?: string; // Optional
+    location?: string; // Optional
+    nickName?: string; // Optional
+    occupation?: string; // Optional
+    tags?: string[]; // Optional
+    yearStart?: string; // Optional
+    avgScore?: number; // Optional
+    favoriteCourses?: string[]; // Optional
+    countHoleInOne?: number; // Optional
+    bestScore?: number; // Optional
+    clubBrands?: string; // Optional
+    introduction?: string; // Optional
 }
 
 export class CreateMemberBySocialDto {
-  firstName: string;
-  lastName: string;
-  email?: string; // Optional, in case the email is needed for registration
-  facebookId?: string; // Optional, for linking accounts
-  googleId?: string; // Optional, for linking accounts
-  appleId?: string; // Optional, for linking accounts
+    firstName: string;
+    lastName: string;
+    email?: string; // Optional, in case the email is needed for registration
+    facebookId?: string; // Optional, for linking accounts
+    googleId?: string; // Optional, for linking accounts
+    appleId?: string; // Optional, for linking accounts
 }
 
 export class FindBySocialIdDto {
-  facebookId?: string | null; // Optional
-  googleId?: string | null; // Optional
-  appleId?: string | null; // Optional
+    facebookId?: string | null; // Optional
+    googleId?: string | null; // Optional
+    appleId?: string | null; // Optional
 }
 
 export class AvgScore {
-  @IsNotEmpty()
-  @IsNumber()
-  min: number;
+    @IsNotEmpty()
+    @IsNumber()
+    min: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  max: number;
+    @IsNotEmpty()
+    @IsNumber()
+    max: number;
 }
 
 export class Stats {
-  @IsNotEmpty()
-  @IsString()
-  yearStart: string;
+    @IsNotEmpty()
+    @IsString()
+    yearStart: string;
 
-  @IsNotEmpty()
-  @IsNumber()
-  handicap: number;
+    @IsNotEmpty()
+    @IsNumber()
+    handicap: number;
 
-  // @ValidateNested()
-  // @Type(() => AvgScore)
-  // avgScoreMinMax: AvgScore;
+    // @ValidateNested()
+    // @Type(() => AvgScore)
+    // avgScoreMinMax: AvgScore;
 
-  @IsNotEmpty()
-  @IsNumber()
-  avgScore: number;
+    @IsNotEmpty()
+    @IsNumber()
+    avgScore: number;
 }
 
 /**
@@ -99,101 +100,104 @@ export class Stats {
  * @description Profile DTO for member profile
  */
 export class Profile {
-  @IsNotEmpty()
-  @IsString()
-  memberId: string;
+    @IsNotEmpty()
+    @IsString()
+    memberId: string;
 
-  @IsString()
-  profileImage: string;
+    @IsString()
+    profileImage: string;
 
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
+    @IsNotEmpty()
+    @IsString()
+    firstName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
+    @IsNotEmpty()
+    @IsString()
+    lastName: string;
 
-  @IsString()
-  nickName: string;
+    @IsString()
+    customUserId: string;
 
-  @IsNotEmpty()
-  @IsString()
-  ranking: string;
+    @IsString()
+    nickName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  introduction: string;
+    @IsNotEmpty()
+    @IsString()
+    ranking: string;
 
-  @IsString()
-  @IsOptional()
-  location?: string;
+    @IsNotEmpty()
+    @IsString()
+    introduction: string;
 
-  @IsNotEmpty()
-  @IsString()
-  country?: string;
+    @IsString()
+    @IsOptional()
+    location?: string;
 
-  @IsNotEmpty()
-  @IsString({ each: true })
-  tags: string[];
+    @IsNotEmpty()
+    @IsString()
+    country?: string;
 
-  @IsOptional()
-  @IsBoolean()
-  isInviteAble?: boolean;
+    @IsNotEmpty()
+    @IsString({ each: true })
+    tags: string[];
 
-  @ValidateNested()
-  @Type(() => Stats)
-  stats: Stats;
+    @IsOptional()
+    @IsBoolean()
+    isInviteAble?: boolean;
 
-  @IsNotEmpty()
-  @IsNumber()
-  followersCount: number;
+    @ValidateNested()
+    @Type(() => Stats)
+    stats: Stats;
 
-  @IsNotEmpty()
-  @IsNumber()
-  followingsCount: number;
+    @IsNotEmpty()
+    @IsNumber()
+    followersCount: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    followingsCount: number;
 }
 
 export class ProfileForSearch {
-  @IsNotEmpty()
-  @IsString()
-  memberId: string;
+    @IsNotEmpty()
+    @IsString()
+    memberId: string;
 
-  @IsString()
-  profileImage: string;
+    @IsString()
+    profileImage: string;
 
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
+    @IsNotEmpty()
+    @IsString()
+    firstName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
+    @IsNotEmpty()
+    @IsString()
+    lastName: string;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // ranking: string;
+    // @IsNotEmpty()
+    // @IsString()
+    // ranking: string;
 
-  @IsNotEmpty()
-  @IsString()
-  introduction: string;
+    @IsNotEmpty()
+    @IsString()
+    introduction: string;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // location: string;
+    // @IsNotEmpty()
+    // @IsString()
+    // location: string;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // country: string;
+    // @IsNotEmpty()
+    // @IsString()
+    // country: string;
 
-  // @IsNotEmpty()
-  // @IsString({ each: true })
-  // tags: string[];
+    // @IsNotEmpty()
+    // @IsString({ each: true })
+    // tags: string[];
 
-  // @IsNotEmpty()
-  // @IsBoolean()
-  // isInviteAble: boolean;
+    // @IsNotEmpty()
+    // @IsBoolean()
+    // isInviteAble: boolean;
 
-  @IsEnum(FriendStatusEnum)
-  status: FriendStatusEnum | null;
+    @IsEnum(FriendStatusEnum)
+    status: FriendStatusEnum | null;
 }

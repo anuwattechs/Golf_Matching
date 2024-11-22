@@ -1,20 +1,20 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { NullableType } from 'src/shared/types';
-import { UpdateProfileDto, ChangeInviteModeDto } from './dto';
-import { FriendsModel, MemberModel } from 'src/schemas/models';
-import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payload.type';
-import { UtilsService } from 'src/shared/utils/utils.service';
-import { v4 as uuidv4 } from 'uuid';
-import { AwsService } from 'src/app/common/services/aws/aws.service';
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { NullableType } from "src/shared/types";
+import { UpdateProfileDto, ChangeInviteModeDto } from "./dto";
+import { FriendsModel, MemberModel } from "src/schemas/models";
+import { JwtPayloadType } from "src/app/modules/auth/strategies/types/jwt-payload.type";
+import { UtilsService } from "src/shared/utils/utils.service";
+import { v4 as uuidv4 } from "uuid";
+import { AwsService } from "src/app/common/services/aws/aws.service";
 import {
   Profile,
   ProfileForSearch,
   ResultsPaginatedFriendsDto,
-} from 'src/schemas/models/dto';
-import { FriendStatusEnum } from 'src/shared/enums';
-import { ScoresService } from '../scores/scores.service';
-import { AssetsService } from '../assets/assets.service';
-import { Member } from 'src/schemas';
+} from "src/schemas/models/dto";
+import { FriendStatusEnum } from "src/shared/enums";
+import { ScoresService } from "../scores/scores.service";
+import { AssetsService } from "../assets/assets.service";
+import { Member } from "src/schemas";
 
 @Injectable()
 export class MembersService {
@@ -24,12 +24,12 @@ export class MembersService {
     private readonly awsService: AwsService,
     private readonly friendsModel: FriendsModel,
     private readonly scoresService: ScoresService,
-    private readonly assetsService: AssetsService,
+    private readonly assetsService: AssetsService
   ) {}
 
   async updateProfile(
     input: UpdateProfileDto,
-    decoded: JwtPayloadType,
+    decoded: JwtPayloadType
   ): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
@@ -37,8 +37,8 @@ export class MembersService {
 
       if (!userRegistered)
         throw new HttpException(
-          this.utilsService.getMessagesTypeSafe('members.USER_NOT_REGISTERED'),
-          HttpStatus.BAD_REQUEST,
+          this.utilsService.getMessagesTypeSafe("members.USER_NOT_REGISTERED"),
+          HttpStatus.BAD_REQUEST
         );
 
       /*const updated = */ await this.memberModel.updateById({
@@ -55,19 +55,19 @@ export class MembersService {
           message: error.message,
           data: null,
         },
-        error.status,
+        error.status
       );
     }
   }
 
   async changeInviteMode(
     input: ChangeInviteModeDto,
-    decoded: JwtPayloadType,
+    decoded: JwtPayloadType
   ): Promise<NullableType<unknown>> {
     try {
       await this.memberModel.changeInviteMode(
         decoded.userId,
-        input.isInviteAble,
+        input.isInviteAble
       );
 
       return null;
@@ -79,17 +79,17 @@ export class MembersService {
           message: error.message,
           data: null,
         },
-        error.status,
+        error.status
       );
     }
   }
 
   async findOnePersonalInfo(
-    decoded: JwtPayloadType,
+    decoded: JwtPayloadType
   ): Promise<NullableType<unknown>> {
     try {
       const member = await this.memberModel.findProfileDetailById(
-        decoded.userId,
+        decoded.userId
       );
 
       return !member ? null : member;
@@ -101,88 +101,77 @@ export class MembersService {
           message: error.message,
           data: null,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   async updateProfilePicture(
     file: Express.Multer.File,
-    decoded: JwtPayloadType,
+    decoded: JwtPayloadType
   ): Promise<NullableType<unknown>> {
     if (!file) {
       throw new HttpException(
         {
           status: false,
           statusCode: HttpStatus.BAD_REQUEST,
-          message: 'File is required',
+          message: "File is required",
           data: null,
         },
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
 
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!allowedMimeTypes.includes(file.mimetype)) {
       throw new HttpException(
         {
           status: false,
           statusCode: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-          message: 'Invalid file type. Only JPEG, PNG, and WEBP are allowed.',
+          message: "Invalid file type. Only JPEG, PNG, and WEBP are allowed.",
           data: null,
         },
-        HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+        HttpStatus.UNSUPPORTED_MEDIA_TYPE
       );
     }
 
-    const fileNames = `profile-images/${uuidv4()}.${file.originalname.split('.').pop()}`;
+    const fileNames = `profile-images/${uuidv4()}.${file.originalname.split(".").pop()}`;
 
     try {
       const member = await this.memberModel.findById(decoded.userId);
       if (!member) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
       }
-
-      // if (member.profileImage) {
-      //   await this.awsService.deleteFile(
-      //     process.env.AWS_DEFAULT_S3_BUCKET,
-      //     member.profileImage,
-      //   );
-      // }
 
       const uploadResult = await this.awsService.uploadFile(
         process.env.AWS_DEFAULT_S3_BUCKET,
         fileNames,
         file.buffer,
-        file.mimetype,
+        file.mimetype
       );
 
       if (!uploadResult || !uploadResult.Location) {
         throw new HttpException(
-          'Failed to upload file to S3',
-          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Failed to upload file to S3",
+          HttpStatus.INTERNAL_SERVER_ERROR
         );
       }
 
       await this.memberModel.updateProfileImage(
         decoded.userId,
-        uploadResult.Key,
+        uploadResult.Key
       );
 
-      return {
-        status: true,
-        message: 'Profile picture updated successfully',
-        data: uploadResult,
-      };
+      return null;
     } catch (error) {
       throw new HttpException(
         {
           status: false,
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An unexpected error occurred',
+          message: error.message || "An unexpected error occurred",
           data: null,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -190,7 +179,7 @@ export class MembersService {
   async findOneProfile(
     _: JwtPayloadType,
     userId: string,
-    isShowPrivateInfo: boolean = false,
+    isShowPrivateInfo: boolean = false
   ): Promise<Profile> {
     try {
       const [member, members, followings, followers] = await Promise.all([
@@ -199,18 +188,13 @@ export class MembersService {
         this.friendsModel
           .getFriendsByUserId(userId, FriendStatusEnum.FOLLOWING)
           .then((res) =>
-            res?.filter((r) => r.senderId === userId)?.map((r) => r.receiverId),
+            res?.filter((r) => r.senderId === userId)?.map((r) => r.receiverId)
           ),
         this.friendsModel
           .getFollowersByUserId(userId, FriendStatusEnum.FOLLOWING)
           .then((res) =>
-            res?.filter((r) => r.receiverId === userId)?.map((r) => r.senderId),
+            res?.filter((r) => r.receiverId === userId)?.map((r) => r.senderId)
           ),
-        // this.friendsModel
-        //   .getFriendRequests(userId)
-        //   .then((res) =>
-        //     res?.filter((r) => r.receiverId === userId)?.map((r) => r.senderId),
-        //   ),
       ]);
 
       if (!member) {
@@ -218,10 +202,10 @@ export class MembersService {
           {
             status: false,
             statusCode: HttpStatus.NOT_FOUND,
-            message: 'User not found',
+            message: "User not found",
             data: null,
           },
-          HttpStatus.NOT_FOUND,
+          HttpStatus.NOT_FOUND
         );
       }
 
@@ -238,7 +222,7 @@ export class MembersService {
       const result: Profile = {
         ...member,
         profileImage: await this.assetsService.getPresignedSignedUrl(
-          member.profileImage,
+          member.profileImage
         ),
         stats: stats,
         followingsCount: mappedFollowings?.length || 0,
@@ -254,7 +238,7 @@ export class MembersService {
           message: error.message,
           data: null,
         },
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -262,7 +246,7 @@ export class MembersService {
   async findAllProfilesWithPagination(
     page: number,
     limit: number,
-    filterQuery: Record<string, unknown>,
+    filterQuery: Record<string, unknown>
   ): Promise<ResultsPaginatedFriendsDto> {
     const {
       data,
@@ -276,7 +260,7 @@ export class MembersService {
       this.memberModel.rootMemberModel(),
       page,
       limit,
-      filterQuery,
+      filterQuery
     );
 
     const result = data.map((member) => this.buildProfileForSearch(member));

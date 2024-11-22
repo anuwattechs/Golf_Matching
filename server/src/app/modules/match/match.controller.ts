@@ -7,18 +7,16 @@ import {
   Req,
   UseGuards,
   Query,
-} from '@nestjs/common';
-import { MatchService } from './match.service';
+} from "@nestjs/common";
+import { MatchService } from "./match.service";
 import {
   CreateMatchDto,
-  MatchesHistoryDto,
   ResultPaginationMatchesHistoryDto,
-} from '../../../schemas/models/dto/match.dto';
-import { JwtAuthGuard } from '../auth/guard';
-import { JwtPayloadType } from '../auth/strategies/types';
-import { ResultPaginationDto } from 'src/shared/dto';
+} from "../../../schemas/models/dto/match.dto";
+import { JwtAuthGuard } from "../auth/guard";
+import { JwtPayloadType } from "../auth/strategies/types";
 
-@Controller('match')
+@Controller("match")
 export class MatchController {
   constructor(private readonly matchService: MatchService) {}
 
@@ -37,9 +35,9 @@ export class MatchController {
    * @param matchId The ID of the match
    * @returns The match details
    */
-  @Get(':matchId/details')
+  @Get(":matchId/details")
   @UseGuards(JwtAuthGuard)
-  async getMatchById(@Param('matchId') matchId: string) {
+  async getMatchById(@Param("matchId") matchId: string) {
     return await this.matchService.getMatchById(matchId);
   }
 
@@ -48,13 +46,19 @@ export class MatchController {
    * @param req The request object containing the decoded JWT payload
    * @returns List of the user's match history
    */
-  @Get('history/me')
+  @Get("history/me")
   @UseGuards(JwtAuthGuard)
   async getMatchHistory(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Req() req: Request & { decoded: JwtPayloadType },
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10,
+    @Req() req: Request & { decoded: JwtPayloadType }
   ): Promise<ResultPaginationMatchesHistoryDto> {
+    if (page < 1) {
+      page = 1;
+    }
+    if (limit < 1) {
+      limit = 10;
+    }
     return await this.matchService.getMatchHistory(req.decoded, page, limit);
   }
 
@@ -68,7 +72,7 @@ export class MatchController {
   @UseGuards(JwtAuthGuard)
   async createMatch(
     @Body() body: CreateMatchDto,
-    @Req() req: Request & { decoded: JwtPayloadType },
+    @Req() req: Request & { decoded: JwtPayloadType }
   ) {
     return await this.matchService.createMatch(body, req.decoded);
   }

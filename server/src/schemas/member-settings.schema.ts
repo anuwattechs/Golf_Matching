@@ -1,10 +1,10 @@
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
-import { UpdateMemberSettingsDto } from './models/dto';
+import { UpdateMemberSettingsDto } from "./models/dto";
 
-@Schema({ collection: 'MemberSettings', timestamps: true, versionKey: false })
+@Schema({ collection: "MemberSettings", timestamps: true, versionKey: false })
 export class MemberSettings extends Document {
   @Prop({
     type: String,
@@ -23,6 +23,7 @@ export class MemberSettings extends Document {
       messages: true,
       hideProfile: false,
       allowOthersToFollow: true,
+      privateAccount: false,
     },
   })
   preferences: UpdateMemberSettingsDto;
