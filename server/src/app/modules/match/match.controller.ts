@@ -1,18 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Param,
-  Req,
-  UseGuards,
-  Query,
-} from "@nestjs/common";
+import { Controller, Get, Req, UseGuards, Query } from "@nestjs/common";
 import { MatchService } from "./match.service";
-import {
-  CreateMatchDto,
-  ResultPaginationMatchesHistoryDto,
-} from "../../../schemas/models/dto/match.dto";
+import { ResultPaginationMatchesHistoryDto } from "../../../schemas/models/dto/match.dto";
 import { JwtAuthGuard } from "../auth/guard";
 import { JwtPayloadType } from "../auth/strategies/types";
 
@@ -21,30 +9,9 @@ export class MatchController {
   constructor(private readonly matchService: MatchService) {}
 
   /**
-   * Get all matches
-   * @returns List of all matches
-   */
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  async getAllMatches() {
-    return await this.matchService.getAllMatches();
-  }
-
-  /**
-   * Get a match by its ID
-   * @param matchId The ID of the match
-   * @returns The match details
-   */
-  @Get(":matchId/details")
-  @UseGuards(JwtAuthGuard)
-  async getMatchById(@Param("matchId") matchId: string) {
-    return await this.matchService.getMatchById(matchId);
-  }
-
-  /**
    * Get the match history of the logged-in user
    * @param req The request object containing the decoded JWT payload
-   * @returns List of the user's match history
+   * @returns List of matches history
    */
   @Get("history/me")
   @UseGuards(JwtAuthGuard)
@@ -60,20 +27,5 @@ export class MatchController {
       limit = 10;
     }
     return await this.matchService.getMatchHistory(req.decoded, page, limit);
-  }
-
-  /**
-   * Create a new match
-   * @param body The data required to create a new match
-   * @param req The request object containing the decoded JWT payload
-   * @returns The newly created match
-   */
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  async createMatch(
-    @Body() body: CreateMatchDto,
-    @Req() req: Request & { decoded: JwtPayloadType }
-  ) {
-    return await this.matchService.createMatch(body, req.decoded);
   }
 }

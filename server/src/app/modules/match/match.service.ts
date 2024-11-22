@@ -1,19 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import {
   CreateMatchDto,
   MatchesHistoryDto,
   ResultPaginationMatchesHistoryDto,
   UpdateMatchDto,
-} from 'src/schemas/models/dto';
-import { MatchesModel } from '../../../schemas/models/matches.model';
-import { NullableType } from 'src/shared/types';
-import { Matches } from 'src/schemas';
-import { JwtPayloadType } from '../auth/strategies/types';
-import { UtilsService } from 'src/shared/utils/utils.service';
-import { GolfCourseModel, MemberModel } from 'src/schemas/models';
-import { MatchPlayerModel } from '../../../schemas/models/match-players.model';
-import { ScoresService } from '../scores/scores.service';
-import { ResultPaginationDto } from 'src/shared/dto';
+} from "src/schemas/models/dto";
+import { MatchesModel } from "../../../schemas/models/matches.model";
+import { NullableType } from "src/shared/types";
+import { Matches } from "src/schemas";
+import { JwtPayloadType } from "../auth/strategies/types";
+import { UtilsService } from "src/shared/utils/utils.service";
+import { GolfCourseModel, MemberModel } from "src/schemas/models";
+import { MatchPlayerModel } from "../../../schemas/models/match-players.model";
+import { ScoresService } from "../scores/scores.service";
+import { ResultPaginationDto } from "src/shared/dto";
 
 @Injectable()
 export class MatchService {
@@ -23,21 +23,21 @@ export class MatchService {
     private readonly matchPlayerModel: MatchPlayerModel,
     private readonly scoresService: ScoresService,
     private readonly utilsService: UtilsService,
-    private readonly golfCourseModel: GolfCourseModel,
+    private readonly golfCourseModel: GolfCourseModel
   ) {}
 
   // Create a match
   async createMatch(
     input: CreateMatchDto,
-    decoded: JwtPayloadType,
+    decoded: JwtPayloadType
   ): Promise<NullableType<unknown>> {
     try {
       // Check if the user is registered
       const userRegistered = await this.memberModel.findById(decoded.userId);
       if (!userRegistered) {
         throw new HttpException(
-          this.utilsService.getMessagesTypeSafe('members.USER_NOT_REGISTERED'),
-          HttpStatus.BAD_REQUEST,
+          this.utilsService.getMessagesTypeSafe("members.USER_NOT_REGISTERED"),
+          HttpStatus.BAD_REQUEST
         );
       }
 
@@ -95,7 +95,7 @@ export class MatchService {
 
               // Fetch player details
               const playerDetails = await this.memberModel.findById(
-                player.playerId,
+                player.playerId
               );
 
               // Return player details with member info
@@ -106,7 +106,7 @@ export class MatchService {
                 nickName: playerDetails?.nickName,
                 ...playerRest,
               };
-            }),
+            })
           );
 
           // Return match with populated player data
@@ -115,7 +115,7 @@ export class MatchService {
             ...rest,
             players,
           } as Matches;
-        }),
+        })
       );
 
       return matchesWithPlayers;
@@ -133,14 +133,14 @@ export class MatchService {
         message: error.message,
         data: null,
       },
-      error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      error.status || HttpStatus.INTERNAL_SERVER_ERROR
     );
   }
 
   async getMatchHistory(
     decoded: JwtPayloadType,
     page: number,
-    limit: number,
+    limit: number
   ): Promise<ResultPaginationMatchesHistoryDto> {
     const {
       data: matchesByMemberIds,
@@ -181,41 +181,41 @@ export class MatchService {
 
         const scores =
           await this.scoresService.getScoreCardByPlayerIdWithOldPagination(
-            decoded.userId,
+            decoded.userId
           );
 
         const players = await this.matchPlayerModel.getPlayersForMatch(matchId);
 
         const playerScore = scores?.find(
-          (score) => score.matchId.toString() === matchId.toString(),
+          (score) => score.matchId.toString() === matchId.toString()
         );
 
         const course = await this.golfCourseModel.findById(courseId);
-        const courseName = course?.name || '';
+        const courseName = course?.name || "";
         const address = {
-          street1: course?.address?.street1 || '',
-          street2: course?.address?.street2 || '',
-          city: course?.address?.city || '',
-          state: course?.address?.state || '',
-          country: course?.address?.country || '',
-          postalCode: course?.address?.postalCode || '',
+          street1: course?.address?.street1 || "",
+          street2: course?.address?.street2 || "",
+          city: course?.address?.city || "",
+          state: course?.address?.state || "",
+          country: course?.address?.country || "",
+          postalCode: course?.address?.postalCode || "",
         };
 
         return {
           matchId,
-          title: title || '',
-          description: description || '',
-          courseId: courseId || '',
+          title: title || "",
+          description: description || "",
+          courseId: courseId || "",
           courseName,
           address,
           coverImageUrl: coverImageUrl || course.coverImage[0],
           date,
-          matchesType: matchesType || '',
+          matchType: matchesType || "",
           maxPlayers: maxPlayers || 0,
           currentPlayers: players.length || 0,
           myScore: playerScore?.myScore || 0,
         };
-      }),
+      })
     );
 
     return {
