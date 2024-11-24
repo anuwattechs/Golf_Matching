@@ -1,23 +1,23 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { FriendsModel, MemberModel } from 'src/schemas/models';
-import { Friends } from 'src/schemas';
-import { FriendStatusEnum } from 'src/shared/enums';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { FriendsModel, MemberModel } from "src/schemas/models";
+import { Friends } from "src/schemas";
+import { FriendStatusEnum } from "src/shared/enums";
 import {
   FilterFriendDto,
   ProfileForSearch,
   ResultsPaginatedFriendsDto,
   SearchFriendsDto,
   SortFriendDto,
-} from 'src/schemas/models/dto';
-import { MembersService } from '../members/members.service';
-import { IPaginationOptions } from 'src/shared/types';
+} from "src/schemas/models/dto";
+import { MembersService } from "../members/members.service";
+import { IPaginationOptions } from "src/shared/types";
 
 enum ErrorMessages {
-  BLOCKED = 'You are blocked by this user or have blocked this user',
-  ALREADY_FOLLOWING = 'You are already following this user',
-  REQUEST_PENDING = 'Friend request is already pending',
-  FRIEND_NOT_FOUND = 'Friend relationship not found',
-  UNAUTHORIZED = 'Unauthorized to accept or decline this request',
+  BLOCKED = "You are blocked by this user or have blocked this user",
+  ALREADY_FOLLOWING = "You are already following this user",
+  REQUEST_PENDING = "Friend request is already pending",
+  FRIEND_NOT_FOUND = "Friend relationship not found",
+  UNAUTHORIZED = "Unauthorized to accept or decline this request",
 }
 
 @Injectable()
@@ -25,12 +25,12 @@ export class FriendsService {
   constructor(
     private readonly friendsModel: FriendsModel,
     private readonly memberModel: MemberModel,
-    private readonly memberService: MembersService,
+    private readonly memberService: MembersService
   ) {}
 
   async getFriendsByUserId(
     userId: string,
-    statuses?: FriendStatusEnum | FriendStatusEnum[],
+    statuses?: FriendStatusEnum | FriendStatusEnum[]
   ): Promise<Friends[]> {
     if (!statuses || statuses.length === 0) {
       return this.friendsModel.getFriendsByUserId(userId);
@@ -45,7 +45,7 @@ export class FriendsService {
 
   private async checkBlockedStatus(
     senderId: string,
-    receiverId: string,
+    receiverId: string
   ): Promise<void> {
     const [memberStatus, friendStatus] = await Promise.all([
       this.friendsModel.findExistingFriend(senderId, receiverId),
@@ -62,7 +62,7 @@ export class FriendsService {
           statusCode: HttpStatus.FORBIDDEN,
           message: ErrorMessages.BLOCKED,
         },
-        HttpStatus.FORBIDDEN,
+        HttpStatus.FORBIDDEN
       );
     }
   }
@@ -94,7 +94,7 @@ export class FriendsService {
   async sendFollowRequest(
     senderId: string,
     receiverId: string,
-    isPrivate = true,
+    isPrivate = true
   ): Promise<Friends> {
     await this.checkBlockedStatus(senderId, receiverId);
 
@@ -104,12 +104,12 @@ export class FriendsService {
         case FriendStatusEnum.FOLLOWING:
           this.throwHttpException(
             ErrorMessages.ALREADY_FOLLOWING,
-            HttpStatus.BAD_REQUEST,
+            HttpStatus.BAD_REQUEST
           );
         case FriendStatusEnum.PENDING:
           this.throwHttpException(
             ErrorMessages.REQUEST_PENDING,
-            HttpStatus.BAD_REQUEST,
+            HttpStatus.BAD_REQUEST
           );
         case FriendStatusEnum.REMOVED:
           return this.friendsModel.updateFriendStatus({
@@ -128,24 +128,24 @@ export class FriendsService {
     return this.friendsModel.createNewFriendRequest(
       senderId,
       receiverId,
-      status,
+      status
     );
   }
 
   async acceptFollowRequest(
     senderId: string,
-    receiverId: string,
+    receiverId: string
   ): Promise<Friends> {
     const existingFriend = await this.friendsModel.findExistingFriend(
       receiverId,
       senderId,
-      FriendStatusEnum.PENDING,
+      FriendStatusEnum.PENDING
     );
 
     if (!existingFriend || existingFriend.status !== FriendStatusEnum.PENDING) {
       this.throwHttpException(
         ErrorMessages.FRIEND_NOT_FOUND,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
 
@@ -162,18 +162,18 @@ export class FriendsService {
 
   async declineFollowRequest(
     senderId: string,
-    receiverId: string,
+    receiverId: string
   ): Promise<Friends> {
     const existingFriend = await this.friendsModel.findExistingFriend(
       receiverId,
       senderId,
-      FriendStatusEnum.PENDING,
+      FriendStatusEnum.PENDING
     );
 
     if (!existingFriend || existingFriend.status !== FriendStatusEnum.PENDING) {
       this.throwHttpException(
         ErrorMessages.FRIEND_NOT_FOUND,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
 
@@ -189,14 +189,14 @@ export class FriendsService {
 
   async toggleBlockStatus(
     senderId: string,
-    receiverId: string,
+    receiverId: string
   ): Promise<Friends> {
     const existingFriend = await this.getFriendStatus(senderId, receiverId);
 
     if (!existingFriend) {
       this.throwHttpException(
         ErrorMessages.FRIEND_NOT_FOUND,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
 
@@ -214,7 +214,7 @@ export class FriendsService {
 
   async searchFriends(
     senderId: string,
-    input: SearchFriendsDto,
+    input: SearchFriendsDto
   ): Promise<ResultsPaginatedFriendsDto> {
     const filterQuery = {
       _id: { $ne: senderId },
@@ -225,7 +225,7 @@ export class FriendsService {
       await this.memberService.findAllProfilesWithPagination(
         input.page,
         input.limit,
-        filterQuery,
+        filterQuery
       );
 
     return {
@@ -239,14 +239,14 @@ export class FriendsService {
             ]);
 
             const statusProfile = friends.find(
-              (f) => f.receiverId === profile.memberId,
+              (f) => f.receiverId === profile.memberId
             )?.status;
 
             return {
               ...profile,
               status: statusProfile || null,
             };
-          }),
+          })
       ),
       pagination,
     };
@@ -269,8 +269,8 @@ export class FriendsService {
 
     if (query) {
       filterQuery.$or = [
-        { firstName: { $regex: query, $options: 'i' } },
-        { lastName: { $regex: query, $options: 'i' } },
+        { firstName: { $regex: query, $options: "i" } },
+        { lastName: { $regex: query, $options: "i" } },
       ];
     }
 
@@ -296,7 +296,7 @@ export class FriendsService {
       };
     }
 
-    if (typeof handicap === 'number') {
+    if (typeof handicap === "number") {
       filterQuery.handicap = handicap;
     }
 
@@ -305,11 +305,11 @@ export class FriendsService {
     }
 
     if (location) {
-      filterQuery.location = { $regex: location, $options: 'i' };
+      filterQuery.location = { $regex: location, $options: "i" };
     }
 
     if (course) {
-      filterQuery.favoriteCourse = { $regex: course, $options: 'i' };
+      filterQuery.favoriteCourse = { $regex: course, $options: "i" };
     }
 
     return filterQuery;
@@ -322,12 +322,12 @@ export class FriendsService {
 
     return this.memberModel
       ?.getProfilesByIds(
-        friends?.filter((r) => r.senderId === userId).map((f) => f.receiverId),
+        friends?.filter((r) => r.senderId === userId).map((f) => f.receiverId)
       )
       ?.then((profiles) =>
         profiles.map((profile) =>
-          this.memberService.buildProfileForSearch(profile),
-        ),
+          this.memberService.buildProfileForSearch(profile)
+        )
       )
       .catch((e) => {
         console.log(e);
@@ -338,16 +338,16 @@ export class FriendsService {
   async getFollowers(userId: string): Promise<ProfileForSearch[]> {
     const friends = await this.friendsModel.getFollowersByUserId(
       userId,
-      FriendStatusEnum.FOLLOWING,
+      FriendStatusEnum.FOLLOWING
     );
 
     return this.memberModel
       .getProfilesByIds(
-        friends?.filter((r) => r.receiverId === userId).map((f) => f.senderId),
+        friends?.filter((r) => r.receiverId === userId).map((f) => f.senderId)
       )
       ?.then((profiles) => {
         return profiles.map((profile) =>
-          this.memberService.buildProfileForSearch(profile),
+          this.memberService.buildProfileForSearch(profile)
         );
       });
   }
