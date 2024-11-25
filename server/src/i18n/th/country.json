@@ -1,0 +1,8 @@
+{
+  "FAILED_TO_GET_COUNTRIES": "ไม่สามารถดึงข้อมูลประเทศได้",
+  "FAILED_TO_GET_STATES": "ไม่สามารถดึงข้อมูลรัฐได้",
+  "COUNTRIES_FETCHED_SUCCESSFULLY": "ดึงข้อมูลประเทศสำเร็จ",
+  "FAILED_TO_FETCH_COUNTRIES": "ไม่สามารถดึงข้อมูลประเทศได้",
+  "FAILED_TO_FETCH_STATES": "ไม่สามารถดึงข้อมูลรัฐได้",
+  "STATES_FETCHED_SUCCESSFULLY": "ดึงข้อมูลรัฐสำเร็จ"
+}
