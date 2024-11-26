@@ -11,19 +11,6 @@ export class MemberSettingsModel {
     private readonly memberSettingsModel: Model<MemberSettings>,
   ) {}
 
-  // async update(
-  //   memberId: string,
-  //   input: UpdateMemberSettingsDto,
-  // ): Promise<MemberSettings> {
-  //   const settings = await this.memberSettingsModel.findOneAndUpdate(
-  //     { memberId },
-  //     { $set: input },
-  //     { new: true, upsert: true },
-  //   );
-
-  //   return settings;
-  // }
-
   async update(
     memberId: string,
     input: UpdateMemberSettingsDto,

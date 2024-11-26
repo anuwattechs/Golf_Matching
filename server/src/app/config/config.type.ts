@@ -8,6 +8,7 @@ import { GoogleConfig } from '../modules/auth-google/config/google-config.type';
 import { AuthConfig } from '../modules/auth/config/auth-config.type';
 import { CountryConfig } from '../modules/country/config/country-config.type';
 import { AppConfig } from './app-config.type';
+import { FirebaseCloudMessagingConfig } from '../common/services/fcm/config/fcm-config.type';
 
 export type AllConfigType = {
   app: AppConfig;
@@ -20,4 +21,5 @@ export type AllConfigType = {
   mail: MailConfig;
   sms: SMSConfig;
   country: CountryConfig;
+  fcm: FirebaseCloudMessagingConfig;
 };

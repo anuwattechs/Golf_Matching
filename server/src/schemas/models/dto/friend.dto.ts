@@ -13,13 +13,14 @@ import {
   IsObject,
   IsPositive,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   FriendInteractionActionEnum,
   FriendStatusEnum,
   GenderEnum,
 } from 'src/shared/enums';
 import { ProfileForSearch } from './member.dto';
+import { PaginationDto, ResultPaginationDto } from 'src/shared/dto';
 
 export class AddFriendRequestDto {
   @IsString()
@@ -137,38 +138,78 @@ export class SearchFriendsDto {
   limit: number;
 }
 
-export class PaginationDto {
-  @IsInt()
-  @IsPositive()
-  total: number;
+export class ResultsPaginatedFriendsDto extends ResultPaginationDto<ProfileForSearch> {}
 
-  @IsInt()
-  @IsPositive()
-  page: number;
+export class FilterFriendDto {
+  @IsString()
+  @IsOptional()
+  query: string;
 
-  @IsInt()
-  @IsPositive()
-  limit: number;
+  @IsString()
+  @IsOptional()
+  customUserId: string;
 
-  @IsInt()
-  @IsPositive()
-  totalPages: number;
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  tags: string[];
 
-  @IsBoolean()
-  hasNextPage: boolean;
+  @ValidateNested()
+  @Type(() => RangeDto)
+  @IsOptional()
+  yearExperience: RangeDto;
 
-  @IsBoolean()
-  hasPrevPage: boolean;
+  @ValidateNested()
+  @Type(() => RangeDto)
+  @IsOptional()
+  averageScore: RangeDto;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  handicap: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  bestScore: number;
 }
 
-export class ResultsPaginatedFriendsDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ProfileForSearch)
-  result: ProfileForSearch[];
+export class SortFriendDto {
+  @Type(() => String)
+  @IsString()
+  orderBy: keyof ProfileForSearch;
 
-  @IsObject()
+  @IsString()
+  order: string;
+}
+
+export class QueryFriendsDto {
+  @Transform(({ value }) => (value ? Number(value) : 1))
+  @IsNumber()
+  @IsOptional()
+  page?: number;
+
+  @Transform(({ value }) => (value ? Number(value) : 10))
+  @IsNumber()
+  @IsOptional()
+  limit?: number;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    value ? plainToInstance(FilterFriendDto, JSON.parse(value)) : undefined,
+  )
   @ValidateNested()
-  @Type(() => PaginationDto)
-  pagination: PaginationDto;
+  @Type(() => FilterFriendDto)
+  filters?: FilterFriendDto | null;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    return value
+      ? plainToInstance(SortFriendDto, JSON.parse(value))
+      : undefined;
+  })
+  @ValidateNested({ each: true })
+  @Type(() => SortFriendDto)
+  sort?: SortFriendDto[] | null;
 }

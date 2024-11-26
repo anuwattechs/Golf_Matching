@@ -5,7 +5,6 @@ import {
   VerificationCodesModel,
   GolfCourseModel,
   TagModel,
-  GalleryModel,
   MatchPlayerModel,
   MatchRequestModel,
   MatchesModel,
@@ -13,6 +12,7 @@ import {
   ScoresModel,
   MemberSettingsModel,
   FriendsModel,
+  NotificationsModel,
 } from '.';
 import {
   Member,
@@ -23,8 +23,6 @@ import {
   GolfCourseSchema,
   Tag,
   TagSchema,
-  Gallery,
-  GallerySchema,
   Matches,
   MatchesSchema,
   MatchRequest,
@@ -39,9 +37,9 @@ import {
   MemberSettingsSchema,
   Friends,
   FriendsSchema,
+  Notifications,
+  NotificationsSchema,
 } from 'src/schemas';
-import { UtilsModule } from 'src/shared/utils/utils.module';
-import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Module({
   imports: [
@@ -63,8 +61,8 @@ import { UtilsService } from 'src/shared/utils/utils.service';
         schema: TagSchema,
       },
       {
-        name: Gallery.name,
-        schema: GallerySchema,
+        name: Matches.name,
+        schema: MatchesSchema,
       },
       {
         name: MatchRequest.name,
@@ -91,8 +89,8 @@ import { UtilsService } from 'src/shared/utils/utils.service';
         schema: FriendsSchema,
       },
       {
-        name: Matches.name,
-        schema: MatchesSchema,
+        name: Notifications.name,
+        schema: NotificationsSchema,
       },
     ]),
   ],
@@ -101,7 +99,6 @@ import { UtilsService } from 'src/shared/utils/utils.service';
     VerificationCodesModel,
     GolfCourseModel,
     TagModel,
-    GalleryModel,
     MatchPlayerModel,
     MatchRequestModel,
     MatchesModel,
@@ -109,14 +106,13 @@ import { UtilsService } from 'src/shared/utils/utils.service';
     ScoresModel,
     MemberSettingsModel,
     FriendsModel,
-    UtilsService,
+    NotificationsModel,
   ],
   exports: [
     MemberModel,
     VerificationCodesModel,
     GolfCourseModel,
     TagModel,
-    GalleryModel,
     MatchPlayerModel,
     MatchRequestModel,
     MatchesModel,
@@ -124,6 +120,7 @@ import { UtilsService } from 'src/shared/utils/utils.service';
     ScoresModel,
     MemberSettingsModel,
     FriendsModel,
+    NotificationsModel,
   ],
 })
 export class ModelsModule {}

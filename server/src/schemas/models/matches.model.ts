@@ -13,6 +13,10 @@ export class MatchesModel {
     private readonly matchesPlayerModel: Model<MatchPlayer>,
   ) {}
 
+  rootMatchModel() {
+    return this.matchesModel;
+  }
+
   async create(
     input: CreateMatchDto,
     decodedUser: JwtPayloadType,
@@ -55,14 +59,64 @@ export class MatchesModel {
     return await this.matchesModel.findOneAndDelete({ _id: matchId }).exec();
   }
 
-  async getMathHistory(userId: string): Promise<Matches[]> {
+  // async getMathHistory(userId: string): Promise<Matches[]> {
+  //   const playerInMatch = await this.matchesPlayerModel
+  //     .find({ playerId: userId })
+  //     .exec();
+
+  //   const matchIds = playerInMatch.map((match) => match.matchId);
+  //   const matches = await this.matchesModel.find({ _id: { $in: matchIds } });
+
+  //   return matches;
+  // }
+
+  async getMathHistory(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    data: Matches[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  }> {
+    const skip = (page - 1) * limit;
+
+    // Step 1: ค้นหา matchIds จาก matchesPlayerModel
     const playerInMatch = await this.matchesPlayerModel
       .find({ playerId: userId })
+      .select('matchId') // ดึงเฉพาะ matchId
       .exec();
 
     const matchIds = playerInMatch.map((match) => match.matchId);
-    const matches = await this.matchesModel.find({ _id: { $in: matchIds } });
 
-    return matches;
+    // Step 2: คำนวณจำนวนทั้งหมด
+    const total = await this.matchesModel.countDocuments({
+      _id: { $in: matchIds },
+    });
+
+    // Step 3: ดึงข้อมูล Matches พร้อม Pagination
+    const matches = await this.matchesModel
+      .find({ _id: { $in: matchIds } })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    const totalPages = Math.ceil(total / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return {
+      data: matches,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage,
+      hasPrevPage,
+    };
   }
 }

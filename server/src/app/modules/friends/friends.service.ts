@@ -3,10 +3,16 @@ import { FriendsModel, MemberModel } from 'src/schemas/models';
 import { Friends } from 'src/schemas';
 import { FriendStatusEnum } from 'src/shared/enums';
 import {
+  FilterFriendDto,
   ProfileForSearch,
   ResultsPaginatedFriendsDto,
   SearchFriendsDto,
+  SortFriendDto,
 } from 'src/schemas/models/dto';
+import { MembersService } from '../members/members.service';
+import { IPaginationOptions } from 'src/shared/types';
+import { NotificationsService } from '../notifications/notifications.service';
+import { FcmService } from 'src/app/common/services/fcm/fcm.service';
 
 enum ErrorMessages {
   BLOCKED = 'You are blocked by this user or have blocked this user',
@@ -14,6 +20,7 @@ enum ErrorMessages {
   REQUEST_PENDING = 'Friend request is already pending',
   FRIEND_NOT_FOUND = 'Friend relationship not found',
   UNAUTHORIZED = 'Unauthorized to accept or decline this request',
+  FOLLOWER_YOURSELF = 'You cannot follow yourself',
 }
 
 @Injectable()
@@ -21,6 +28,8 @@ export class FriendsService {
   constructor(
     private readonly friendsModel: FriendsModel,
     private readonly memberModel: MemberModel,
+    private readonly memberService: MembersService,
+    private readonly notificationService: NotificationsService,
   ) {}
 
   async getFriendsByUserId(
@@ -42,6 +51,9 @@ export class FriendsService {
     senderId: string,
     receiverId: string,
   ): Promise<void> {
+    if (senderId === receiverId) {
+      return;
+    }
     const [memberStatus, friendStatus] = await Promise.all([
       this.friendsModel.findExistingFriend(senderId, receiverId),
       this.friendsModel.findExistingFriend(receiverId, senderId),
@@ -89,8 +101,14 @@ export class FriendsService {
   async sendFollowRequest(
     senderId: string,
     receiverId: string,
-    isPrivate = true,
+    isPrivate = false,
   ): Promise<Friends> {
+    if (senderId === receiverId) {
+      this.throwHttpException(
+        ErrorMessages.FOLLOWER_YOURSELF,
+        HttpStatus.FORBIDDEN,
+      );
+    }
     await this.checkBlockedStatus(senderId, receiverId);
 
     const existingFriend = await this.getFriendStatus(senderId, receiverId);
@@ -120,6 +138,22 @@ export class FriendsService {
     const status = isPrivate
       ? FriendStatusEnum.PENDING
       : FriendStatusEnum.FOLLOWING;
+
+    const resSaveNotify = await this.notificationService.createNotification({
+      memberId: receiverId,
+      type: 'FOLLOWING_REQUEST',
+      message: `${senderId} followed you`,
+      metadata: { actionBy: senderId },
+      isRead: false,
+    });
+
+    if (!resSaveNotify) {
+      this.throwHttpException(
+        'Failed to send follow request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     return this.friendsModel.createNewFriendRequest(
       senderId,
       receiverId,
@@ -215,8 +249,9 @@ export class FriendsService {
       _id: { $ne: senderId },
       ...this.buildFilterQuery(input),
     };
+
     const { result: allProfile, pagination } =
-      await this.memberModel.findAllProfilesWithPagination(
+      await this.memberService.findAllProfilesWithPagination(
         input.page,
         input.limit,
         filterQuery,
@@ -314,9 +349,19 @@ export class FriendsService {
       FriendStatusEnum.FOLLOWING,
     ]);
 
-    return this.memberModel.getProfilesByIds(
-      friends?.filter((r) => r.senderId === userId).map((f) => f.receiverId),
-    );
+    return this.memberModel
+      ?.getProfilesByIds(
+        friends?.filter((r) => r.senderId === userId).map((f) => f.receiverId),
+      )
+      ?.then((profiles) =>
+        profiles.map((profile) =>
+          this.memberService.buildProfileForSearch(profile),
+        ),
+      )
+      .catch((e) => {
+        console.log(e);
+        return [];
+      });
   }
 
   async getFollowers(userId: string): Promise<ProfileForSearch[]> {
@@ -325,8 +370,30 @@ export class FriendsService {
       FriendStatusEnum.FOLLOWING,
     );
 
-    return this.memberModel.getProfilesByIds(
-      friends?.filter((r) => r.receiverId === userId).map((f) => f.senderId),
-    );
+    return this.memberModel
+      .getProfilesByIds(
+        friends?.filter((r) => r.receiverId === userId).map((f) => f.senderId),
+      )
+      ?.then((profiles) => {
+        return profiles.map((profile) =>
+          this.memberService.buildProfileForSearch(profile),
+        );
+      });
+  }
+
+  findManyWithPagination({
+    filterOptions,
+    sortOptions,
+    paginationOptions,
+  }: {
+    filterOptions?: FilterFriendDto | null;
+    sortOptions?: SortFriendDto[] | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<Friends[]> {
+    return this.friendsModel.findManyWithPagination({
+      filterOptions,
+      sortOptions,
+      paginationOptions,
+    });
   }
 }

@@ -6,14 +6,17 @@ import {
   Param,
   Req,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { MatchService } from './match.service';
 import {
   CreateMatchDto,
   MatchesHistoryDto,
+  ResultPaginationMatchesHistoryDto,
 } from '../../../schemas/models/dto/match.dto';
 import { JwtAuthGuard } from '../auth/guard';
 import { JwtPayloadType } from '../auth/strategies/types';
+import { ResultPaginationDto } from 'src/shared/dto';
 
 @Controller('match')
 export class MatchController {
@@ -48,9 +51,11 @@ export class MatchController {
   @Get('history/me')
   @UseGuards(JwtAuthGuard)
   async getMatchHistory(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
     @Req() req: Request & { decoded: JwtPayloadType },
-  ): Promise<MatchesHistoryDto[]> {
-    return await this.matchService.getMatchHistory(req.decoded);
+  ): Promise<ResultPaginationMatchesHistoryDto> {
+    return await this.matchService.getMatchHistory(req.decoded, page, limit);
   }
 
   /**

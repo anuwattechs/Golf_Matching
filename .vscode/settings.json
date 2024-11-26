@@ -1,21 +1,3 @@
 {
-    "cSpell.words": [
-        "actived",
-        "commitlint",
-        "contries",
-        "conventionalcommits",
-        "CSCAPI",
-        "Forgor",
-        "ianvs",
-        "Indentity",
-        "infile",
-        "infobip",
-        "libphonenumber",
-        "nestjs",
-        "Signin",
-        "typeorm",
-        "unfollow",
-        "uuidv"
-    ],
-    "nuxt.isNuxtApp": false
+  "nuxt.isNuxtApp": false
 }

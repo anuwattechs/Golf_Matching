@@ -25,7 +25,6 @@ import { HeaderResolver } from 'nestjs-i18n';
 import path from 'path';
 import { AllConfigType } from 'src/app/config/config.type';
 import { HealthCheckModule } from './app/modules/health-check/health-check.module';
-import { GalleryModule } from './app/modules/gallery/gallery.module';
 import { MatchModule } from './app/modules/match/match.module';
 import { MatchRequestsModule } from './app/modules/match-requests/match-requests.module';
 import { MatchPlayerModule } from './app/modules/match-player/match-player.module';
@@ -33,6 +32,7 @@ import { GolfCourseLayoutModule } from './app/modules/golf-course-layout/golf-co
 import { MemberSettingsModule } from './app/modules/member-settings/member-settings.module';
 import { ScoresModule } from './app/modules/scores/scores.module';
 import { FriendsModule } from './app/modules/friends/friends.module';
+import { NotificationsModule } from './app/modules/notifications/notifications.module';
 
 const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
@@ -98,7 +98,6 @@ const environment = process.env.NODE_ENV || 'development';
     CountryModule,
     AssetsModule,
     HealthCheckModule,
-    GalleryModule,
     MatchModule,
     MatchRequestsModule,
     MatchPlayerModule,
@@ -106,6 +105,7 @@ const environment = process.env.NODE_ENV || 'development';
     MemberSettingsModule,
     ScoresModule,
     FriendsModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

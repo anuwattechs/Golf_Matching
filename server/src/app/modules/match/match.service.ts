@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   CreateMatchDto,
   MatchesHistoryDto,
+  ResultPaginationMatchesHistoryDto,
   UpdateMatchDto,
 } from 'src/schemas/models/dto';
 import { MatchesModel } from '../../../schemas/models/matches.model';
@@ -9,8 +10,10 @@ import { NullableType } from 'src/shared/types';
 import { Matches } from 'src/schemas';
 import { JwtPayloadType } from '../auth/strategies/types';
 import { UtilsService } from 'src/shared/utils/utils.service';
-import { GolfCourseModel, MemberModel, ScoresModel } from 'src/schemas/models';
+import { GolfCourseModel, MemberModel } from 'src/schemas/models';
 import { MatchPlayerModel } from '../../../schemas/models/match-players.model';
+import { ScoresService } from '../scores/scores.service';
+import { ResultPaginationDto } from 'src/shared/dto';
 
 @Injectable()
 export class MatchService {
@@ -18,7 +21,7 @@ export class MatchService {
     private readonly memberModel: MemberModel,
     private readonly matchesModel: MatchesModel,
     private readonly matchPlayerModel: MatchPlayerModel,
-    private readonly scoresModel: ScoresModel,
+    private readonly scoresService: ScoresService,
     private readonly utilsService: UtilsService,
     private readonly golfCourseModel: GolfCourseModel,
   ) {}
@@ -134,18 +137,37 @@ export class MatchService {
     );
   }
 
-  // Get the match history of the logged-in user
-  async getMatchHistory(decoded: JwtPayloadType): Promise<MatchesHistoryDto[]> {
-    const matchesByMemberId = await this.matchesModel.getMathHistory(
-      decoded.userId,
-    );
+  async getMatchHistory(
+    decoded: JwtPayloadType,
+    page: number,
+    limit: number,
+  ): Promise<ResultPaginationMatchesHistoryDto> {
+    const {
+      data: matchesByMemberIds,
+      total,
+      page: _,
+      limit: _1,
+      totalPages,
+      hasNextPage,
+      hasPrevPage,
+    } = await this.matchesModel.getMathHistory(decoded.userId, page, limit);
 
-    if (!matchesByMemberId || matchesByMemberId.length === 0) {
-      return [];
+    if (!matchesByMemberIds) {
+      return {
+        result: [],
+        pagination: {
+          total: 0,
+          page,
+          limit,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
+      };
     }
 
     const result = await Promise.all(
-      matchesByMemberId.map(async (match: Matches) => {
+      matchesByMemberIds.map(async (match: Matches) => {
         const {
           _id: matchId,
           courseId,
@@ -155,11 +177,12 @@ export class MatchService {
           date,
           matchesType,
           maxPlayers,
-        } = match.toObject();
+        } = match;
 
-        const scores = await this.scoresModel.getScoreCardByPlayerId(
-          decoded.userId,
-        );
+        const scores =
+          await this.scoresService.getScoreCardByPlayerIdWithOldPagination(
+            decoded.userId,
+          );
 
         const players = await this.matchPlayerModel.getPlayersForMatch(matchId);
 
@@ -195,6 +218,16 @@ export class MatchService {
       }),
     );
 
-    return result;
+    return {
+      result: result,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      },
+    };
   }
 }
