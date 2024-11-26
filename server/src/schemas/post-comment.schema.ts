@@ -3,11 +3,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({
-  collection: 'GalleryComments',
+  collection: 'PostComments',
   timestamps: true,
   versionKey: false,
 })
-export class GalleryComment extends Document {
+export class PostComment extends Document {
   @Prop({
     type: String,
     default: uuidv4,
@@ -15,14 +15,19 @@ export class GalleryComment extends Document {
   _id: string;
 
   @Prop({ required: true, type: String })
-  galleryId: string;
+  postId: string;
 
   @Prop({ default: null, type: String })
-  message: string;
+  comment: string;
+
+  @Prop({ required: true, type: String })
+  reference: string; // Array of memberId
+
+  @Prop({ default: [], type: [String] })
+  likes: string[]; // Array of memberId
 
   @Prop({ required: true, type: String })
   createdBy: string;
 }
 
-export const GalleryCommentSchema =
-  SchemaFactory.createForClass(GalleryComment);
+export const PostCommentSchema = SchemaFactory.createForClass(PostComment);
