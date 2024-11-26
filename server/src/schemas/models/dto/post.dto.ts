@@ -1,5 +1,13 @@
-import { IsNotEmpty, IsString, IsUUID, IsEnum } from 'class-validator';
-import { MediaTypeEnum } from 'src/shared/enums';
+import {
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  IsEnum,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { MediaTypeEnum, PostDisplayEnum } from 'src/shared/enums';
 
 export class MediaDto {
   @IsString()
@@ -20,7 +28,19 @@ export class CreatePostDto {
   @IsNotEmpty()
   memberId: string;
 
-  caption: string;
-  key: string;
-  createdBy: string;
+  @IsOptional()
+  @IsString()
+  caption?: string;
+
+  @ValidateNested({ each: true })
+  @Type(() => MediaDto)
+  media: MediaDto[];
+
+  @IsOptional()
+  @IsUUID()
+  tags?: string[];
+
+  @IsOptional()
+  @IsEnum(PostDisplayEnum)
+  display?: PostDisplayEnum;
 }

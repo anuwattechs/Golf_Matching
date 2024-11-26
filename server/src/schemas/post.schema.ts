@@ -52,9 +52,6 @@ export class Post extends Document {
 
   @Prop({ default: PostDisplayEnum.PRIVATE, type: String })
   display: PostDisplayEnum;
-
-  @Prop({ required: true, type: String })
-  createdBy: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

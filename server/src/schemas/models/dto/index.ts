@@ -10,3 +10,4 @@ export * from './scores.dto';
 export * from './member-settings.dto';
 export * from './friend.dto';
 export * from './notification.dto';
+export * from './post.dto';
