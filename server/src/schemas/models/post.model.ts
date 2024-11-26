@@ -24,4 +24,8 @@ export class PostModel {
   deleteById(id: string): Promise<DeleteResult> {
     return this.post.deleteOne({ _id: id });
   }
+
+  startSession() {
+    return this.post.startSession();
+  }
 }
