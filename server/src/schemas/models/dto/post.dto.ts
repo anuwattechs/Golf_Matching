@@ -1,9 +1,9 @@
-import { MediaTypeEnum, PostPrivacyEnum } from 'src/shared/enums';
+import { PostPrivacyEnum } from 'src/shared/enums';
 
 export class MediaDto {
-  etag: string;
+  // etag: string;
   key: string;
-  type: MediaTypeEnum;
+  type: string;
 }
 
 export class CreatePostDto {

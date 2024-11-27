@@ -1,3 +1,5 @@
 {
-  "POST_CREATED_SUCCESSFULLY": "สร้างโพสต์สำเร็จ"
+  "POST_CREATED_SUCCESSFULLY": "สร้างโพสต์สำเร็จ",
+  "POST_UPDATED_SUCCESSFULLY": "แก้ไขโพสต์สำเร็จ",
+  "POST_DELETED_SUCCESSFULLY": "ลบโพสต์สำเร็จ"
 }

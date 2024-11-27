@@ -92,6 +92,8 @@ export type I18nTranslations = {
     };
     "post": {
         "POST_CREATED_SUCCESSFULLY": string;
+        "POST_UPDATED_SUCCESSFULLY": string;
+        "POST_DELETED_SUCCESSFULLY": string;
     };
     "settings": {
         "UPDATE_SETTINGS_SUCCESSFULLY": string;

@@ -1,3 +1,5 @@
 {
-  "POST_CREATED_SUCCESSFULLY": "Post created successfully"
+  "POST_CREATED_SUCCESSFULLY": "Post created successfully",
+  "POST_UPDATED_SUCCESSFULLY": "Post updated successfully",
+  "POST_DELETED_SUCCESSFULLY": "Post deleted successfully"
 }

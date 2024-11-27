@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Put,
   // UploadedFile,
   UploadedFiles,
   Body,
@@ -10,20 +11,16 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   MaxFileSizeValidator,
-  // Delete,
+  Delete,
   UseGuards,
   Req,
 } from '@nestjs/common';
 import { Request } from 'express';
-// import { AssetsService } from './assets.service';
 import { ResponseMessage } from 'src/app/common/decorator/response-message.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
-// import { ConfigService } from '@nestjs/config';
-// import { AllConfigType } from 'src/app/config/config.type';
-// import { CreateTagDto } from './dto/create-tag.dto';
 import { JwtAuthGuard /*, BlockGuard*/ } from '../auth/guard';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto';
+import { CreatePostDto, UpdatePostDto, DeletePostDto } from './dto';
 import { JwtPayloadType } from '../auth/strategies/types';
 
 @Controller('posts')
@@ -34,10 +31,8 @@ export class PostsController {
   // @UseGuards(BlockGuard)
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('post.POST_CREATED_SUCCESSFULLY')
-  // @UseInterceptors(FileInterceptor('file'))
   @UseInterceptors(FilesInterceptor('files'))
   create(
-    // @Param('id') id: string,
     @Body() body: CreatePostDto,
     @Req() req: Request & { decoded: JwtPayloadType },
     @UploadedFiles(
@@ -56,5 +51,19 @@ export class PostsController {
   ) {
     // return { body, files };
     return this.postsService.create(body, req.decoded, files);
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  @ResponseMessage('post.POST_UPDATED_SUCCESSFULLY')
+  update(@Body() body: UpdatePostDto) {
+    return this.postsService.update(body);
+  }
+
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  @ResponseMessage('post.POST_DELETED_SUCCESSFULLY')
+  delete(@Body() query: DeletePostDto) {
+    return this.postsService.delete(query);
   }
 }

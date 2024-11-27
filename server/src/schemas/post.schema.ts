@@ -1,18 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { PostPrivacyEnum, MediaTypeEnum } from 'src/shared/enums';
+import { PostPrivacyEnum } from 'src/shared/enums';
 
 @Schema({ _id: false })
 export class Media {
-  @Prop({ required: true, type: String })
-  etag: string;
+  // @Prop({ required: true, type: String })
+  // etag: string;
 
   @Prop({ required: true, type: String })
   key: string;
 
   @Prop({ required: true, type: String })
-  type: MediaTypeEnum;
+  type: string;
 }
 
 @Schema({
@@ -48,7 +48,7 @@ export class Post extends Document {
   @Prop({ default: null, type: Date })
   pinnedAt: Date;
 
-  @Prop({ default: PostPrivacyEnum.PRIVATE, type: String })
+  @Prop({ default: PostPrivacyEnum.FOLLOWER, type: String })
   privacy: PostPrivacyEnum;
 }
 
