@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { DeleteResult } from 'mongodb';
+import { DeleteResult, UpdateResult } from 'mongodb';
 import { Post } from '..';
-import { CreatePostDto } from './dto/post.dto';
+import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
+import { PostPrivacyEnum } from 'src/shared/enums';
 
 @Injectable()
 export class PostModel {
@@ -19,6 +20,18 @@ export class PostModel {
 
   create(input: CreatePostDto): Promise<Post> {
     return this.post.create(input);
+  }
+
+  update(input: UpdatePostDto): Promise<UpdateResult> {
+    const { postId, ...data } = input;
+    return this.post.updateMany({ _id: postId }, { $set: data });
+  }
+
+  updatePrivacy(
+    postId: string,
+    privacy: PostPrivacyEnum,
+  ): Promise<UpdateResult> {
+    return this.post.updateOne({ _id: postId }, { $set: { privacy } });
   }
 
   deleteById(id: string): Promise<DeleteResult> {

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { PostDisplayEnum, MediaTypeEnum } from 'src/shared/enums';
+import { PostPrivacyEnum, MediaTypeEnum } from 'src/shared/enums';
 
 @Schema({ _id: false })
 export class Media {
@@ -37,12 +37,10 @@ export class Post extends Document {
   media: Array<Media>;
 
   @Prop({ default: [], type: [String] })
-  tags: string[]; // Array of hashtags
+  hashtags: string[]; // Array of hashtags
 
   @Prop({ default: [], type: [String] })
   likes: string[]; // Array of memberId
-
-  //! Comments
 
   @Prop({ default: false, type: Boolean })
   isPinned: boolean;
@@ -50,8 +48,8 @@ export class Post extends Document {
   @Prop({ default: null, type: Date })
   pinnedAt: Date;
 
-  @Prop({ default: PostDisplayEnum.PRIVATE, type: String })
-  display: PostDisplayEnum;
+  @Prop({ default: PostPrivacyEnum.PRIVATE, type: String })
+  privacy: PostPrivacyEnum;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

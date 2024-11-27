@@ -13,6 +13,7 @@ import {
   MemberSettingsModel,
   FriendsModel,
   NotificationsModel,
+  PostModel,
 } from '.';
 import {
   Member,
@@ -39,6 +40,8 @@ import {
   FriendsSchema,
   Notifications,
   NotificationsSchema,
+  Post,
+  PostSchema,
 } from 'src/schemas';
 
 @Module({
@@ -92,6 +95,10 @@ import {
         name: Notifications.name,
         schema: NotificationsSchema,
       },
+      {
+        name: Post.name,
+        schema: PostSchema,
+      },
     ]),
   ],
   providers: [
@@ -107,6 +114,7 @@ import {
     MemberSettingsModel,
     FriendsModel,
     NotificationsModel,
+    PostModel,
   ],
   exports: [
     MemberModel,
@@ -121,6 +129,7 @@ import {
     MemberSettingsModel,
     FriendsModel,
     NotificationsModel,
+    PostModel,
   ],
 })
 export class ModelsModule {}
