@@ -10,12 +10,47 @@ import { PostPrivacyEnum } from 'src/shared/enums';
 export class PostModel {
   constructor(@InjectModel(Post.name) private post: Model<Post>) {}
 
-  findAll(): Promise<Post[]> {
-    return this.post.find().exec();
+  findAll(memberId: string): Promise<Post[]> {
+    return this.post
+      .find(
+        { memberId },
+        {},
+        {
+          sort: { createdAt: -1 },
+          projection: {
+            _id: 0,
+            postId: '$_id',
+            memberId: 1,
+            caption: 1,
+            media: 1,
+            hashtags: 1, // Array of hashtags
+            likes: 1, // Array of memberId
+            isPinned: 1,
+            pinnedAt: 1,
+            privacy: 1,
+            createdAt: 1,
+            updatedAt: 1,
+          },
+        },
+      )
+      .exec();
   }
 
   findById(id: string): Promise<Post> {
     return this.post.findOne({ _id: id }).exec();
+  }
+
+  findAllWithPublic(memberId: string): Promise<Post[]> {
+    return this.post.find({ memberId, privacy: PostPrivacyEnum.PUBLIC }).exec();
+  }
+
+  findAllWithFollow(memberId: string): Promise<Post[]> {
+    return this.post
+      .find({
+        memberId,
+        privacy: { $in: [PostPrivacyEnum.PUBLIC, PostPrivacyEnum.FOLLOWER] },
+      })
+      .exec();
   }
 
   create(input: CreatePostDto): Promise<Post> {

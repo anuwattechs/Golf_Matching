@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Put,
   // UploadedFile,
   UploadedFiles,
@@ -51,6 +52,13 @@ export class PostsController {
   ) {
     // return { body, files };
     return this.postsService.create(body, req.decoded, files);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ResponseMessage('post.FETCHED_ALL_POSTS_SUCCESSFULLY')
+  findAll(@Req() req: Request & { decoded: JwtPayloadType }) {
+    return this.postsService.findAll(req.decoded);
   }
 
   @Put()

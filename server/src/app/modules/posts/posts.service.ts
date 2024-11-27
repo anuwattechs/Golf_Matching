@@ -53,6 +53,31 @@ export class PostsService {
     }
   }
 
+  async findAll(decoded: JwtPayloadType): Promise<NullableType<unknown>> {
+    try {
+      const bucketName = this.configService.get<string>(
+        'assets.awsDefaultS3Bucket',
+        { infer: true },
+      );
+      const results = await this.postModel.findAll(decoded.userId);
+      return await Promise.all([
+        ...results.map(async (item) => ({
+          ...item.toObject(),
+          media: await Promise.all([
+            ...item.toObject().media.map(async (media) => ({
+              ...media,
+              url: await this.awsService.getSignedUrl(bucketName, media.key, {
+                Expires: 60 * 60, // 1 hour
+              }),
+            })),
+          ]),
+        })),
+      ]);
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
   async update(body: UpdatePostDto): Promise<NullableType<unknown>> {
     try {
       const updated = await this.postModel.update({
