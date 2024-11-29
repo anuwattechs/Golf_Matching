@@ -9,13 +9,16 @@ import {
   IsString,
   ValidateIf,
   ValidateNested,
+  IsDateString,
+  IsUUID,
 } from 'class-validator';
 import { GenderEnum } from 'src/shared/enums';
 import { AddressDto } from '.';
 import { ResultPaginationDto } from 'src/shared/dto';
+import { MatchesTypeEnum } from 'src/shared/enums';
 
 export class CreateMatchDto {
-  @ValidateIf((o) => o.matchesType === 'SOLO')
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.SOLO)
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -32,13 +35,13 @@ export class CreateMatchDto {
   @IsOptional()
   discussionId: string; // for chat and comments on the match
 
-  @IsString()
+  @IsDateString()
   @IsNotEmpty()
   date: Date; // example: 2021-09-01T00:00:00.000Z
 
-  @IsEnum(['SOLO', 'GROUP'])
+  @IsEnum(MatchesTypeEnum)
   @IsNotEmpty()
-  matchesType: string;
+  matchesType: MatchesTypeEnum;
 
   @IsString()
   @IsOptional()
@@ -64,18 +67,20 @@ export class CreateMatchDto {
   @IsNotEmpty()
   maxPlayers: number;
 
-  @ValidateIf((o) => o.matchesType === 'GROUP')
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
   @IsArray()
   @IsOptional()
   tags: string[];
 
-  @ValidateIf((o) => o.matchesType === 'GROUP')
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
   @IsEnum(GenderEnum)
   @IsOptional()
   gender?: GenderEnum;
 }
 
 export class UpdateMatchDto {
+  @IsUUID()
+  @IsNotEmpty()
   matchId: string;
 
   @IsString()
@@ -90,13 +95,13 @@ export class UpdateMatchDto {
   @IsOptional()
   courseId?: string;
 
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   date?: Date;
 
-  @IsEnum(['SOLO', 'GROUP'])
+  @IsEnum(MatchesTypeEnum)
   @IsOptional()
-  matchesType?: string;
+  matchesType?: MatchesTypeEnum;
 
   coverImageUrl?: string;
 
@@ -134,7 +139,7 @@ export class UpdateMatchDto {
 }
 
 export class MatchesHistoryDto {
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   matchId: string;
 
@@ -146,7 +151,7 @@ export class MatchesHistoryDto {
   @IsNotEmpty()
   description: string;
 
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   courseId: string;
 
@@ -162,13 +167,13 @@ export class MatchesHistoryDto {
   @IsNotEmpty()
   coverImageUrl: string;
 
-  @IsString()
+  @IsDateString()
   @IsNotEmpty()
   date: Date;
 
-  @IsEnum(['SOLO', 'GROUP'])
+  @IsEnum(MatchesTypeEnum)
   @IsNotEmpty()
-  matchesType: string;
+  matchesType: MatchesTypeEnum;
 
   @IsNumber()
   @IsNotEmpty()

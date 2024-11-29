@@ -6,3 +6,4 @@ export * from './friend.enum';
 export * from './notifications.enum';
 export * from './post-privacy.enum';
 export * from './media-type.enum';
+export * from './matches-type.enum';

@@ -14,6 +14,7 @@ import { GolfCourseModel, MemberModel } from 'src/schemas/models';
 import { MatchPlayerModel } from '../../../schemas/models/match-players.model';
 import { ScoresService } from '../scores/scores.service';
 import { ResultPaginationDto } from 'src/shared/dto';
+import { MatchesTypeEnum } from 'src/shared/enums';
 
 @Injectable()
 export class MatchService {
@@ -210,7 +211,7 @@ export class MatchService {
           address,
           coverImageUrl: coverImageUrl || course.coverImage[0],
           date,
-          matchesType: matchesType || '',
+          matchesType: (matchesType as MatchesTypeEnum) || MatchesTypeEnum.SOLO,
           maxPlayers: maxPlayers || 0,
           currentPlayers: players.length || 0,
           myScore: playerScore?.myScore || 0,
