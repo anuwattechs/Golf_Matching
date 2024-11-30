@@ -9,3 +9,4 @@ export * from './golf-course-layout.model';
 export * from './scores.model';
 export * from './member-settings.model';
 export * from './friends.model';
+export * from './post.model';
