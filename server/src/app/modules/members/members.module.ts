@@ -10,6 +10,7 @@ import { UtilsModule } from 'src/shared/utils/utils.module';
 import { AWSModule } from 'src/app/common/services/aws/aws.module';
 import { ScoresModule } from '../scores/scores.module';
 import { AssetsModule } from '../assets/assets.module';
+import { GolfCoursesModule } from '../golf-courses/golf-courses.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AssetsModule } from '../assets/assets.module';
     AWSModule,
     ScoresModule,
     AssetsModule,
+    GolfCoursesModule,
   ],
   controllers: [MembersController],
   providers: [MembersService, JwtStrategy],
