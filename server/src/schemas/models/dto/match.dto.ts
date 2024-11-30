@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDate,
@@ -7,15 +7,17 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsDateString,
   ValidateIf,
   ValidateNested,
-} from "class-validator";
-import { GenderEnum } from "src/shared/enums";
-import { AddressDto } from ".";
-import { ResultPaginationDto } from "src/shared/dto";
+} from 'class-validator';
+import { GenderEnum } from 'src/shared/enums';
+import { AddressDto } from '.';
+import { ResultPaginationDto } from 'src/shared/dto';
+import { MatchesTypeEnum } from 'src/shared/enums';
 
 export class CreateMatchDto {
-  @ValidateIf((o) => o.matchesType === "SOLO")
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.SOLO)
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -32,13 +34,13 @@ export class CreateMatchDto {
   @IsOptional()
   discussionId: string; // for chat and comments on the match
 
-  @IsString()
+  @IsDateString()
   @IsNotEmpty()
   date: Date; // example: 2021-09-01T00:00:00.000Z
 
-  @IsEnum(["SOLO", "GROUP"])
+  @IsEnum(MatchesTypeEnum)
   @IsNotEmpty()
-  matchesType: string;
+  matchesType: MatchesTypeEnum;
 
   @IsString()
   @IsOptional()
@@ -64,12 +66,12 @@ export class CreateMatchDto {
   @IsNotEmpty()
   maxPlayers: number;
 
-  @ValidateIf((o) => o.matchesType === "GROUP")
+  @ValidateIf((o) => o.matchesType === 'GROUP')
   @IsArray()
   @IsOptional()
   tags: string[];
 
-  @ValidateIf((o) => o.matchesType === "GROUP")
+  @ValidateIf((o) => o.matchesType === 'GROUP')
   @IsEnum(GenderEnum)
   @IsOptional()
   gender?: GenderEnum;
@@ -94,7 +96,7 @@ export class UpdateMatchDto {
   @IsOptional()
   date?: Date;
 
-  @IsEnum(["SOLO", "GROUP"])
+  @IsEnum(['SOLO', 'GROUP'])
   @IsOptional()
   matchesType?: string;
 
@@ -166,7 +168,7 @@ export class MatchesHistoryDto {
   @IsNotEmpty()
   date: Date;
 
-  @IsEnum(["SOLO", "GROUP"])
+  @IsEnum(['SOLO', 'GROUP'])
   @IsNotEmpty()
   matchType: string;
 

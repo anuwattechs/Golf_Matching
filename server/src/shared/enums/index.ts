@@ -5,3 +5,4 @@ export * from './verify-type.enum';
 export * from './friend.enum';
 export * from './post-privacy.enum';
 export * from './notifications.enum';
+export * from './matches-type.enum';

@@ -215,7 +215,7 @@ export class MembersService {
         );
       }
 
-      const customUserId = !member.customUserId
+      const customUserId = !Boolean(member.customUserId)
         ? await this.authService.generateUniqueCustomUserId()
         : member.customUserId;
       if (!member.customUserId)
