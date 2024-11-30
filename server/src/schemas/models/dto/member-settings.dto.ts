@@ -1,10 +1,10 @@
-import { Type } from 'class-transformer';
+import { Type } from "class-transformer";
 import {
   IsBoolean,
   ValidateNested,
   IsObject,
   IsOptional,
-} from 'class-validator';
+} from "class-validator";
 
 class NotificationSettingsDto {
   @IsBoolean()
@@ -26,6 +26,10 @@ class NotificationSettingsDto {
   @IsBoolean()
   @IsOptional()
   allowOthersToFollow: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  privateAccount: boolean;
 }
 
 export class UpdateMemberSettingsDto {

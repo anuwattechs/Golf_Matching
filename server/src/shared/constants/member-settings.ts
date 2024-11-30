@@ -4,4 +4,5 @@ export const DEFAULT_MEMBER_SETTINGS = {
   messages: true,
   hideProfile: false,
   allowOthersToFollow: true,
+  privateAccount: false,
 };

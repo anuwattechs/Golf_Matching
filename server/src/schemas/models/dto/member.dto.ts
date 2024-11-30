@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsEnum,
@@ -7,13 +7,14 @@ import {
   IsOptional,
   IsString,
   ValidateNested,
-} from 'class-validator';
-import { FriendStatusEnum, GenderEnum } from 'src/shared/enums';
+} from "class-validator";
+import { FriendStatusEnum, GenderEnum } from "src/shared/enums";
 
 export class CreateMemberDto {
   firstName: string;
   lastName: string;
   birthDate: string;
+  customUserId: string;
   gender: GenderEnum;
   email?: string | null; // Optional or required based on your application logic
   phoneNo?: string | null; // Optional or required based on your application logic
@@ -85,18 +86,32 @@ export class Stats {
   @IsNumber()
   handicap: number;
 
-  // @ValidateNested()
-  // @Type(() => AvgScore)
-  // avgScoreMinMax: AvgScore;
-
   @IsNotEmpty()
   @IsNumber()
   avgScore: number;
 }
 
+export class Tag {
+  @IsNotEmpty()
+  @IsString()
+  tagId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  tagName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  url: string;
+
+  @IsOptional()
+  @IsString()
+  etag?: string;
+}
+
 /**
  * Profile DTO
- * @description Profile DTO for member profile
+ * @description Profile DTO for transfer data in model layer
  */
 export class Profile {
   @IsNotEmpty()
@@ -113,6 +128,9 @@ export class Profile {
   @IsNotEmpty()
   @IsString()
   lastName: string;
+
+  @IsString()
+  customUserId: string;
 
   @IsString()
   nickName: string;
@@ -136,6 +154,70 @@ export class Profile {
   @IsNotEmpty()
   @IsString({ each: true })
   tags: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  isInviteAble?: boolean;
+
+  @ValidateNested()
+  @Type(() => Stats)
+  stats: Stats;
+
+  @IsNotEmpty()
+  @IsNumber()
+  followersCount: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  followingsCount: number;
+}
+
+/**
+ * ProfileMain DTO
+ * @description ProfileMain DTO for member profile
+ */
+export class ProfileMain {
+  @IsNotEmpty()
+  @IsString()
+  memberId: string;
+
+  @IsString()
+  profileImage: string;
+
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsString()
+  customUserId: string;
+
+  @IsString()
+  nickName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  ranking: string;
+
+  @IsNotEmpty()
+  @IsString()
+  introduction: string;
+
+  @IsString()
+  @IsOptional()
+  location?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  country?: string;
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => Tag)
+  tags: Tag[];
 
   @IsOptional()
   @IsBoolean()

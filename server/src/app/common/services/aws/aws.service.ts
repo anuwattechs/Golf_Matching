@@ -58,15 +58,10 @@ export class AwsService {
     await this.s3.deleteObject(params).promise();
   }
 
-  async getSignedUrl(
-    bucketName: string,
-    key: string,
-    args: any,
-  ): Promise<string> {
+  async getSignedUrl(bucketName: string, key: string): Promise<string> {
     const params = {
       Bucket: bucketName,
       Key: key,
-      ...args,
     };
 
     return this.s3.getSignedUrlPromise('getObject', params);

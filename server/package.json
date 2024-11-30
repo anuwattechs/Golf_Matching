@@ -52,7 +52,6 @@
     "class-validator": "^0.14.1",
     "date-fns": "^4.1.0",
     "fb": "^2.0.0",
-    "firebase-admin": "^13.0.1",
     "google-auth-library": "^9.14.1",
     "google-libphonenumber": "^3.2.38",
     "lodash": "^4.17.21",

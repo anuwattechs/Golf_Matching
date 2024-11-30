@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Member } from '..';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Member } from "..";
 import {
   CreateMemberDto,
   CreateMemberBySocialDto,
@@ -9,17 +9,21 @@ import {
   FindBySocialIdDto,
   Profile,
   ProfileForSearch,
-} from './dto';
-import { omit } from 'lodash';
+} from "./dto";
+import { omit } from "lodash";
 
 @Injectable()
 export class MemberModel {
   constructor(
-    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>
   ) {}
 
   rootMemberModel(): Model<Member> {
     return this.memberModel;
+  }
+
+  async findOne(query: Record<string, unknown>): Promise<Member | null> {
+    return await this.memberModel.findOne(query).exec();
   }
 
   // Fetch profile details by user ID excluding sensitive information
@@ -33,12 +37,12 @@ export class MemberModel {
     if (!result) return null;
 
     const selectedFields = omit(result, [
-      '_id',
-      'password',
-      'isActived',
-      'activedAt',
-      'updatedAt',
-      '__v',
+      "_id",
+      "password",
+      "isActived",
+      "activedAt",
+      "updatedAt",
+      "__v",
     ]);
 
     return {
@@ -129,7 +133,7 @@ export class MemberModel {
     const { userId, ...data } = input;
     const result = await this.memberModel.updateOne(
       { _id: userId },
-      { $set: { ...data, isRegistered: true } },
+      { $set: { ...data, isRegistered: true } }
     );
     return result.modifiedCount > 0 ? this.findById(input.userId) : null;
   }
@@ -146,14 +150,14 @@ export class MemberModel {
           isActived: isActive,
           ...(isActive ? { activedAt: new Date() } : {}),
         },
-      },
+      }
     );
   }
 
   async changeInviteMode(userId: string, isInviteAble: boolean): Promise<void> {
     await this.memberModel.updateOne(
       { _id: userId },
-      { $set: { isInviteAble } },
+      { $set: { isInviteAble } }
     );
   }
 
@@ -163,7 +167,7 @@ export class MemberModel {
 
   async updatePasswordByUsername(
     username: string,
-    password: string,
+    password: string
   ): Promise<void> {
     await this.memberModel.updateOne(
       {
@@ -172,17 +176,17 @@ export class MemberModel {
           { phoneNo: username.toLowerCase() },
         ],
       },
-      { $set: { password } },
+      { $set: { password } }
     );
   }
 
   async updateProfileImage(
     userId: string,
-    profileImage: string,
+    profileImage: string
   ): Promise<Member | null> {
     const result = await this.memberModel.updateOne(
       { _id: userId },
-      { $set: { profileImage } },
+      { $set: { profileImage } }
     );
     return result.modifiedCount > 0 ? this.findById(userId) : null;
   }
@@ -200,11 +204,9 @@ export class MemberModel {
       _id: memberId,
       firstName,
       lastName,
+      customUserId,
       introduction,
-      location,
-      country,
       tags,
-      isInviteAble,
       profileImage,
       nickName,
       yearStart,
@@ -213,10 +215,11 @@ export class MemberModel {
     return {
       memberId: memberId,
       profileImage: profileImage,
+      customUserId: customUserId,
       firstName: firstName,
       lastName: lastName,
       nickName: nickName,
-      ranking: 'Rookie',
+      ranking: "Rookie",
       introduction: introduction,
       tags: tags,
       stats: {

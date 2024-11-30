@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { I18nPath } from 'src/generated/i18n.generated';
-import { NotificationType } from '../enums';
 
 @Injectable()
 export class UtilsService {
@@ -179,23 +178,5 @@ export class UtilsService {
       hasNextPage,
       hasPrevPage,
     };
-  }
-
-  generateMessageNotification(
-    type: NotificationType,
-    sender: string,
-    receiver: string,
-  ): string {
-    const messages: Record<NotificationType, string> = {
-      [NotificationType.FOLLOW]: `${sender} ได้ติดตามคุณ`,
-      [NotificationType.MESSAGE]: `${sender} ส่งข้อความถึงคุณ`,
-      [NotificationType.REACT]: `${sender} รีแอคชันโพสต์ของคุณ`,
-      [NotificationType.COMMENT]: `${sender} แสดงความคิดเห็นในโพสต์ของคุณ`,
-      [NotificationType.LIKE]: `${sender} ถูกใจโพสต์ของคุณ`,
-      [NotificationType.TAG]: `${sender} แท็กคุณในโพสต์`,
-      [NotificationType.REPLY]: `${sender} ตอบกลับความคิดเห็นของคุณ`,
-      [NotificationType.SHARE]: `${sender} แชร์โพสต์ของคุณ`,
-    };
-    return messages[type];
   }
 }

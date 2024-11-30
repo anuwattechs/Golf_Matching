@@ -7,8 +7,6 @@ import { AuthModule } from '../auth/auth.module';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { MembersModule } from '../members/members.module';
 import { UtilsModule } from 'src/shared/utils/utils.module';
-import { FcmModule } from 'src/app/common/services/fcm/fcm.module';
-import { NotificationsModule } from '../notifications/notifications.module';
 @Module({
   imports: [
     ModelsModule,
@@ -16,7 +14,6 @@ import { NotificationsModule } from '../notifications/notifications.module';
     AuthModule,
     MembersModule,
     UtilsModule,
-    NotificationsModule,
   ],
   controllers: [FriendsController],
   providers: [FriendsService, JwtStrategy],
