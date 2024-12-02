@@ -288,7 +288,44 @@ export class AuthService {
     input: ChangePasswordDto,
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
-    return null;
+    try {
+      const userRegistered = await this.memberModel.findById(decoded.userId);
+      if (!userRegistered)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      if (input.newPassword === input.oldPassword)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe(
+            'auth.NEW_PASSWORD_SAME_AS_OLD_PASSWORD',
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const isMatched = await bcrypt.compare(
+        input.oldPassword,
+        userRegistered.password,
+      );
+
+      if (!isMatched)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_PASSWORD'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const hashedPassword = await bcrypt.hash(
+        input.newPassword,
+        bcrypt.genSaltSync(10),
+      );
+
+      await this.memberModel.updatePasswordById(decoded.userId, hashedPassword);
+
+      return null;
+    } catch (error) {
+      this.handleException(error);
+    }
   }
 
   async resetPassword(input: ResetPasswordDto): Promise<NullableType<unknown>> {

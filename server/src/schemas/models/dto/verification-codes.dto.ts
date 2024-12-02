@@ -1,8 +1,8 @@
-import { VerifyTypeEnum } from 'src/shared/enums';
+import { VerifyTypeEnum, VerifyTypeAuthEnum } from 'src/shared/enums';
 
 export class CreateVerificationCodeDto {
   username: string;
-  type: VerifyTypeEnum;
+  type: VerifyTypeEnum | VerifyTypeAuthEnum;
   verifyCode: string;
 }
 

@@ -4,12 +4,14 @@ import { SmsService } from 'src/app/common/services/sms/sms.service';
 import { UtilsService } from 'src/shared/utils/utils.service';
 import {
   RequestOtpDto,
+  RequestOtpAuthDto,
   VerifyOtpDto,
   RequestOtpChangeUsernameDto,
 } from './dto';
 import { NullableType } from 'src/shared/types';
-import { VerifyTypeEnum } from 'src/shared/enums';
+import { VerifyTypeEnum, VerifyTypeAuthEnum } from 'src/shared/enums';
 import { MailService } from 'src/app/common/services/mail/mail.service';
+import { JwtPayloadType } from '../auth/strategies/types';
 
 @Injectable()
 export class OtpService {
@@ -21,6 +23,16 @@ export class OtpService {
     private readonly mailService: MailService,
   ) {}
 
+  async initMailTemplate(): Promise<NullableType<unknown>> {
+    try {
+      this.mailService.initializeTemplates();
+
+      return null;
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
   async create(input: RequestOtpDto): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
@@ -28,7 +40,7 @@ export class OtpService {
         input.username,
       );
 
-      console.log(userRegistered.length);
+      // console.log(userRegistered.length);
 
       if (userRegistered.length > 0 && input.type === VerifyTypeEnum.REGISTER)
         throw new HttpException(
@@ -45,15 +57,21 @@ export class OtpService {
           HttpStatus.BAD_REQUEST,
         );
 
+      const isEmail = this.utilsService.validateEmail(input.username);
+      const isPhone = this.utilsService.validatePhoneNumber(input.username);
+
+      if (!isEmail && !isPhone)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('otp.INVALID_EMAIL_OR_PHONE'),
+          HttpStatus.BAD_REQUEST,
+        );
+
       const verifyCode = this.utilsService.generateRandomNumber(6);
       const created = await this.verificationCodesModel.create({
         username: input.username,
         type: input.type,
         verifyCode,
       });
-
-      const isEmail = this.utilsService.validateEmail(input.username);
-      const isPhone = this.utilsService.validatePhoneNumber(input.username);
 
       if (isEmail) {
         const resp =
@@ -78,6 +96,98 @@ export class OtpService {
       return {
         verifyId: created._id,
         referenceNo: created._id.slice(0, 6),
+        verifyCode,
+      };
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
+  async createByAuth(
+    input: RequestOtpAuthDto,
+    decoded: JwtPayloadType,
+  ): Promise<NullableType<unknown>> {
+    try {
+      // return {
+      //   input,
+      //   decoded,
+      // };
+
+      //! Check if user registered
+      const userRegistered = await this.memberModel.findById(decoded.userId);
+      // console.log(userRegistered.length);
+
+      // return userRegistered.toObject();
+
+      if (!userRegistered)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const isEmail = this.utilsService.validateEmail(input.username);
+      const isPhone = this.utilsService.validatePhoneNumber(input.username);
+      if (!isEmail && !isPhone)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('otp.INVALID_EMAIL_OR_PHONE'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      if (
+        (isEmail &&
+          (input.type === VerifyTypeAuthEnum.ADD_PHONE_NUMBER ||
+            input.type === VerifyTypeAuthEnum.CHANGE_PHONE_NUMBER)) ||
+        (isPhone &&
+          (input.type === VerifyTypeAuthEnum.ADD_EMAIL ||
+            input.type === VerifyTypeAuthEnum.CHANGE_EMAIL)) ||
+        (input.type === VerifyTypeAuthEnum.ADD_EMAIL &&
+          userRegistered.email !== null) ||
+        (input.type === VerifyTypeAuthEnum.ADD_PHONE_NUMBER &&
+          userRegistered.phoneNo !== null) ||
+        (input.type === VerifyTypeAuthEnum.CHANGE_EMAIL &&
+          userRegistered.email === null) ||
+        (input.type === VerifyTypeAuthEnum.CHANGE_PHONE_NUMBER &&
+          userRegistered.phoneNo === null)
+      )
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('status-code.400'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      // return null;
+
+      const verifyCode = this.utilsService.generateRandomNumber(6);
+      const created = await this.verificationCodesModel.create({
+        username: input.username,
+        type: input.type,
+        verifyCode,
+      });
+
+      const referenceCode = created._id.slice(0, 6);
+
+      if (isEmail) {
+        const resp =
+          input.type === VerifyTypeAuthEnum.ADD_EMAIL
+            ? await this.mailService.sendAddEmail(input.username, {
+                code: verifyCode,
+                referenceCode,
+              })
+            : await this.mailService.sendChangeEmail(input.username, {
+                code: verifyCode,
+                referenceCode,
+              });
+        // console.log('Email Response: ', resp);
+      } else if (isPhone) {
+        const resp = await this.smsService.sendSms(input.username, input.type, {
+          code: verifyCode,
+          referenceCode,
+        });
+        // console.log('SMS Response: ', resp);
+      }
+
+      return {
+        verifyId: created._id,
+        referenceNo: referenceCode,
         verifyCode,
       };
     } catch (error) {
