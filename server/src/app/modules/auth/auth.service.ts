@@ -7,6 +7,7 @@ import {
   LoginDto,
   ChangePasswordDto,
   ResetPasswordDto,
+  AddChangeUsernameDto,
 } from './dto';
 import { MemberModel, VerificationCodesModel } from 'src/schemas/models';
 import { Member } from 'src/schemas';
@@ -14,7 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
-import { VerifyTypeEnum } from 'src/shared/enums';
+import { VerifyTypeEnum, VerifyTypeAuthEnum } from 'src/shared/enums';
 import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
@@ -363,7 +364,7 @@ export class AuthService {
 
       if (!(isEmail || isPhoneNo))
         throw new HttpException(
-          this.utilsService.getMessagesTypeSafe('auth.INVALID_VERIFY_TYPE'),
+          this.utilsService.getMessagesTypeSafe('otp.INVALID_EMAIL_OR_PHONE'),
           HttpStatus.BAD_REQUEST,
         );
 
@@ -378,6 +379,63 @@ export class AuthService {
         userVerified.username,
         hashedPassword,
       );
+
+      return null;
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
+  async changeContact(
+    input: AddChangeUsernameDto,
+    decoded: JwtPayloadType,
+  ): Promise<NullableType<unknown>> {
+    try {
+      //! Check if user verified
+      const userVerified = await this.verificationCodesModel.findById(
+        input.verifyId,
+        [true],
+      );
+      if (!userVerified)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_VERIFIED'),
+          HttpStatus.BAD_REQUEST,
+        );
+      if (
+        ![
+          VerifyTypeAuthEnum.ADD_EMAIL,
+          VerifyTypeAuthEnum.ADD_PHONE_NUMBER,
+          VerifyTypeAuthEnum.CHANGE_EMAIL,
+          VerifyTypeAuthEnum.CHANGE_PHONE_NUMBER,
+        ].includes(userVerified.verifyType as VerifyTypeAuthEnum)
+      )
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_VERIFY_TYPE'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const isEmail = this.utilsService.validateEmail(userVerified.username);
+      const isPhoneNo = this.utilsService.validatePhoneNumber(
+        userVerified.username,
+      );
+
+      if (!(isEmail || isPhoneNo))
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('otp.INVALID_EMAIL_OR_PHONE'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      if (isEmail) {
+        await this.memberModel.updateEmailById(
+          decoded.userId,
+          userVerified.username,
+        );
+      } else if (isPhoneNo) {
+        await this.memberModel.updatePhoneNoById(
+          decoded.userId,
+          userVerified.username,
+        );
+      }
 
       return null;
     } catch (error) {

@@ -115,6 +115,16 @@ export class OtpService {
 
       //! Check if user registered
       const userRegistered = await this.memberModel.findById(decoded.userId);
+      const userRegistered2 = await this.memberModel.findAllByUsername(
+        input.username.toLowerCase(),
+      );
+
+      if (userRegistered2.length > 0)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_ALREADY_REGISTERED'),
+          HttpStatus.BAD_REQUEST,
+        );
+
       // console.log(userRegistered.length);
 
       // return userRegistered.toObject();

@@ -180,6 +180,17 @@ export class MemberModel {
     );
   }
 
+  updateEmailById(userId: string, email: string): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne({ _id: userId }, { $set: { email } });
+  }
+
+  updatePhoneNoById(
+    userId: string,
+    phoneNo: string,
+  ): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne({ _id: userId }, { $set: { phoneNo } });
+  }
+
   async updateProfileImage(
     userId: string,
     profileImage: string,
