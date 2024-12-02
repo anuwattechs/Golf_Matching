@@ -3,13 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 import { S3 } from 'aws-sdk';
 import { AllConfigType } from 'src/app/config/config.type';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class AwsService {
   private s3: S3;
-  private s3Client: S3Client;
 
   constructor(private readonly configService: ConfigService<AllConfigType>) {
     this.s3 = new AWS.S3({
@@ -17,34 +14,6 @@ export class AwsService {
       secretAccessKey: this.getConfig('assets.secretAccessKey'),
       region: this.getConfig('assets.awsS3Region'),
     });
-    this.s3Client = new S3Client({
-      region: this.getConfig('assets.awsS3Region'), // Replace with your AWS region
-      credentials: {
-        accessKeyId: this.getConfig('assets.accessKeyId'), // Replace with your access key
-        secretAccessKey: this.getConfig('assets.secretAccessKey'), // Replace with your secret key
-      },
-    });
-  }
-
-  getBucketName(): string {
-    return this.getConfig('assets.awsDefaultS3Bucket');
-  }
-
-  getUrl(bucketName: string, key: string): string {
-    return `https://${bucketName}.s3.amazonaws.com/${key}`;
-  }
-
-  async generatePresignedUrl(
-    bucketName: string,
-    objectKey: string,
-  ): Promise<string> {
-    const command = new GetObjectCommand({
-      Bucket: bucketName,
-      Key: objectKey,
-    });
-    const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 }); // URL valid for 1 hour
-    // console.log("Presigned URL:", url);
-    return url;
   }
 
   private getConfig(key: string): string {

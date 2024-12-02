@@ -153,6 +153,7 @@ export class MembersService {
         fileNames,
         file.buffer,
         file.mimetype,
+        { ACL: 'private' },
       );
 
       if (!uploadResult || !uploadResult.Location) {
@@ -258,12 +259,19 @@ export class MembersService {
       };
       */
 
+      const bucketName = this.awsService.getBucketName();
+
       const result = {
         memberId: member._id,
         customUserId,
         profileImage: member.profileImage
-          ? await this.assetsService.getPresignedSignedUrl(member.profileImage)
-          : null,
+          ? // ? await this.assetsService.getPresignedSignedUrl(member.profileImage)
+            await this.awsService.generatePresignedUrl(
+              bucketName,
+              member.profileImage,
+            )
+          : // this.awsService.getUrl(bucketName, member.profileImage)
+            null,
         profile: {
           yearStart: member.yearStart,
           handicap: 0, //! Mock data
