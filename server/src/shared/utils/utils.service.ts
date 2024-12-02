@@ -198,4 +198,12 @@ export class UtilsService {
     };
     return messages[type];
   }
+
+  parseNumberToString(number: number): string {
+    return number === 0
+      ? '0'
+      : number % 1 === 0
+        ? number.toString()
+        : number.toFixed(2);
+  }
 }
