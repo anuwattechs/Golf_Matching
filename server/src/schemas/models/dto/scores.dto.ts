@@ -78,6 +78,11 @@ export class UpdateScoresDto {
   caddieIds: string[];
 }
 
+/**
+ * Represents a score card for calculating golf scores.
+ * @category DTO
+ * @class ScoreCardDto
+ */
 export class ScoreCardDto {
   @IsNotEmpty()
   @IsString()
@@ -128,8 +133,63 @@ export class ScoreCardDto {
   puttsHole: number;
 }
 
-export class ResultsPaginatedScoreCardsDto extends ResultPaginationDto<ScoreCardDto> {
+/**
+ * Represents a score card for response. This is a DTO.
+ * @category DTO
+ * @class ResScoreCard
+ */
+export class ResScoreCardDto {
+  @IsNotEmpty()
+  @IsString()
+  matchId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  playerId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  date: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  courseId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  courseName: string;
+
   @ValidateNested()
-  @Type(() => ScoreCardDto)
-  result: ScoreCardDto[];
+  @Type(() => AddressDto)
+  address: AddressDto;
+
+  @IsNumber()
+  @IsNotEmpty()
+  maxPlayers: number;
+
+  @IsString()
+  @IsNotEmpty()
+  myScore: String;
+
+  @IsString()
+  @IsNotEmpty()
+  overScore: String;
+
+  @IsString()
+  @IsNotEmpty()
+  fairways: String;
+
+  @IsString()
+  @IsNotEmpty()
+  puttsRound: String;
+
+  @IsString()
+  @IsNotEmpty()
+  puttsHole: String;
+}
+
+export class ResultsPaginatedScoreCardsDto extends ResultPaginationDto<ResScoreCardDto> {
+  @ValidateNested()
+  @Type(() => ResScoreCardDto)
+  result: ResScoreCardDto[];
 }

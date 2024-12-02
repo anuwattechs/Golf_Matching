@@ -7,9 +7,7 @@ import { UtilsService } from 'src/shared/utils/utils.service';
 import { v4 as uuidv4 } from 'uuid';
 import { AwsService } from 'src/app/common/services/aws/aws.service';
 import {
-  Profile,
   ProfileForSearch,
-  ProfileMain,
   ResultsPaginatedFriendsDto,
 } from 'src/schemas/models/dto';
 import { FriendStatusEnum } from 'src/shared/enums';
@@ -48,6 +46,8 @@ export class MembersService {
 
       /*const updated = */ await this.memberModel.updateById({
         ...input,
+        yearStart: input.yearStart,
+        tags: input.tags,
         userId: decoded.userId,
       });
 
@@ -153,7 +153,6 @@ export class MembersService {
         fileNames,
         file.buffer,
         file.mimetype,
-        // { ACL: 'private' },
       );
 
       if (!uploadResult || !uploadResult.Location) {
@@ -259,19 +258,12 @@ export class MembersService {
       };
       */
 
-      const bucketName = this.awsService.getBucketName();
-
       const result = {
         memberId: member._id,
         customUserId,
         profileImage: member.profileImage
-          ? // ? await this.assetsService.getPresignedSignedUrl(member.profileImage)
-            await this.awsService.generatePresignedUrl(
-              bucketName,
-              member.profileImage,
-            )
-          : // this.awsService.getUrl(bucketName, member.profileImage)
-            null,
+          ? await this.assetsService.getPresignedSignedUrl(member.profileImage)
+          : null,
         profile: {
           yearStart: member.yearStart,
           handicap: 0, //! Mock data

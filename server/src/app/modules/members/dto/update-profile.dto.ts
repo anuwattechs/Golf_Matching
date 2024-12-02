@@ -1,7 +1,19 @@
-import { IsNotEmpty, IsString, IsEnum, Matches } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  Matches,
+  IsEnum,
+  IsOptional,
+  IsArray,
+  IsNumber,
+} from 'class-validator';
 import { GenderEnum } from 'src/shared/enums';
 
+/**
+ * Data Transfer Object for updating user profile
+ */
 export class UpdateProfileDto {
+  // Required Fields
   @IsString()
   @IsNotEmpty()
   firstName: string;
@@ -29,14 +41,45 @@ export class UpdateProfileDto {
   @IsNotEmpty()
   location: string;
 
-  nickName: string;
-  occupation: string;
-  tags: string[];
-  yearStart: string;
-  avgScore: number;
-  favoriteCourses: string[];
-  countHoleInOne: number;
-  bestScore: number;
-  clubBrands: string;
-  introduction: string;
+  // Optional Basic Info
+  @IsOptional()
+  @IsString()
+  nickName?: string;
+
+  @IsOptional()
+  @IsString()
+  occupation?: string;
+
+  @IsOptional()
+  @IsArray()
+  tags?: string[];
+
+  @IsOptional()
+  @IsString()
+  yearStart?: string;
+
+  // Optional Golf-Related Info
+  @IsOptional()
+  @IsNumber()
+  avgScore?: number;
+
+  @IsOptional()
+  @IsArray()
+  favoriteCourses?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  countHoleInOne?: number;
+
+  @IsOptional()
+  @IsNumber()
+  bestScore?: number;
+
+  @IsOptional()
+  @IsString()
+  clubBrands?: string;
+
+  @IsOptional()
+  @IsString()
+  introduction?: string;
 }

@@ -135,6 +135,7 @@ export class UpdateMatchDto {
   gender: GenderEnum;
 }
 
+// for calculating golf scores
 export class MatchesHistoryDto {
   @IsString()
   @IsNotEmpty()
@@ -185,9 +186,60 @@ export class MatchesHistoryDto {
   myScore: number;
 }
 
-export class ResultPaginationMatchesHistoryDto extends ResultPaginationDto<MatchesHistoryDto> {
+// for paginating the matches history
+export class ResMatchesHistoryDto {
+  @IsString()
+  @IsNotEmpty()
+  matchId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  courseId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  courseName: string;
+
+  @ValidateNested()
+  @Type(() => AddressDto)
+  address: AddressDto;
+
+  @IsString()
+  @IsNotEmpty()
+  coverImageUrl: string;
+
+  @IsString()
+  @IsNotEmpty()
+  date: Date;
+
+  @IsEnum(['SOLO', 'GROUP'])
+  @IsNotEmpty()
+  matchType: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  maxPlayers: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  currentPlayers: number;
+
+  @IsString()
+  @IsNotEmpty()
+  myScore: string;
+}
+
+export class ResultPaginationMatchesHistoryDto extends ResultPaginationDto<ResMatchesHistoryDto> {
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => MatchesHistoryDto)
-  result: MatchesHistoryDto[];
+  @Type(() => ResMatchesHistoryDto)
+  result: ResMatchesHistoryDto[];
 }
