@@ -153,7 +153,7 @@ export class MembersService {
         fileNames,
         file.buffer,
         file.mimetype,
-        { ACL: 'private' },
+        // { ACL: 'private' },
       );
 
       if (!uploadResult || !uploadResult.Location) {
