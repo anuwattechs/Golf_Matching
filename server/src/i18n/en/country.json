@@ -1,0 +1,8 @@
+{
+  "FAILED_TO_GET_COUNTRIES": "Failed to get countries",
+  "FAILED_TO_GET_STATES": "Failed to get states",
+  "COUNTRIES_FETCHED_SUCCESSFULLY": "Countries fetched successfully",
+  "FAILED_TO_FETCH_COUNTRIES": "Failed to fetch countries",
+  "FAILED_TO_FETCH_STATES": "Failed to fetch states",
+  "STATES_FETCHED_SUCCESSFULLY": "States fetched successfully"
+}

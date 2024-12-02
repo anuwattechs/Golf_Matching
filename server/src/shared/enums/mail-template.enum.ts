@@ -1,0 +1,4 @@
+export enum MailTemplateEnum {
+  VERIFY_CODE = 'VERIFY_CODE',
+  RECOVER_PASSWORD = 'RECOVER_PASSWORD',
+}

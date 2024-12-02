@@ -1,0 +1,8 @@
+{
+  "INVALID_RESPONSE_FROM_THE_DATABASE": "การตอบกลับจากฐานข้อมูลไม่ถูกต้อง",
+  "FAILED_TO_FETCH_GOLF_COURSES": "ไม่สามารถดึงข้อมูลสนามกอล์ฟได้",
+  "FAILED_TO_CREATE_GOLF_COURSES": "ไม่สามารถสร้างสนามกอล์ฟได้",
+  "UNKNOWN_ERROR": "ข้อผิดพลาดที่ไม่ทราบสาเหตุ",
+  "GOLF_COURSE_CREATED_SUCCESSFULLY": "สร้างสนามกอล์ฟสำเร็จ",
+  "INTERNAL_SERVER_ERROR": "ข้อผิดพลาดภายในเซิร์ฟเวอร์"
+}

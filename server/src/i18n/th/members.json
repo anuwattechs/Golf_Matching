@@ -1,0 +1,6 @@
+{
+  "USER_NOT_REGISTERED": "ผู้ใช้ยังไม่ได้ลงทะเบียน",
+  "PERSONAL_INFO_RETRIEVED_SUCCESSFULLY": "ดึงข้อมูลส่วนตัวสำเร็จ",
+  "PROFILE_UPDATED_SUCCESSFULLY": "อัปเดตโปรไฟล์สำเร็จ",
+  "INVITE_MODE_CHANGED_SUCCESSFULLY": "เปลี่ยนโหมดการเชิญสำเร็จ"
+}

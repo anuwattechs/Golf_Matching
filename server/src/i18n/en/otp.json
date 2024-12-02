@@ -1,0 +1,9 @@
+{
+  "USER_ALREADY_REGISTERED": "User already registered",
+  "OTP_SENT_SUCCESSFULLY": "OTP sent successfully",
+  "OTP_VERIFIED_SUCCESSFULLY": "OTP verified successfully",
+  "USER_DOES_NOT_EXISTS": "User does not exist",
+  "VERIFICATION_CODE_IS_INVALID": "Verification code is invalid",
+  "VERIFICATION_CODE_IS_ALREADY_VERIFIED": "Verification code is already verified",
+  "VERIFICATION_CODE_IS_EXPIRED": "Verification code is expired"
+}
