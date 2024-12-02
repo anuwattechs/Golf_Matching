@@ -296,6 +296,16 @@ export class AuthService {
           HttpStatus.BAD_REQUEST,
         );
 
+      if (
+        userRegistered.facebookId ||
+        userRegistered.googleId ||
+        userRegistered.appleId
+      )
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_SOCIAL_ACCOUNT'),
+          HttpStatus.BAD_REQUEST,
+        );
+
       if (input.newPassword === input.oldPassword)
         throw new HttpException(
           this.utilsService.getMessagesTypeSafe(
