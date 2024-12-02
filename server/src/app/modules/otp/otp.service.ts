@@ -69,7 +69,7 @@ export class OtpService {
       const verifyCode = this.utilsService.generateRandomNumber(6);
       const created = await this.verificationCodesModel.create({
         username: input.username,
-        type: input.type,
+        verifyType: input.type,
         verifyCode,
       });
 
@@ -181,7 +181,7 @@ export class OtpService {
       const verifyCode = this.utilsService.generateRandomNumber(6);
       const created = await this.verificationCodesModel.create({
         username: input.username,
-        type: input.type,
+        verifyType: input.type,
         verifyCode,
       });
 
@@ -244,7 +244,7 @@ export class OtpService {
       const verifyCode = this.utilsService.generateRandomNumber(6);
       const created = await this.verificationCodesModel.create({
         username: input.username,
-        type: input.type,
+        verifyType: input.type,
         verifyCode,
       });
 

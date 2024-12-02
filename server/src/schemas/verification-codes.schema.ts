@@ -3,6 +3,8 @@ import { Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { VerifyTypeAuthEnum, VerifyTypeEnum } from 'src/shared/enums';
 
+export type VerifyType = VerifyTypeEnum | VerifyTypeAuthEnum;
+
 @Schema({
   collection: 'VerificationCodes',
   timestamps: true,
@@ -19,7 +21,7 @@ export class VerificationCode extends Document {
   username: string;
 
   @Prop({ required: true, default: VerifyTypeEnum.REGISTER, type: String })
-  verifyType: VerifyTypeEnum | VerifyTypeAuthEnum;
+  verifyType: VerifyType;
 
   @Prop({ required: true })
   verifyCode: string;
