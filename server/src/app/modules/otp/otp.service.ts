@@ -119,6 +119,8 @@ export class OtpService {
         input.username.toLowerCase(),
       );
 
+      // console.log(userRegistered2);
+
       if (userRegistered2.length > 0)
         throw new HttpException(
           this.utilsService.getMessagesTypeSafe('auth.USER_ALREADY_REGISTERED'),
