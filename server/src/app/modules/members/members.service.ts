@@ -326,11 +326,23 @@ export class MembersService {
         member.updatedCustomUserId &&
         now.getTime() - member.updatedCustomUserId.getTime() <
           30 * 24 * 60 * 60 * 1000
-      )
+      ) {
         throw new HttpException(
           'CustomUserId can only be updated every 30 days',
           400,
         );
+      }
+
+      const isCustomUserIdTaken = await this.memberModel.findOne({
+        customUserId: input.customUserId,
+      });
+
+      if (isCustomUserIdTaken) {
+        throw new HttpException(
+          'CustomUserId is already taken. Please choose a different one.',
+          400,
+        );
+      }
 
       await this.memberModel.updateCustomUserId(
         decoded.userId,
@@ -338,8 +350,8 @@ export class MembersService {
       );
 
       return {
-        customUserId: member.customUserId,
-        updatedCustomUserId: member.updatedCustomUserId,
+        customUserId: input.customUserId,
+        updatedCustomUserId: now,
       };
     } catch (error) {
       this.handleException(error);

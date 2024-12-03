@@ -206,9 +206,10 @@ export class MemberModel {
     userId: string,
     customUserId: string,
   ): Promise<UpdateWriteOpResult> {
+    const now = new Date();
     return this.memberModel.updateOne(
       { _id: userId },
-      { $set: { customUserId } },
+      { $set: { customUserId, updatedCustomUserId: now } },
     );
   }
 
