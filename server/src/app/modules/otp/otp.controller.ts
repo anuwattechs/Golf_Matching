@@ -33,7 +33,7 @@ export class OtpController {
     return await this.otpService.create(body);
   }
 
-  @Post('auth/request')
+  @Post('request/auth')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('otp.OTP_SENT_SUCCESSFULLY')
@@ -51,7 +51,7 @@ export class OtpController {
     return await this.otpService.verify(body);
   }
 
-  @Patch('verify/contact')
+  @Patch('verify/auth')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('otp.OTP_VERIFIED_SUCCESSFULLY')

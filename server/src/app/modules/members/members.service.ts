@@ -1,6 +1,10 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { NullableType } from 'src/shared/types';
-import { UpdateProfileDto, ChangeInviteModeDto } from './dto';
+import {
+  UpdateProfileDto,
+  ChangeInviteModeDto,
+  UpdateCustomUserIdDto,
+} from './dto';
 import { FriendsModel, MemberModel, TagModel } from 'src/schemas/models';
 import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payload.type';
 import { UtilsService } from 'src/shared/utils/utils.service';
@@ -53,15 +57,7 @@ export class MembersService {
 
       return await this.memberModel.findProfileById(decoded.userId);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
-      );
+      this.handleException(error);
     }
   }
 
@@ -77,15 +73,7 @@ export class MembersService {
 
       return null;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status,
-      );
+      this.handleException(error);
     }
   }
 
@@ -99,15 +87,7 @@ export class MembersService {
 
       return !member ? null : member;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message,
-          data: null,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.handleException(error);
     }
   }
 
@@ -169,15 +149,7 @@ export class MembersService {
 
       return null;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An unexpected error occurred',
-          data: null,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.handleException(error);
     }
   }
 
@@ -301,15 +273,7 @@ export class MembersService {
 
       return result;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message,
-          data: null,
-        },
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.handleException(error);
     }
   }
 
@@ -348,6 +312,40 @@ export class MembersService {
     };
   }
 
+  async updateCustomUserId(
+    input: UpdateCustomUserIdDto,
+    decoded: JwtPayloadType,
+  ): Promise<NullableType<unknown>> {
+    try {
+      const member = await this.memberModel.findById(decoded.userId);
+
+      if (!member) throw new HttpException('Member not found', 400);
+
+      const now = new Date();
+      if (
+        member.updatedCustomUserId &&
+        now.getTime() - member.updatedCustomUserId.getTime() <
+          30 * 24 * 60 * 60 * 1000
+      )
+        throw new HttpException(
+          'CustomUserId can only be updated every 30 days',
+          400,
+        );
+
+      await this.memberModel.updateCustomUserId(
+        decoded.userId,
+        input.customUserId,
+      );
+
+      return {
+        customUserId: member.customUserId,
+        updatedCustomUserId: member.updatedCustomUserId,
+      };
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
   buildProfileForSearch(member: Member): ProfileForSearch {
     const { _id, firstName, lastName, introduction, profileImage } = member;
     return {
@@ -358,5 +356,17 @@ export class MembersService {
       introduction: introduction,
       status: null,
     };
+  }
+
+  private handleException(error: any): void {
+    throw new HttpException(
+      {
+        status: false,
+        statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+        data: null,
+      },
+      error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 }
