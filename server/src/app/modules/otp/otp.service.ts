@@ -137,15 +137,15 @@ export class OtpService {
           HttpStatus.BAD_REQUEST,
         );
 
-      if (
-        userRegistered.facebookId ||
-        userRegistered.googleId ||
-        userRegistered.appleId
-      )
-        throw new HttpException(
-          this.utilsService.getMessagesTypeSafe('auth.USER_SOCIAL_ACCOUNT'),
-          HttpStatus.BAD_REQUEST,
-        );
+      // if (
+      //   userRegistered.facebookId ||
+      //   userRegistered.googleId ||
+      //   userRegistered.appleId
+      // )
+      //   throw new HttpException(
+      //     this.utilsService.getMessagesTypeSafe('auth.USER_SOCIAL_ACCOUNT'),
+      //     HttpStatus.BAD_REQUEST,
+      //   );
 
       const isEmail = this.utilsService.validateEmail(input.username);
       const isPhone = this.utilsService.validatePhoneNumber(input.username);
