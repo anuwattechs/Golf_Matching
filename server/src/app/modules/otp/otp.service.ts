@@ -301,6 +301,81 @@ export class OtpService {
     }
   }
 
+  async verifyChangeContact(
+    input: VerifyOtpDto,
+    decoded: JwtPayloadType,
+  ): Promise<NullableType<unknown>> {
+    try {
+      //! Check if registration code is valid
+      const validatedResult = await this.verificationCodesModel.validate(
+        input.verifyId,
+        input.verifyCode,
+      );
+
+      if (validatedResult !== null)
+        throw new HttpException(validatedResult, HttpStatus.BAD_REQUEST);
+
+      const updated = await this.verificationCodesModel.verify(input.verifyId);
+      if (updated.modifiedCount === 0)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe(
+            'otp.VERIFICATION_CODE_IS_INVALID',
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      //! Check if user verified
+      const userVerified = await this.verificationCodesModel.findById(
+        input.verifyId,
+        [true],
+      );
+      if (!userVerified)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_VERIFIED'),
+          HttpStatus.BAD_REQUEST,
+        );
+      if (
+        ![
+          VerifyTypeAuthEnum.ADD_EMAIL,
+          VerifyTypeAuthEnum.ADD_PHONE_NUMBER,
+          VerifyTypeAuthEnum.CHANGE_EMAIL,
+          VerifyTypeAuthEnum.CHANGE_PHONE_NUMBER,
+        ].includes(userVerified.verifyType as VerifyTypeAuthEnum)
+      )
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_VERIFY_TYPE'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const isEmail = this.utilsService.validateEmail(userVerified.username);
+      const isPhoneNo = this.utilsService.validatePhoneNumber(
+        userVerified.username,
+      );
+
+      if (!(isEmail || isPhoneNo))
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('otp.INVALID_EMAIL_OR_PHONE'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      if (isEmail) {
+        await this.memberModel.updateEmailById(
+          decoded.userId,
+          userVerified.username,
+        );
+      } else if (isPhoneNo) {
+        await this.memberModel.updatePhoneNoById(
+          decoded.userId,
+          userVerified.username,
+        );
+      }
+
+      return null;
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
   private handleException(error: any): void {
     throw new HttpException(
       {

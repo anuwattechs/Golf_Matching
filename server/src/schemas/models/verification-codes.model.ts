@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { VerificationCode } from '..';
-import { Model } from 'mongoose';
+import { Model, UpdateWriteOpResult, now } from 'mongoose';
 import { CreateVerificationCodeDto } from './dto';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class VerificationCodesModel {
       },
       {
         $set: {
-          registeredAt: new Date(),
+          registeredAt: now(),
         },
       },
     );
@@ -42,13 +42,13 @@ export class VerificationCodesModel {
       },
       {
         $set: {
-          resetedAt: new Date(),
+          resetedAt: now(),
         },
       },
     );
   }
 
-  verify(verifyId: string): Promise<unknown> {
+  verify(verifyId: string): Promise<UpdateWriteOpResult> {
     return this.verificationCode.updateOne(
       {
         _id: verifyId,
@@ -56,7 +56,7 @@ export class VerificationCodesModel {
       {
         $set: {
           isVerified: true,
-          verifiedAt: new Date(),
+          verifiedAt: now(),
         },
       },
     );
