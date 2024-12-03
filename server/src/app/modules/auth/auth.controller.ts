@@ -64,6 +64,7 @@ export class AuthController {
     return await this.authService.resetPassword(body);
   }
 
+  /*
   @Patch('change-contact')
   @UseGuards(JwtAuthGuard)
   @ResponseMessage('auth.CONTACT_CHANGED_SUCCESSFULLY')
@@ -73,4 +74,5 @@ export class AuthController {
   ) {
     return await this.authService.changeContact(body, req.decoded);
   }
+  */
 }
