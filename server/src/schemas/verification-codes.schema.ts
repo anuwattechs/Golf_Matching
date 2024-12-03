@@ -40,6 +40,9 @@ export class VerificationCode extends Document {
 
   @Prop({ default: null })
   resetedAt: Date;
+
+  @Prop({ default: null, type: String })
+  memberId: string;
 }
 
 export const VerificationCodeSchema =

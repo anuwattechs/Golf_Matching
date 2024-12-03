@@ -55,10 +55,10 @@ export class OtpController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('otp.OTP_VERIFIED_SUCCESSFULLY')
-  async verifyChangeContact(
+  async verifyByAuth(
     @Body() body: VerifyOtpDto,
     @Req() req: Request & { decoded: JwtPayloadType },
   ) {
-    return await this.otpService.verifyChangeContact(body, req.decoded);
+    return await this.otpService.verifyByAuth(body, req.decoded);
   }
 }

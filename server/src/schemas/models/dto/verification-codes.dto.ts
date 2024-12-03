@@ -1,5 +1,5 @@
 import { VerifyTypeEnum, VerifyTypeAuthEnum } from 'src/shared/enums';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 type VerifyType = VerifyTypeEnum | VerifyTypeAuthEnum;
 
@@ -15,6 +15,10 @@ export class CreateVerificationCodeDto {
   @IsString()
   @IsNotEmpty()
   verifyCode: string;
+
+  @IsString()
+  @IsOptional()
+  memberId: string;
 }
 
 // export class VerifyCodeDto {

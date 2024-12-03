@@ -71,6 +71,7 @@ export class OtpService {
         username: input.username,
         verifyType: input.type,
         verifyCode,
+        memberId: null,
       });
 
       if (isEmail) {
@@ -183,6 +184,7 @@ export class OtpService {
         username: input.username,
         verifyType: input.type,
         verifyCode,
+        memberId: decoded.userId,
       });
 
       const referenceCode = created._id.slice(0, 6);
@@ -246,6 +248,7 @@ export class OtpService {
         username: input.username,
         verifyType: input.type,
         verifyCode,
+        memberId: null,
       });
 
       const isEmail = this.utilsService.validateEmail(input.username);
@@ -301,7 +304,7 @@ export class OtpService {
     }
   }
 
-  async verifyChangeContact(
+  async verifyByAuth(
     input: VerifyOtpDto,
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
@@ -329,6 +332,15 @@ export class OtpService {
         input.verifyId,
         [true],
       );
+
+      if (userVerified.memberId !== decoded.userId)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe(
+            'otp.VERIFICATION_CODE_IS_INVALID',
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
+
       if (!userVerified)
         throw new HttpException(
           this.utilsService.getMessagesTypeSafe('auth.USER_NOT_VERIFIED'),

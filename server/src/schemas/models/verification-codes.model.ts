@@ -12,7 +12,7 @@ export class VerificationCodesModel {
   ) {}
 
   create(input: CreateVerificationCodeDto): Promise<VerificationCode> {
-    console.log('input', input);
+    // console.log('input', input);
 
     // const now = new Date();
     // return this.verificationCode.create({
