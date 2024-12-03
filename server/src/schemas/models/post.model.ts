@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ClientSession } from 'mongoose';
 import { DeleteResult, UpdateResult } from 'mongodb';
 import { Post } from '..';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
@@ -73,7 +73,7 @@ export class PostModel {
     return this.post.deleteOne({ _id: id });
   }
 
-  startSession() {
+  startSession(): Promise<ClientSession> {
     return this.post.startSession();
   }
 }

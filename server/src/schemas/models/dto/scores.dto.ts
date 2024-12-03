@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -6,9 +6,9 @@ import {
   IsNumber,
   IsString,
   ValidateNested,
-} from "class-validator";
-import { AddressDto } from "./golf-course.dto";
-import { ResultPaginationDto } from "src/shared/dto";
+} from 'class-validator';
+import { AddressDto } from './golf-course.dto';
+import { ResultPaginationDto } from 'src/shared/dto';
 
 export class CreateScoresDto {
   @IsNotEmpty()

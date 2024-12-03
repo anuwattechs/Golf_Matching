@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, UpdateWriteOpResult } from "mongoose";
-import { Member } from "..";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, UpdateWriteOpResult } from 'mongoose';
+import { Member } from '..';
 import {
   CreateMemberDto,
   CreateMemberBySocialDto,
@@ -9,13 +9,13 @@ import {
   FindBySocialIdDto,
   Profile,
   ProfileForSearch,
-} from "./dto";
-import { omit } from "lodash";
+} from './dto';
+import { omit } from 'lodash';
 
 @Injectable()
 export class MemberModel {
   constructor(
-    @InjectModel(Member.name) private readonly memberModel: Model<Member>
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
   ) {}
 
   rootMemberModel(): Model<Member> {
@@ -37,12 +37,12 @@ export class MemberModel {
     if (!result) return null;
 
     const selectedFields = omit(result, [
-      "_id",
-      "password",
-      "isActived",
-      "activedAt",
-      "updatedAt",
-      "__v",
+      '_id',
+      'password',
+      'isActived',
+      'activedAt',
+      'updatedAt',
+      '__v',
     ]);
 
     return {
@@ -133,7 +133,7 @@ export class MemberModel {
     const { userId, ...data } = input;
     const result = await this.memberModel.updateOne(
       { _id: userId },
-      { $set: { ...data, isRegistered: true } }
+      { $set: { ...data, isRegistered: true } },
     );
     return result.modifiedCount > 0 ? this.findById(input.userId) : null;
   }
@@ -150,14 +150,14 @@ export class MemberModel {
           isActived: isActive,
           ...(isActive ? { activedAt: new Date() } : {}),
         },
-      }
+      },
     );
   }
 
   async changeInviteMode(userId: string, isInviteAble: boolean): Promise<void> {
     await this.memberModel.updateOne(
       { _id: userId },
-      { $set: { isInviteAble } }
+      { $set: { isInviteAble } },
     );
   }
 
@@ -167,7 +167,7 @@ export class MemberModel {
 
   async updatePasswordByUsername(
     username: string,
-    password: string
+    password: string,
   ): Promise<void> {
     await this.memberModel.updateOne(
       {
@@ -176,28 +176,40 @@ export class MemberModel {
           { phoneNo: username.toLowerCase() },
         ],
       },
-      { $set: { password } }
+      { $set: { password } },
     );
+  }
+
+  updateEmailById(userId: string, email: string): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne({ _id: userId }, { $set: { email } });
+  }
+
+  updatePhoneNoById(
+    userId: string,
+    phoneNo: string,
+  ): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne({ _id: userId }, { $set: { phoneNo } });
   }
 
   async updateProfileImage(
     userId: string,
-    profileImage: string
+    profileImage: string,
   ): Promise<Member | null> {
     const result = await this.memberModel.updateOne(
       { _id: userId },
-      { $set: { profileImage } }
+      { $set: { profileImage } },
     );
     return result.modifiedCount > 0 ? this.findById(userId) : null;
   }
 
   updateCustomUserId(
     userId: string,
-    customUserId: string
+    customUserId: string,
   ): Promise<UpdateWriteOpResult> {
+    const now = new Date();
     return this.memberModel.updateOne(
       { _id: userId },
-      { $set: { customUserId } }
+      { $set: { customUserId, updatedCustomUserId: now } },
     );
   }
 
@@ -229,7 +241,7 @@ export class MemberModel {
       firstName: firstName,
       lastName: lastName,
       nickName: nickName,
-      ranking: "Rookie",
+      ranking: 'Rookie',
       introduction: introduction,
       tags: tags,
       stats: {

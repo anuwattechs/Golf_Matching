@@ -1,21 +1,25 @@
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
-import { NullableType } from "src/shared/types";
-import { UpdateProfileDto, ChangeInviteModeDto } from "./dto";
-import { FriendsModel, MemberModel, TagModel } from "src/schemas/models";
-import { JwtPayloadType } from "src/app/modules/auth/strategies/types/jwt-payload.type";
-import { UtilsService } from "src/shared/utils/utils.service";
-import { v4 as uuidv4 } from "uuid";
-import { AwsService } from "src/app/common/services/aws/aws.service";
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { NullableType } from 'src/shared/types';
+import {
+  UpdateProfileDto,
+  ChangeInviteModeDto,
+  UpdateCustomUserIdDto,
+} from './dto';
+import { FriendsModel, MemberModel, TagModel } from 'src/schemas/models';
+import { JwtPayloadType } from 'src/app/modules/auth/strategies/types/jwt-payload.type';
+import { UtilsService } from 'src/shared/utils/utils.service';
+import { v4 as uuidv4 } from 'uuid';
+import { AwsService } from 'src/app/common/services/aws/aws.service';
 import {
   ProfileForSearch,
   ResultsPaginatedFriendsDto,
-} from "src/schemas/models/dto";
-import { FriendStatusEnum } from "src/shared/enums";
-import { ScoresService } from "../scores/scores.service";
-import { AuthService } from "../auth/auth.service";
-import { AssetsService } from "../assets/assets.service";
-import { GolfCoursesService } from "../golf-courses/golf-courses.service";
-import { Member } from "src/schemas";
+} from 'src/schemas/models/dto';
+import { FriendStatusEnum } from 'src/shared/enums';
+import { ScoresService } from '../scores/scores.service';
+import { AuthService } from '../auth/auth.service';
+import { AssetsService } from '../assets/assets.service';
+import { GolfCoursesService } from '../golf-courses/golf-courses.service';
+import { Member } from 'src/schemas';
 
 @Injectable()
 export class MembersService {
@@ -27,12 +31,12 @@ export class MembersService {
     private readonly scoresService: ScoresService,
     private readonly authService: AuthService,
     private readonly assetsService: AssetsService,
-    private readonly golfCoursesService: GolfCoursesService
+    private readonly golfCoursesService: GolfCoursesService,
   ) {}
 
   async updateProfile(
     input: UpdateProfileDto,
-    decoded: JwtPayloadType
+    decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     try {
       //! Check if user registered
@@ -40,8 +44,8 @@ export class MembersService {
 
       if (!userRegistered)
         throw new HttpException(
-          this.utilsService.getMessagesTypeSafe("members.USER_NOT_REGISTERED"),
-          HttpStatus.BAD_REQUEST
+          this.utilsService.getMessagesTypeSafe('members.USER_NOT_REGISTERED'),
+          HttpStatus.BAD_REQUEST,
         );
 
       /*const updated = */ await this.memberModel.updateById({
@@ -53,138 +57,106 @@ export class MembersService {
 
       return await this.memberModel.findProfileById(decoded.userId);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status
-      );
+      this.handleException(error);
     }
   }
 
   async changeInviteMode(
     input: ChangeInviteModeDto,
-    decoded: JwtPayloadType
+    decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     try {
       await this.memberModel.changeInviteMode(
         decoded.userId,
-        input.isInviteAble
+        input.isInviteAble,
       );
 
       return null;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status,
-          message: error.message,
-          data: null,
-        },
-        error.status
-      );
+      this.handleException(error);
     }
   }
 
   async findOnePersonalInfo(
-    decoded: JwtPayloadType
+    decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     try {
       const member = await this.memberModel.findProfileDetailById(
-        decoded.userId
+        decoded.userId,
       );
 
       return !member ? null : member;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message,
-          data: null,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      this.handleException(error);
     }
   }
 
   async updateProfilePicture(
     file: Express.Multer.File,
-    decoded: JwtPayloadType
+    decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     if (!file) {
       throw new HttpException(
         {
           status: false,
           statusCode: HttpStatus.BAD_REQUEST,
-          message: "File is required",
+          message: 'File is required',
           data: null,
         },
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 
-    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedMimeTypes.includes(file.mimetype)) {
       throw new HttpException(
         {
           status: false,
           statusCode: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-          message: "Invalid file type. Only JPEG, PNG, and WEBP are allowed.",
+          message: 'Invalid file type. Only JPEG, PNG, and WEBP are allowed.',
           data: null,
         },
-        HttpStatus.UNSUPPORTED_MEDIA_TYPE
+        HttpStatus.UNSUPPORTED_MEDIA_TYPE,
       );
     }
 
-    const fileNames = `profile-images/${uuidv4()}.${file.originalname.split(".").pop()}`;
+    const fileNames = `profile-images/${uuidv4()}.${file.originalname.split('.').pop()}`;
 
     try {
       const member = await this.memberModel.findById(decoded.userId);
       if (!member) {
-        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
       const uploadResult = await this.awsService.uploadFile(
         process.env.AWS_DEFAULT_S3_BUCKET,
         fileNames,
         file.buffer,
-        file.mimetype
+        file.mimetype,
       );
 
       if (!uploadResult || !uploadResult.Location) {
         throw new HttpException(
-          "Failed to upload file to S3",
-          HttpStatus.INTERNAL_SERVER_ERROR
+          'Failed to upload file to S3',
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
 
       await this.memberModel.updateProfileImage(
         decoded.userId,
-        uploadResult.Key
+        uploadResult.Key,
       );
 
       return null;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || "An unexpected error occurred",
-          data: null,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      this.handleException(error);
     }
   }
 
   async findOneProfile(
     _: JwtPayloadType,
     userId: string,
-    isShowPrivateInfo: boolean = false
+    isShowPrivateInfo: boolean = false,
     // ): Promise<ProfileMain> {
   ): Promise<NullableType<unknown>> {
     try {
@@ -194,12 +166,12 @@ export class MembersService {
         this.friendsModel
           .getFriendsByUserId(userId, FriendStatusEnum.FOLLOWING)
           .then((res) =>
-            res?.filter((r) => r.senderId === userId)?.map((r) => r.receiverId)
+            res?.filter((r) => r.senderId === userId)?.map((r) => r.receiverId),
           ),
         this.friendsModel
           .getFollowersByUserId(userId, FriendStatusEnum.FOLLOWING)
           .then((res) =>
-            res?.filter((r) => r.receiverId === userId)?.map((r) => r.senderId)
+            res?.filter((r) => r.receiverId === userId)?.map((r) => r.senderId),
           ),
       ]);
 
@@ -208,10 +180,10 @@ export class MembersService {
           {
             status: false,
             statusCode: HttpStatus.NOT_FOUND,
-            message: "User not found",
+            message: 'User not found',
             data: null,
           },
-          HttpStatus.NOT_FOUND
+          HttpStatus.NOT_FOUND,
         );
       }
 
@@ -238,11 +210,11 @@ export class MembersService {
       const golfCourses = await this.golfCoursesService.findAll();
 
       const memberTags = tags?.filter((tag) =>
-        member.tags?.includes(tag.tagId)
+        member.tags?.includes(tag.tagId),
       );
 
       const memberGolfCourses = golfCourses?.filter((course) =>
-        member.favoriteCourses?.includes(course.golfCourseId)
+        member.favoriteCourses?.includes(course.golfCourseId),
       );
 
       /*
@@ -301,22 +273,14 @@ export class MembersService {
 
       return result;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: false,
-          statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message,
-          data: null,
-        },
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      this.handleException(error);
     }
   }
 
   async findAllProfilesWithPagination(
     page: number,
     limit: number,
-    filterQuery: Record<string, unknown>
+    filterQuery: Record<string, unknown>,
   ): Promise<ResultsPaginatedFriendsDto> {
     const {
       data,
@@ -330,7 +294,7 @@ export class MembersService {
       this.memberModel.rootMemberModel(),
       page,
       limit,
-      filterQuery
+      filterQuery,
     );
 
     const result = data.map((member) => this.buildProfileForSearch(member));
@@ -348,6 +312,53 @@ export class MembersService {
     };
   }
 
+  async updateCustomUserId(
+    input: UpdateCustomUserIdDto,
+    decoded: JwtPayloadType,
+  ): Promise<NullableType<unknown>> {
+    try {
+      const member = await this.memberModel.findById(decoded.userId);
+
+      if (!member) throw new HttpException('Member not found', 400);
+
+      const now = new Date();
+
+      if (
+        member.updatedCustomUserId &&
+        now.getTime() - member.updatedCustomUserId.getTime() <
+          30 * 24 * 60 * 60 * 1000
+      ) {
+        throw new HttpException(
+          'CustomUserId can only be updated every 30 days',
+          400,
+        );
+      }
+
+      const isCustomUserIdTaken = await this.memberModel.findOne({
+        customUserId: input.customUserId,
+      });
+
+      if (isCustomUserIdTaken) {
+        throw new HttpException(
+          'CustomUserId is already taken. Please choose a different one.',
+          400,
+        );
+      }
+
+      await this.memberModel.updateCustomUserId(
+        decoded.userId,
+        input.customUserId,
+      );
+
+      return {
+        customUserId: input.customUserId,
+        updatedCustomUserId: now,
+      };
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
   buildProfileForSearch(member: Member): ProfileForSearch {
     const { _id, firstName, lastName, introduction, profileImage } = member;
     return {
@@ -358,5 +369,17 @@ export class MembersService {
       introduction: introduction,
       status: null,
     };
+  }
+
+  private handleException(error: any): void {
+    throw new HttpException(
+      {
+        status: false,
+        statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+        data: null,
+      },
+      error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 }

@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { AuthTypeEnum, VerifyTypeEnum } from 'src/shared/enums';
+import { VerifyTypeAuthEnum, VerifyTypeEnum } from 'src/shared/enums';
+
+export type VerifyType = VerifyTypeEnum | VerifyTypeAuthEnum;
 
 @Schema({
   collection: 'VerificationCodes',
@@ -18,8 +20,8 @@ export class VerificationCode extends Document {
   @Prop({ required: true, type: String }) //! Email or Phone Number
   username: string;
 
-  @Prop({ required: true, default: VerifyTypeEnum.REGISTER })
-  verifyType: VerifyTypeEnum;
+  @Prop({ required: true, default: VerifyTypeEnum.REGISTER, type: String })
+  verifyType: VerifyType;
 
   @Prop({ required: true })
   verifyCode: string;

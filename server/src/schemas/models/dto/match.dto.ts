@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDate,
@@ -10,11 +10,11 @@ import {
   IsDateString,
   ValidateIf,
   ValidateNested,
-} from "class-validator";
-import { GenderEnum } from "src/shared/enums";
-import { AddressDto } from ".";
-import { ResultPaginationDto } from "src/shared/dto";
-import { MatchesTypeEnum } from "src/shared/enums";
+} from 'class-validator';
+import { GenderEnum } from 'src/shared/enums';
+import { AddressDto } from '.';
+import { ResultPaginationDto } from 'src/shared/dto';
+import { MatchesTypeEnum } from 'src/shared/enums';
 
 export class CreateMatchDto {
   @ValidateIf((o) => o.matchesType === MatchesTypeEnum.SOLO)
@@ -66,12 +66,12 @@ export class CreateMatchDto {
   @IsNotEmpty()
   maxPlayers: number;
 
-  @ValidateIf((o) => o.matchesType === "GROUP")
+  @ValidateIf((o) => o.matchesType === 'GROUP')
   @IsArray()
   @IsOptional()
   tags: string[];
 
-  @ValidateIf((o) => o.matchesType === "GROUP")
+  @ValidateIf((o) => o.matchesType === 'GROUP')
   @IsEnum(GenderEnum)
   @IsOptional()
   gender?: GenderEnum;
@@ -96,7 +96,7 @@ export class UpdateMatchDto {
   @IsOptional()
   date?: Date;
 
-  @IsEnum(["SOLO", "GROUP"])
+  @IsEnum(['SOLO', 'GROUP'])
   @IsOptional()
   matchesType?: string;
 
@@ -169,7 +169,7 @@ export class MatchesHistoryDto {
   @IsNotEmpty()
   date: Date;
 
-  @IsEnum(["SOLO", "GROUP"])
+  @IsEnum(['SOLO', 'GROUP'])
   @IsNotEmpty()
   matchType: string;
 
@@ -220,7 +220,7 @@ export class ResMatchesHistoryDto {
   @IsNotEmpty()
   date: Date;
 
-  @IsEnum(["SOLO", "GROUP"])
+  @IsEnum(['SOLO', 'GROUP'])
   @IsNotEmpty()
   matchType: string;
 

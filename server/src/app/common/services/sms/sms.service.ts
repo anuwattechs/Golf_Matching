@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { AllConfigType } from 'src/app/config/config.type';
-import { VerifyTypeEnum } from 'src/shared/enums';
+import { VerifyTypeEnum, VerifyTypeAuthEnum } from 'src/shared/enums';
 import * as libphonenumber from 'google-libphonenumber';
 
 @Injectable()
@@ -28,12 +28,12 @@ export class SmsService {
   /**
    * Sends an SMS message based on the verification type using the Infobip API.
    * @param {string} to - The recipient's phone number.
-   * @param {VerifyTypeEnum} type - The type of verification for SMS content.
+   * @param {VerifyTypeEnum | VerifyTypeAuthEnum} type - The type of verification for SMS content.
    * @param {Object} data - Dynamic data for populating the template (e.g., code or reset link).
    */
   async sendSms(
     to: string,
-    type: VerifyTypeEnum = VerifyTypeEnum.REGISTER,
+    type: VerifyTypeEnum | VerifyTypeAuthEnum = VerifyTypeEnum.REGISTER,
     data: {
       code?: string;
       referenceCode?: string;
@@ -81,12 +81,12 @@ export class SmsService {
 
   /**
    * Generates a message template based on verification type.
-   * @param {VerifyTypeEnum} type - The type of verification.
+   * @param {VerifyTypeEnum|VerifyTypeAuthEnum} type - The type of verification.
    * @param {Object} data - Data to populate in the message.
    * @returns {string} - The generated message.
    */
   private generateMessage(
-    type: VerifyTypeEnum,
+    type: VerifyTypeEnum | VerifyTypeAuthEnum,
     data: {
       code?: string;
       referenceCode?: string;
@@ -97,6 +97,10 @@ export class SmsService {
         return `Your verification code is: ${data.code} (Ref: ${data.referenceCode}). for registration. Please do not share this code with anyone.`;
       case VerifyTypeEnum.RECOVER_PASSWORD:
         return `Your verification code is: ${data.code} (Ref: ${data.referenceCode}).  for password recovery. Please do not share this code with anyone.`;
+      case VerifyTypeAuthEnum.ADD_PHONE_NUMBER:
+        return `Your verification code is: ${data.code} (Ref: ${data.referenceCode}).  for add phone number. Please do not share this code with anyone.`;
+      case VerifyTypeAuthEnum.CHANGE_PHONE_NUMBER:
+        return `Your verification code is: ${data.code} (Ref: ${data.referenceCode}).  for change phone number. Please do not share this code with anyone.`;
       default:
         return `Your verification code is: ${data.code} (Ref: ${data.referenceCode}). Please do not share this code with anyone.`;
     }

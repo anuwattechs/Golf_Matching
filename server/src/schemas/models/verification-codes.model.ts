@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { VerificationCode } from '..';
-import { Model } from 'mongoose';
+import { Model, UpdateWriteOpResult, now } from 'mongoose';
 import { CreateVerificationCodeDto } from './dto';
 
 @Injectable()
@@ -12,6 +12,8 @@ export class VerificationCodesModel {
   ) {}
 
   create(input: CreateVerificationCodeDto): Promise<VerificationCode> {
+    console.log('input', input);
+
     // const now = new Date();
     // return this.verificationCode.create({
     //   ...input,
@@ -27,7 +29,7 @@ export class VerificationCodesModel {
       },
       {
         $set: {
-          registeredAt: new Date(),
+          registeredAt: now(),
         },
       },
     );
@@ -40,13 +42,13 @@ export class VerificationCodesModel {
       },
       {
         $set: {
-          resetedAt: new Date(),
+          resetedAt: now(),
         },
       },
     );
   }
 
-  verify(verifyId: string): Promise<unknown> {
+  verify(verifyId: string): Promise<UpdateWriteOpResult> {
     return this.verificationCode.updateOne(
       {
         _id: verifyId,
@@ -54,7 +56,7 @@ export class VerificationCodesModel {
       {
         $set: {
           isVerified: true,
-          verifiedAt: new Date(),
+          verifiedAt: now(),
         },
       },
     );
@@ -91,7 +93,8 @@ export class VerificationCodesModel {
 
     if (!result) return 'otp.VERIFICATION_CODE_IS_INVALID';
     if (result.isVerified) return 'otp.VERIFICATION_CODE_IS_ALREADY_VERIFIED';
-    if (result.expiredAt < new Date()) return 'otp.VERIFICATION_CODE_IS_EXPIRED';
+    if (result.expiredAt < new Date())
+      return 'otp.VERIFICATION_CODE_IS_EXPIRED';
 
     return null;
   }

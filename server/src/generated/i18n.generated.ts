@@ -54,6 +54,9 @@ export type I18nTranslations = {
         "PASSWORD_CHANGED_SUCCESSFULLY": string;
         "TOKEN_REFRESHED_SUCCESSFULLY": string;
         "USER_RESET_PASSWORD_SUCCESSFULLY": string;
+        "NEW_PASSWORD_SAME_AS_OLD_PASSWORD": string;
+        "USER_SOCIAL_ACCOUNT": string;
+        "CONTACT_CHANGED_SUCCESSFULLY": string;
     };
     "common": {
         "SUCCESS": string;
@@ -82,6 +85,7 @@ export type I18nTranslations = {
         "INVITE_MODE_CHANGED_SUCCESSFULLY": string;
     };
     "otp": {
+        "INVALID_EMAIL_OR_PHONE": string;
         "USER_ALREADY_REGISTERED": string;
         "OTP_SENT_SUCCESSFULLY": string;
         "OTP_VERIFIED_SUCCESSFULLY": string;

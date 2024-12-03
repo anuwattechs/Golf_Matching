@@ -60,6 +60,36 @@ export class MailService {
   }
 
   /**
+   * Sends a password recovery email to the specified email address.
+   * @param email - The recipient's email address.
+   * @param data - An object containing the reset link.
+   */
+  async sendAddEmail(
+    email: string,
+    data: {
+      code: string;
+      referenceCode: string;
+    },
+  ): Promise<boolean> {
+    return this.sendTemplateEmail(email, MailTemplateEnum.ADD_EMAIL, data);
+  }
+
+  /**
+   * Sends a password recovery email to the specified email address.
+   * @param email - The recipient's email address.
+   * @param data - An object containing the reset link.
+   */
+  async sendChangeEmail(
+    email: string,
+    data: {
+      code: string;
+      referenceCode: string;
+    },
+  ): Promise<boolean> {
+    return this.sendTemplateEmail(email, MailTemplateEnum.CHANGE_EMAIL, data);
+  }
+
+  /**
    * Generic function to send templated emails.
    * @param email - The recipient's email address.
    * @param template - The email template name.
@@ -120,6 +150,38 @@ export class MailService {
         </body>
       </html>`,
       'GoLink Golf | Password Recovery',
+    );
+
+    this.createOrUpdateTemplate(
+      MailTemplateEnum.ADD_EMAIL,
+      `
+      <html>
+        <body>
+          <p>Hi,</p>
+          <p>We received a request to add your email. Please use the following code to proceed:</p>
+          <p><b>{{code}}</b></p>
+          <p>Your reference code for this request is: <b>{{referenceCode}}</b></p>
+          <p>If you did not request this, please ignore this email or contact our support team immediately.</p>
+          <p>Thank you,<br/>GoLink Golf Team</p>
+        </body>
+      </html>`,
+      'GoLink Golf | Add Email',
+    );
+
+    this.createOrUpdateTemplate(
+      MailTemplateEnum.CHANGE_EMAIL,
+      `
+      <html>
+        <body>
+          <p>Hi,</p>
+          <p>We received a request to change your email. Please use the following code to proceed:</p>
+          <p><b>{{code}}</b></p>
+          <p>Your reference code for this request is: <b>{{referenceCode}}</b></p>
+          <p>If you did not request this, please ignore this email or contact our support team immediately.</p>
+          <p>Thank you,<br/>GoLink Golf Team</p>
+        </body>
+      </html>`,
+      'GoLink Golf | Change Email',
     );
   }
 
