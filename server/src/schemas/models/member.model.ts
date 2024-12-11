@@ -87,6 +87,18 @@ export class MemberModel {
     return this.memberModel.findOne(input).exec();
   }
 
+  async findOneBySocialId2(input: FindBySocialIdDto): Promise<Member | null> {
+    return this.memberModel
+      .findOne({
+        $or: [
+          { facebookId: input.facebookId },
+          { googleId: input.googleId },
+          { appleId: input.appleId },
+        ],
+      })
+      .exec();
+  }
+
   async findAllByUsername(username: string): Promise<Member[]> {
     return this.memberModel
       .find({

@@ -70,13 +70,15 @@ export class AuthService {
   ): Promise<NullableType<unknown>> {
     // console.log('Social Data: ', socialData);
     try {
-      const userRegistered = await this.memberModel.findOneBySocialId({
+      const userRegistered = await this.memberModel.findOneBySocialId2({
         facebookId: socialData.facebookId || null,
         googleId: socialData.googleId || null,
         appleId: socialData.appleId || null,
       });
 
       // console.log(userRegistered);
+
+      // return userRegistered;
 
       if (userRegistered) {
         await this.memberModel.setActive(userRegistered._id, true);
