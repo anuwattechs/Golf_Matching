@@ -1,0 +1,6 @@
+{
+  "POST_CREATED_SUCCESSFULLY": "Post created successfully",
+  "FETCHED_ALL_POSTS_SUCCESSFULLY": "Fetched all posts successfully",
+  "POST_UPDATED_SUCCESSFULLY": "Post updated successfully",
+  "POST_DELETED_SUCCESSFULLY": "Post deleted successfully"
+}
