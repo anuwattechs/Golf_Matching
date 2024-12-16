@@ -6,6 +6,7 @@ import {
   RegisterDto,
   LoginDto,
   ChangePasswordDto,
+  CreatePasswordDto,
   ResetPasswordDto,
   AddChangeUsernameDto,
 } from './dto';
@@ -324,6 +325,55 @@ export class AuthService {
     } catch (error) {
       this.handleException(error);
     }
+  }
+
+  async createPassword(
+    input: CreatePasswordDto,
+    decoded: JwtPayloadType,
+  ): Promise<NullableType<unknown>> {
+    try {
+      const userRegistered = await this.memberModel.findById(decoded.userId);
+      if (!userRegistered)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      if (userRegistered.email === null && userRegistered.phoneNo === null)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe(
+            'auth.PLEASE_ADD_EMAIL_OR_PHONE',
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      if (userRegistered.password !== null)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe(
+            'auth.PASSWORD_HAS_BEEN_GENERATED',
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const hashedPassword = await bcrypt.hash(
+        input.newPassword,
+        bcrypt.genSaltSync(10),
+      );
+
+      await this.memberModel.updatePasswordById(decoded.userId, hashedPassword);
+
+      return null;
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
+  async addSocialAccount() {
+    return null;
+  }
+
+  async removeSocialAccount() {
+    return null;
   }
 
   async resetPassword(input: ResetPasswordDto): Promise<NullableType<unknown>> {

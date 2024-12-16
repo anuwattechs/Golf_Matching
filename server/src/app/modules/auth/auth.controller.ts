@@ -14,6 +14,7 @@ import {
   RegisterDto,
   LoginDto,
   ChangePasswordDto,
+  CreatePasswordDto,
   ResetPasswordDto,
   AddChangeUsernameDto,
 } from './dto';
@@ -62,5 +63,15 @@ export class AuthController {
   @ResponseMessage('auth.USER_RESET_PASSWORD_SUCCESSFULLY')
   async resetPassword(@Body() body: ResetPasswordDto) {
     return await this.authService.resetPassword(body);
+  }
+
+  @Patch('create-password')
+  @UseGuards(JwtAuthGuard)
+  @ResponseMessage('auth.PASSWORD_CREATED_SUCCESSFULLY')
+  async createPassword(
+    @Body() body: CreatePasswordDto,
+    @Req() req: Request & { decoded: JwtPayloadType },
+  ) {
+    return await this.authService.createPassword(body, req.decoded);
   }
 }

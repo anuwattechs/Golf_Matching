@@ -57,6 +57,9 @@ export type I18nTranslations = {
         "NEW_PASSWORD_SAME_AS_OLD_PASSWORD": string;
         "USER_SOCIAL_ACCOUNT": string;
         "CONTACT_CHANGED_SUCCESSFULLY": string;
+        "PASSWORD_CREATED_SUCCESSFULLY": string;
+        "PASSWORD_HAS_BEEN_GENERATED": string;
+        "PLEASE_ADD_EMAIL_OR_PHONE": string;
     };
     "common": {
         "SUCCESS": string;
