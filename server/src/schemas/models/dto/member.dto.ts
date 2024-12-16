@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -7,8 +7,8 @@ import {
   IsOptional,
   IsString,
   ValidateNested,
-} from "class-validator";
-import { FriendStatusEnum, GenderEnum } from "src/shared/enums";
+} from 'class-validator';
+import { FriendStatusEnum, GenderEnum } from 'src/shared/enums';
 
 export class CreateMemberDto {
   firstName: string;
@@ -55,7 +55,6 @@ export class UpdateMemberDto {
 export class CreateMemberBySocialDto {
   firstName: string;
   lastName: string;
-  email?: string; // Optional, in case the email is needed for registration
   facebookId?: string; // Optional, for linking accounts
   googleId?: string; // Optional, for linking accounts
   appleId?: string; // Optional, for linking accounts

@@ -127,7 +127,6 @@ export class AuthService {
     const newUser = await this.memberModel.createBySocial({
       firstName: socialData.firstName,
       lastName: socialData.lastName,
-      email: socialData.email,
       facebookId: socialData.facebookId || null,
       googleId: socialData.googleId || null,
       appleId: socialData.appleId || null,
