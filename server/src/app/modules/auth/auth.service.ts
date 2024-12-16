@@ -135,20 +135,6 @@ export class AuthService {
 
     await this.memberModel.setActive(newUser._id, true);
 
-    // throw new HttpException(
-    //   {
-    //     status: true,
-    //     statusCode: HttpStatus.CREATED,
-    //     message: 'Social login successful, please complete your registration.',
-    //     data: {
-    //       userId: newUser._id,
-    //       firstName: newUser.firstName,
-    //       lastName: newUser.lastName,
-    //     },
-    //   },
-    //   HttpStatus.CREATED,
-    // );
-
     return {
       userId: newUser._id,
       firstName: socialData.firstName,
