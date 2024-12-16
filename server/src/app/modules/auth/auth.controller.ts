@@ -63,16 +63,4 @@ export class AuthController {
   async resetPassword(@Body() body: ResetPasswordDto) {
     return await this.authService.resetPassword(body);
   }
-
-  /*
-  @Patch('change-contact')
-  @UseGuards(JwtAuthGuard)
-  @ResponseMessage('auth.CONTACT_CHANGED_SUCCESSFULLY')
-  async changeContact(
-    @Body() body: AddChangeUsernameDto,
-    @Req() req: Request & { decoded: JwtPayloadType },
-  ) {
-    return await this.authService.changeContact(body, req.decoded);
-  }
-  */
 }

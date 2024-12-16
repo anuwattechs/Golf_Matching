@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateWriteOpResult } from 'mongoose';
+import { Model, UpdateWriteOpResult, now } from 'mongoose';
 import { Member } from '..';
 import {
   CreateMemberDto,
@@ -8,7 +8,7 @@ import {
   UpdateMemberDto,
   FindBySocialIdDto,
   Profile,
-  ProfileForSearch,
+  // ProfileForSearch,
 } from './dto';
 import { omit } from 'lodash';
 
@@ -160,7 +160,7 @@ export class MemberModel {
       {
         $set: {
           isActived: isActive,
-          ...(isActive ? { activedAt: new Date() } : {}),
+          ...(isActive ? { activedAt: now() } : {}),
         },
       },
     );
@@ -218,10 +218,9 @@ export class MemberModel {
     userId: string,
     customUserId: string,
   ): Promise<UpdateWriteOpResult> {
-    const now = new Date();
     return this.memberModel.updateOne(
       { _id: userId },
-      { $set: { customUserId, updatedCustomUserId: now } },
+      { $set: { customUserId, updatedCustomUserId: now() } },
     );
   }
 
