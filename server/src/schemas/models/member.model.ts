@@ -278,4 +278,25 @@ export class MemberModel {
     return members;
     // return members.map((member) => this.buildProfileForSearch(member));
   }
+
+  removeFacebookId(userId: string): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { facebookId: null } },
+    );
+  }
+
+  removeAppleId(userId: string): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { appleId: null } },
+    );
+  }
+
+  removeGoogleId(userId: string): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { googleId: null } },
+    );
+  }
 }

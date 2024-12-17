@@ -7,3 +7,4 @@ export * from './friend.enum';
 export * from './post-privacy.enum';
 export * from './notifications.enum';
 export * from './matches-type.enum';
+export * from './social-type.enum';

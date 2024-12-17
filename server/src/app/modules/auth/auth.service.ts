@@ -16,7 +16,11 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/app/config/config.type';
-import { VerifyTypeEnum, VerifyTypeAuthEnum } from 'src/shared/enums';
+import {
+  VerifyTypeEnum,
+  VerifyTypeAuthEnum,
+  SocialTypeEnum,
+} from 'src/shared/enums';
 import { UtilsService } from 'src/shared/utils/utils.service';
 
 @Injectable()
@@ -385,11 +389,84 @@ export class AuthService {
 
   async addSocialAccount(
     socialData: SocialInterface,
+    decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
+    const userRegistered = await this.memberModel.findById(decoded.userId);
+    if (!userRegistered)
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const facebookId = userRegistered.facebookId;
+    const googleId = userRegistered.googleId;
+    const appleId = userRegistered.appleId;
+
     return null;
   }
 
-  async removeSocialAccount(): Promise<NullableType<unknown>> {
+  async removeSocialAccount(
+    decoded: JwtPayloadType,
+    socialType: SocialTypeEnum,
+  ): Promise<NullableType<unknown>> {
+    const userRegistered = await this.memberModel.findById(decoded.userId);
+    if (!userRegistered)
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const email = userRegistered.email;
+    const phoneNo = userRegistered.phoneNo;
+    const facebookId = userRegistered.facebookId;
+    const googleId = userRegistered.googleId;
+    const appleId = userRegistered.appleId;
+
+    if (
+      (socialType === SocialTypeEnum.FACEBOOK && !facebookId) ||
+      (socialType === SocialTypeEnum.GOOGLE && !googleId) ||
+      (socialType === SocialTypeEnum.APPLE && !appleId)
+    )
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('status-code.400'),
+        HttpStatus.BAD_REQUEST,
+      );
+
+    if (
+      (email === null &&
+        phoneNo === null &&
+        facebookId === null &&
+        googleId === null &&
+        socialType === SocialTypeEnum.APPLE) ||
+      (email === null &&
+        phoneNo === null &&
+        facebookId === null &&
+        appleId === null &&
+        socialType === SocialTypeEnum.GOOGLE) ||
+      (email === null &&
+        phoneNo === null &&
+        googleId === null &&
+        appleId === null &&
+        socialType === SocialTypeEnum.FACEBOOK)
+    )
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('status-code.400'),
+        HttpStatus.BAD_REQUEST,
+      );
+
+    switch (socialType) {
+      case SocialTypeEnum.FACEBOOK:
+        await this.memberModel.removeFacebookId(decoded.userId);
+        break;
+      case SocialTypeEnum.GOOGLE:
+        await this.memberModel.removeGoogleId(decoded.userId);
+        break;
+      case SocialTypeEnum.APPLE:
+        await this.memberModel.removeAppleId(decoded.userId);
+        break;
+      default:
+        break;
+    }
     return null;
   }
 
