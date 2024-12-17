@@ -21,11 +21,13 @@ export class MatchesModel {
     input: CreateMatchDto,
     decodedUser: JwtPayloadType,
   ): Promise<Matches> {
+    const tags = input.tags.split('|');
     const createdMatch = await this.matchesModel.create({
       ...input,
-      date: new Date(input.date),
+      tags: input.tags == '' ? [] : tags,
+      datetime: new Date(input.datetime),
       createdBy: decodedUser.userId,
-      discussionId: Math.random().toString(36).substring(2), // assume this is a chat id for the match
+      discussionId: Math.random().toString(36).substring(2),
     });
 
     await this.matchesPlayerModel.create({

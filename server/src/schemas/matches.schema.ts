@@ -24,10 +24,15 @@ export class Matches extends Document {
   discussionId: string; // for chat and comments on the match
 
   @Prop({ required: true, type: Date })
-  date: Date;
+  datetime: Date;
 
-  // @Prop({ type: Boolean, default: false })
-  // playNow: boolean;
+  @Prop({
+    required: true,
+    type: String,
+    enum: ['9HOLES', '18HOLES'],
+    default: '9HOLES',
+  })
+  holeType: string;
 
   @Prop({ required: true, type: String, enum: ['SOLO', 'GROUP'] })
   matchesType: string;
@@ -42,10 +47,14 @@ export class Matches extends Document {
   handicap: string;
 
   @Prop({ type: Number })
-  averageScore: number;
+  avgScore: number;
 
-  @Prop({ type: String })
-  transportMode: string;
+  @Prop({
+    type: String,
+    enum: ['NS', 'YES', 'NO'],
+    default: 'NS',
+  })
+  useGolfCart: string;
 
   @Prop({ type: Number })
   maxPlayers: number;

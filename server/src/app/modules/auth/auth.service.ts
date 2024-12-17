@@ -71,6 +71,7 @@ export class AuthService {
   ): Promise<NullableType<unknown>> {
     // console.log('Social Data: ', socialData);
     try {
+      // const userRegistered = await this.memberModel.findOneBySocialId({
       const userRegistered = await this.memberModel.findOneBySocialId2({
         facebookId: socialData.facebookId || null,
         googleId: socialData.googleId || null,
@@ -134,6 +135,20 @@ export class AuthService {
     });
 
     await this.memberModel.setActive(newUser._id, true);
+
+    // throw new HttpException(
+    //   {
+    //     status: true,
+    //     statusCode: HttpStatus.CREATED,
+    //     message: 'Social login successful, please complete your registration.',
+    //     data: {
+    //       userId: newUser._id,
+    //       firstName: newUser.firstName,
+    //       lastName: newUser.lastName,
+    //     },
+    //   },
+    //   HttpStatus.CREATED,
+    // );
 
     return {
       userId: newUser._id,
@@ -418,6 +433,63 @@ export class AuthService {
         userVerified.username,
         hashedPassword,
       );
+
+      return null;
+    } catch (error) {
+      this.handleException(error);
+    }
+  }
+
+  async changeContact(
+    input: AddChangeUsernameDto,
+    decoded: JwtPayloadType,
+  ): Promise<NullableType<unknown>> {
+    try {
+      //! Check if user verified
+      const userVerified = await this.verificationCodesModel.findById(
+        input.verifyId,
+        [true],
+      );
+      if (!userVerified)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_VERIFIED'),
+          HttpStatus.BAD_REQUEST,
+        );
+      if (
+        ![
+          VerifyTypeAuthEnum.ADD_EMAIL,
+          VerifyTypeAuthEnum.ADD_PHONE_NUMBER,
+          VerifyTypeAuthEnum.CHANGE_EMAIL,
+          VerifyTypeAuthEnum.CHANGE_PHONE_NUMBER,
+        ].includes(userVerified.verifyType as VerifyTypeAuthEnum)
+      )
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.INVALID_VERIFY_TYPE'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const isEmail = this.utilsService.validateEmail(userVerified.username);
+      const isPhoneNo = this.utilsService.validatePhoneNumber(
+        userVerified.username,
+      );
+
+      if (!(isEmail || isPhoneNo))
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('otp.INVALID_EMAIL_OR_PHONE'),
+          HttpStatus.BAD_REQUEST,
+        );
+
+      if (isEmail) {
+        await this.memberModel.updateEmailById(
+          decoded.userId,
+          userVerified.username,
+        );
+      } else if (isPhoneNo) {
+        await this.memberModel.updatePhoneNoById(
+          decoded.userId,
+          userVerified.username,
+        );
+      }
 
       return null;
     } catch (error) {

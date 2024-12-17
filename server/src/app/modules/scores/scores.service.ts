@@ -362,7 +362,7 @@ export class ScoresService {
 
       const scoreCards: ResScoreCardDto[] = await Promise.all(
         paginatedMatches.map(async (match) => {
-          const { courseId, _id: matchId, date, maxPlayers } = match;
+          const { courseId, _id: matchId, datetime, maxPlayers } = match;
 
           const scores =
             await this.scoresModel.findHoleScoreByMatchIdAndPlayerId(
@@ -392,7 +392,7 @@ export class ScoresService {
           return {
             matchId,
             playerId,
-            date,
+            datetime,
             courseId,
             courseName,
             address,
@@ -443,7 +443,7 @@ export class ScoresService {
 
       const scoreCards: ScoreCardDto[] = await Promise.all(
         playerMatches.map(async (match) => {
-          const { courseId, _id: matchId, date, maxPlayers } = match;
+          const { courseId, _id: matchId, datetime, maxPlayers } = match;
 
           const scores =
             await this.scoresModel.findHoleScoreByMatchIdAndPlayerId(
@@ -473,7 +473,7 @@ export class ScoresService {
           return {
             matchId,
             playerId,
-            date,
+            datetime,
             courseId,
             courseName,
             address,

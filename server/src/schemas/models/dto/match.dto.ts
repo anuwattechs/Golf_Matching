@@ -10,21 +10,23 @@ import {
   IsDateString,
   ValidateIf,
   ValidateNested,
+  Min,
 } from 'class-validator';
-import { GenderEnum } from 'src/shared/enums';
-import { AddressDto } from '.';
+import { GenderEnum, HoleTypeEnum } from 'src/shared/enums';
+import { AddressDto, ResScoreCardsShortDto } from '.';
+import { Transform } from 'class-transformer';
 import { ResultPaginationDto } from 'src/shared/dto';
 import { MatchesTypeEnum } from 'src/shared/enums';
 
 export class CreateMatchDto {
-  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.SOLO)
-  @IsString()
-  @IsNotEmpty()
-  title: string;
-
   @IsString()
   @IsOptional()
-  description?: string;
+  title: string;
+
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
+  @IsString()
+  @IsOptional() // Description can be optional, even if conditionally validated
+  description: string;
 
   @IsString()
   @IsNotEmpty()
@@ -32,49 +34,57 @@ export class CreateMatchDto {
 
   @IsString()
   @IsOptional()
-  discussionId: string; // for chat and comments on the match
+  discussionId: string;
 
   @IsDateString()
   @IsNotEmpty()
-  date: Date; // example: 2021-09-01T00:00:00.000Z
+  datetime: Date;
+
+  @IsEnum(HoleTypeEnum)
+  @IsNotEmpty()
+  holeType: HoleTypeEnum;
 
   @IsEnum(MatchesTypeEnum)
   @IsNotEmpty()
   matchesType: MatchesTypeEnum;
 
-  @IsString()
   @IsOptional()
-  coverImageUrl?: File;
+  @IsString() // URL or file name in case it's already stored in the server
+  coverImageUrl?: string;
 
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
   @IsNumber()
-  @IsOptional()
-  costPerPerson?: number;
+  @Min(1)
+  @Transform(({ value }) => parseFloat(value))
+  costPerPerson: number;
 
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
   @IsString()
-  @IsOptional()
-  handicap?: string;
+  handicap: string;
 
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
   @IsNumber()
-  @IsOptional()
-  averageScore?: number;
+  @Min(0)
+  @Transform(({ value }) => parseFloat(value))
+  avgScore: number;
 
-  @IsString()
-  @IsOptional()
-  transportMode?: string;
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
+  @IsEnum(['NS', 'YES', 'NO'])
+  useGolfCart: string;
 
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
   @IsNumber()
-  @IsNotEmpty()
+  @Min(2)
+  @Transform(({ value }) => parseFloat(value))
   maxPlayers: number;
 
-  @ValidateIf((o) => o.matchesType === 'GROUP')
-  @IsArray()
-  @IsOptional()
-  tags: string[];
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
+  @IsString()
+  tags: string;
 
-  @ValidateIf((o) => o.matchesType === 'GROUP')
+  @ValidateIf((o) => o.matchesType === MatchesTypeEnum.GROUP)
   @IsEnum(GenderEnum)
-  @IsOptional()
-  gender?: GenderEnum;
+  gender: GenderEnum;
 }
 
 export class UpdateMatchDto {
@@ -112,7 +122,7 @@ export class UpdateMatchDto {
 
   @IsNumber()
   @IsOptional()
-  averageScore?: number;
+  avgScore?: number;
 
   @IsString()
   @IsOptional()
@@ -218,7 +228,7 @@ export class ResMatchesHistoryDto {
 
   @IsString()
   @IsNotEmpty()
-  date: Date;
+  datetime: Date;
 
   @IsEnum(['SOLO', 'GROUP'])
   @IsNotEmpty()
@@ -232,9 +242,13 @@ export class ResMatchesHistoryDto {
   @IsNotEmpty()
   currentPlayers: number;
 
-  @IsString()
+  @ValidateNested()
+  @Type(() => ResScoreCardsShortDto)
+  score: ResScoreCardsShortDto;
+
+  @IsEnum(['LIVE', 'ENDED'])
   @IsNotEmpty()
-  myScore: string;
+  matchStatus: string;
 }
 
 export class ResultPaginationMatchesHistoryDto extends ResultPaginationDto<ResMatchesHistoryDto> {

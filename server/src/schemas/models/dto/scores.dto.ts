@@ -94,7 +94,7 @@ export class ScoreCardDto {
 
   @IsString()
   @IsNotEmpty()
-  date: Date;
+  datetime: Date;
 
   @IsString()
   @IsNotEmpty()
@@ -149,7 +149,7 @@ export class ResScoreCardDto {
 
   @IsString()
   @IsNotEmpty()
-  date: Date;
+  datetime: Date;
 
   @IsString()
   @IsNotEmpty()
@@ -167,6 +167,28 @@ export class ResScoreCardDto {
   @IsNotEmpty()
   maxPlayers: number;
 
+  @IsString()
+  @IsNotEmpty()
+  myScore: String;
+
+  @IsString()
+  @IsNotEmpty()
+  overScore: String;
+
+  @IsString()
+  @IsNotEmpty()
+  fairways: String;
+
+  @IsString()
+  @IsNotEmpty()
+  puttsRound: String;
+
+  @IsString()
+  @IsNotEmpty()
+  puttsHole: String;
+}
+
+export class ResScoreCardsShortDto {
   @IsString()
   @IsNotEmpty()
   myScore: String;

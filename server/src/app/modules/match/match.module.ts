@@ -8,6 +8,7 @@ import { AuthModule } from '../auth/auth.module';
 import { UtilsModule } from 'src/shared/utils/utils.module';
 import { MembersModule } from '../members/members.module';
 import { ScoresModule } from '../scores/scores.module';
+import { AWSModule } from 'src/app/common/services/aws/aws.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ScoresModule } from '../scores/scores.module';
     UtilsModule,
     MembersModule,
     ScoresModule,
+    AWSModule,
   ],
   controllers: [MatchController],
   providers: [MatchService, JwtStrategy],

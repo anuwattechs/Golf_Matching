@@ -236,6 +236,7 @@ export class MembersService {
         profileImage: member.profileImage
           ? await this.assetsService.getPresignedSignedUrl(member.profileImage)
           : null,
+        isPasswordSet: member.password ? true : false,
         profile: {
           yearStart: member.yearStart,
           handicap: 0, //! Mock data

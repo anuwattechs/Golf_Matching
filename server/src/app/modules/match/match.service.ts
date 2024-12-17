@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   CreateMatchDto,
-  MatchesHistoryDto,
   ResultPaginationMatchesHistoryDto,
   UpdateMatchDto,
 } from 'src/schemas/models/dto';
@@ -13,7 +12,7 @@ import { UtilsService } from 'src/shared/utils/utils.service';
 import { GolfCourseModel, MemberModel } from 'src/schemas/models';
 import { MatchPlayerModel } from '../../../schemas/models/match-players.model';
 import { ScoresService } from '../scores/scores.service';
-import { ResultPaginationDto } from 'src/shared/dto';
+import { AwsService } from 'src/app/common/services/aws/aws.service';
 
 @Injectable()
 export class MatchService {
@@ -24,12 +23,14 @@ export class MatchService {
     private readonly scoresService: ScoresService,
     private readonly utilsService: UtilsService,
     private readonly golfCourseModel: GolfCourseModel,
+    private readonly awsService: AwsService,
   ) {}
 
   // Create a match
   async createMatch(
     input: CreateMatchDto,
     decoded: JwtPayloadType,
+    // fileCoverImage: Express.Multer.File
   ): Promise<NullableType<unknown>> {
     try {
       // Check if the user is registered
@@ -41,8 +42,51 @@ export class MatchService {
         );
       }
 
-      // Proceed to create the match
-      return await this.matchesModel.create(input, decoded);
+      const {
+        title,
+        courseId,
+        datetime,
+        holeType,
+        matchesType,
+        coverImageUrl,
+        description,
+        ...matchDetails
+      } = input;
+
+      const parsedBodySOLO = {
+        ...matchDetails,
+        title,
+        description,
+        courseId,
+        datetime,
+        holeType,
+        matchesType,
+        coverImageUrl,
+        costPerPerson: null,
+        handicap: null,
+        averageScore: null,
+        transportMode: null,
+        maxPlayers: 1,
+        tags: '',
+        gender: null,
+      };
+
+      const payload =
+        matchesType === 'SOLO'
+          ? parsedBodySOLO
+          : {
+              ...input,
+              coverImageUrl,
+            };
+
+      const result = (
+        await this.matchesModel.create(payload, decoded)
+      ).toObject();
+      const { _id: matchId, ...rest } = result;
+      return {
+        matchId,
+        ...rest,
+      };
     } catch (error) {
       this.handleError(error);
     }
@@ -77,16 +121,36 @@ export class MatchService {
     }
   }
 
-  async getAllMatches(): Promise<Matches[]> {
+  async getAllMatches(
+    decoded: JwtPayloadType,
+    page: number,
+    limit: number,
+  ): Promise<NullableType<unknown>> {
     try {
-      const matches = await this.matchesModel.findAll();
+      const { data: result, ...matchesWithPagination } =
+        await this.utilsService.findAllWithPaginationAndFilter(
+          this.matchesModel.rootMatchModel(),
+          page,
+          limit,
+          {},
+        );
 
-      // Fetch matches with player details
       const matchesWithPlayers = await Promise.all(
-        matches.map(async (match) => {
-          const { _id: matchId, ...rest } = match.toObject();
+        result.map(async (match) => {
+          const { _id: matchId, ...rest } = match;
           const playersInMatch =
             await this.matchPlayerModel.getPlayersForMatch(matchId);
+
+          if (rest.coverImageUrl !== null) {
+            const coverImageUrl = await this.awsService.getSignedUrl(
+              process.env.AWS_DEFAULT_S3_BUCKET,
+              rest.coverImageUrl,
+              {
+                Expires: 60 * 60 * 24 * 10,
+              },
+            );
+            rest.coverImageUrl = coverImageUrl;
+          }
 
           // Fetch player details in parallel
           const players = await Promise.all(
@@ -114,11 +178,14 @@ export class MatchService {
             matchId,
             ...rest,
             players,
-          } as Matches;
+          };
         }),
       );
 
-      return matchesWithPlayers;
+      return {
+        result: matchesWithPlayers,
+        ...matchesWithPagination,
+      };
     } catch (error) {
       this.handleError(error);
     }
@@ -174,7 +241,7 @@ export class MatchService {
           title,
           description,
           coverImageUrl,
-          date,
+          datetime,
           matchesType,
           maxPlayers,
         } = match;
@@ -201,6 +268,25 @@ export class MatchService {
           postalCode: course?.address?.postalCode || '',
         };
 
+        //TODO: IMPLEMENT SCORE CALCULATION LOGIC
+        const score = {
+          myScore: this.utilsService.parseNumberToString(276),
+          overScore: this.utilsService.parseNumberToString(9),
+          fairways: `${this.utilsService.parseNumberToString(57.14)}%`,
+          puttsRound: this.utilsService.parseNumberToString(28),
+          puttsHole: this.utilsService.parseNumberToString(1.56),
+        };
+
+        //TODO: IMPLEMENT MATCH STATUS LOGIC
+        const matchStatus = 'LIVE';
+        const image = await this.awsService.getSignedUrl(
+          process.env.AWS_DEFAULT_S3_BUCKET,
+          coverImageUrl || course.coverImage[0],
+          {
+            Expires: 60 * 60 * 24 * 10, // 10 days
+          },
+        );
+
         return {
           matchId,
           title: title || '',
@@ -208,12 +294,15 @@ export class MatchService {
           courseId: courseId || '',
           courseName,
           address,
-          coverImageUrl: coverImageUrl || course.coverImage[0],
-          date,
+          coverImageUrl: image,
+          datetime: datetime,
           matchType: matchesType || '',
           maxPlayers: maxPlayers || 0,
           currentPlayers: players.length || 0,
-          myScore: this.utilsService.parseNumberToString(276),
+          score: {
+            ...score,
+          },
+          matchStatus: matchStatus || '',
         };
       }),
     );
@@ -230,4 +319,7 @@ export class MatchService {
       },
     };
   }
+}
+function uuidv4() {
+  throw new Error('Function not implemented.');
 }
