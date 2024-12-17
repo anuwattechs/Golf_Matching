@@ -9,6 +9,7 @@ import { UtilsModule } from "src/shared/utils/utils.module";
 import { MembersModule } from "../members/members.module";
 import { ScoresModule } from "../scores/scores.module";
 import { AWSModule } from "src/app/common/services/aws/aws.module";
+import { AssetsModule } from "../assets/assets.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AWSModule } from "src/app/common/services/aws/aws.module";
     MembersModule,
     ScoresModule,
     AWSModule,
+    AssetsModule,
   ],
   controllers: [MatchController],
   providers: [MatchService, JwtStrategy],
