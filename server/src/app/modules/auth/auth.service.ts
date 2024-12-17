@@ -368,11 +368,13 @@ export class AuthService {
     }
   }
 
-  async addSocialAccount() {
+  async addSocialAccount(
+    socialData: SocialInterface,
+  ): Promise<NullableType<unknown>> {
     return null;
   }
 
-  async removeSocialAccount() {
+  async removeSocialAccount(): Promise<NullableType<unknown>> {
     return null;
   }
 
