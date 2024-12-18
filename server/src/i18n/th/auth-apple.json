@@ -1,4 +1,6 @@
 {
   "USER_LOGGED_IN_SUCCESSFULLY": "ผู้ใช้เข้าสู่ระบบสำเร็จ",
+  "ADDED_APPLE_ACCOUNT_SUCCESSFULLY": "เพิ่มบัญชี Apple สำเร็จ",
+  "REMOVED_APPLE_ACCOUNT_SUCCESSFULLY": "ลบบัญชี Apple สำเร็จ",
   "INVALID_TOKEN": "โทเค็นไม่ถูกต้อง"
 }

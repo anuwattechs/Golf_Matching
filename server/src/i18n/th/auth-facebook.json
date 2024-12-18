@@ -1,5 +1,7 @@
 {
   "ERROR_FETCHING_FACEBOOK_PROFILE:": "ข้อผิดพลาดในการดึงข้อมูลโปรไฟล์ Facebook:",
   "USER_LOGGED_IN_SUCCESSFULLY": "ผู้ใช้เข้าสู่ระบบสำเร็จ",
+  "ADDED_FACEBOOK_ACCOUNT_SUCCESSFULLY": "เพิ่มบัญชี Facebook สำเร็จ",
+  "REMOVED_FACEBOOK_ACCOUNT_SUCCESSFULLY": "ลบบัญชี Facebook สำเร็จ",
   "INVALID_TOKEN": "โทเค็นไม่ถูกต้อง"
 }

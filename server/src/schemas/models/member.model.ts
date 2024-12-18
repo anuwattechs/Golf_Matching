@@ -279,6 +279,36 @@ export class MemberModel {
     // return members.map((member) => this.buildProfileForSearch(member));
   }
 
+  createFacebookId(
+    userId: string,
+    socialId: string,
+  ): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { facebookId: socialId } },
+    );
+  }
+
+  createAppleId(
+    userId: string,
+    socialId: string,
+  ): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { appleId: socialId } },
+    );
+  }
+
+  createGoogleId(
+    userId: string,
+    socialId: string,
+  ): Promise<UpdateWriteOpResult> {
+    return this.memberModel.updateOne(
+      { _id: userId },
+      { $set: { googleId: socialId } },
+    );
+  }
+
   removeFacebookId(userId: string): Promise<UpdateWriteOpResult> {
     return this.memberModel.updateOne(
       { _id: userId },

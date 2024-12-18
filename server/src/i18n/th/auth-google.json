@@ -1,4 +1,6 @@
 {
   "INVALID_TOKEN": "โทเค็นไม่ถูกต้อง",
+  "ADDED_GOOGLE_ACCOUNT_SUCCESSFULLY": "เพิ่มบัญชี Google สำเร็จ",
+  "REMOVED_GOOGLE_ACCOUNT_SUCCESSFULLY": "ลบบัญชี Google สำเร็จ",
   "USER_LOGGED_IN_SUCCESSFULLY": "ผู้ใช้เข้าสู่ระบบสำเร็จ"
 }

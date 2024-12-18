@@ -1,4 +1,6 @@
 {
   "USER_LOGGED_IN_SUCCESSFULLY": "User logged in successfully",
+  "ADDED_APPLE_ACCOUNT_SUCCESSFULLY": "Added apple account successfully",
+  "REMOVED_APPLE_ACCOUNT_SUCCESSFULLY": "Removed apple account successfully",
   "INVALID_TOKEN": "Invalid token"
 }

@@ -1,5 +1,7 @@
 {
   "ERROR_FETCHING_FACEBOOK_PROFILE:": "Error fetching Facebook profile:",
   "USER_LOGGED_IN_SUCCESSFULLY": "User logged in successfully",
+  "ADDED_FACEBOOK_ACCOUNT_SUCCESSFULLY": "Added facebook account successfully",
+  "REMOVED_FACEBOOK_ACCOUNT_SUCCESSFULLY": "Removed facebook account successfully",
   "INVALID_TOKEN": "Invalid token"
 }

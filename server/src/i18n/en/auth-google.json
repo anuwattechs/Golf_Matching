@@ -1,4 +1,6 @@
 {
   "INVALID_TOKEN": "Invalid token",
+  "ADDED_GOOGLE_ACCOUNT_SUCCESSFULLY": "Added google account successfully",
+  "REMOVED_GOOGLE_ACCOUNT_SUCCESSFULLY": "Removed google account successfully",
   "USER_LOGGED_IN_SUCCESSFULLY": "User logged in successfully"
 }

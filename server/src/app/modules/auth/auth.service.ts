@@ -140,20 +140,6 @@ export class AuthService {
 
     await this.memberModel.setActive(newUser._id, true);
 
-    // throw new HttpException(
-    //   {
-    //     status: true,
-    //     statusCode: HttpStatus.CREATED,
-    //     message: 'Social login successful, please complete your registration.',
-    //     data: {
-    //       userId: newUser._id,
-    //       firstName: newUser.firstName,
-    //       lastName: newUser.lastName,
-    //     },
-    //   },
-    //   HttpStatus.CREATED,
-    // );
-
     return {
       userId: newUser._id,
       firstName: socialData.firstName,
@@ -389,6 +375,7 @@ export class AuthService {
 
   async addSocialAccount(
     socialData: SocialInterface,
+    socialType: SocialTypeEnum,
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     const userRegistered = await this.memberModel.findById(decoded.userId);
@@ -402,12 +389,44 @@ export class AuthService {
     const googleId = userRegistered.googleId;
     const appleId = userRegistered.appleId;
 
+    if (
+      (socialType === SocialTypeEnum.FACEBOOK && facebookId) ||
+      (socialType === SocialTypeEnum.GOOGLE && googleId) ||
+      (socialType === SocialTypeEnum.APPLE && appleId)
+    )
+      throw new HttpException(
+        this.utilsService.getMessagesTypeSafe('status-code.400'),
+        HttpStatus.BAD_REQUEST,
+      );
+
+    switch (socialType) {
+      case SocialTypeEnum.FACEBOOK:
+        await this.memberModel.createFacebookId(
+          decoded.userId,
+          socialData.facebookId,
+        );
+        break;
+      case SocialTypeEnum.GOOGLE:
+        await this.memberModel.createGoogleId(
+          decoded.userId,
+          socialData.googleId,
+        );
+        break;
+      case SocialTypeEnum.APPLE:
+        await this.memberModel.createAppleId(
+          decoded.userId,
+          socialData.appleId,
+        );
+        break;
+      default:
+        break;
+    }
     return null;
   }
 
   async removeSocialAccount(
-    decoded: JwtPayloadType,
     socialType: SocialTypeEnum,
+    decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
     const userRegistered = await this.memberModel.findById(decoded.userId);
     if (!userRegistered)
