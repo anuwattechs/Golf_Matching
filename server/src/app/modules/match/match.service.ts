@@ -13,6 +13,7 @@ import { GolfCourseModel, MemberModel } from 'src/schemas/models';
 import { MatchPlayerModel } from '../../../schemas/models/match-players.model';
 import { ScoresService } from '../scores/scores.service';
 import { AwsService } from 'src/app/common/services/aws/aws.service';
+import { AssetsService } from '../assets/assets.service';
 
 @Injectable()
 export class MatchService {
@@ -24,6 +25,7 @@ export class MatchService {
     private readonly utilsService: UtilsService,
     private readonly golfCourseModel: GolfCourseModel,
     private readonly awsService: AwsService,
+    private readonly assetsService: AssetsService,
   ) {}
 
   // Create a match
@@ -173,10 +175,19 @@ export class MatchService {
             }),
           );
 
+          const tags = await this.assetsService.getTags({
+            isPublic: false,
+          });
+
+          const matchTags = tags?.filter((tag) =>
+            rest.tags?.includes(tag.tagId),
+          );
+
           // Return match with populated player data
           return {
-            matchId,
             ...rest,
+            tags: matchTags,
+            matchId,
             players,
           };
         }),
@@ -319,7 +330,4 @@ export class MatchService {
       },
     };
   }
-}
-function uuidv4() {
-  throw new Error('Function not implemented.');
 }
