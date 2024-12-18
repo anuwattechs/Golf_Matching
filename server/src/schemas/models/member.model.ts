@@ -87,13 +87,13 @@ export class MemberModel {
     return this.memberModel.findOne(input).exec();
   }
 
-  async findOneBySocialId2(input: FindBySocialIdDto): Promise<Member | null> {
+  async findOneBySocialId2(socialId: string): Promise<Member | null> {
     return this.memberModel
       .findOne({
         $or: [
-          { facebookId: input.facebookId },
-          { googleId: input.googleId },
-          { appleId: input.appleId },
+          { facebookId: socialId },
+          { googleId: socialId },
+          { appleId: socialId },
         ],
       })
       .exec();
@@ -123,16 +123,7 @@ export class MemberModel {
   async findOneByUsername(username: string): Promise<Member | null> {
     return this.memberModel
       .findOne({
-        $and: [
-          {
-            $or: [{ email: username }, { phoneNo: username }],
-          },
-          {
-            facebookId: null,
-            googleId: null,
-            appleId: null,
-          },
-        ],
+        $or: [{ email: username }, { phoneNo: username }],
       })
       .exec();
   }

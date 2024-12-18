@@ -76,17 +76,15 @@ export class AuthService {
     // console.log('Social Data: ', socialData);
     try {
       // const userRegistered = await this.memberModel.findOneBySocialId({
-      const userRegistered = await this.memberModel.findOneBySocialId2({
-        facebookId: socialData.facebookId || null,
-        googleId: socialData.googleId || null,
-        appleId: socialData.appleId || null,
-      });
+      const userRegistered = await this.memberModel.findOneBySocialId2(
+        socialData.facebookId || socialData.googleId || socialData.appleId,
+      );
 
       // console.log(userRegistered);
 
-      // return userRegistered;
+      // return userRegistered.toObject();
 
-      if (userRegistered) {
+      if (userRegistered !== null) {
         await this.memberModel.setActive(userRegistered._id, true);
         return this.handleExistingUser(socialData, userRegistered);
       }
@@ -112,12 +110,12 @@ export class AuthService {
 
     return {
       userId: userRegistered._id,
-      firstName: socialData.firstName,
-      lastName: socialData.lastName,
-      email: socialData.email,
-      facebookId: socialData.facebookId || null,
-      googleId: socialData.googleId || null,
-      appleId: socialData.appleId || null,
+      firstName: userRegistered.firstName,
+      lastName: userRegistered.lastName,
+      // email: socialData.email,
+      facebookId: userRegistered.facebookId || null,
+      googleId: userRegistered.googleId || null,
+      appleId: userRegistered.appleId || null,
       statusCode,
       ...(await this.generateTokens({
         userId: userRegistered._id,
@@ -378,115 +376,139 @@ export class AuthService {
     socialType: SocialTypeEnum,
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
-    const userRegistered = await this.memberModel.findById(decoded.userId);
-    if (!userRegistered)
-      throw new HttpException(
-        this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
-        HttpStatus.BAD_REQUEST,
+    try {
+      const checkExists = await this.memberModel.findOneBySocialId2(
+        socialData.facebookId || socialData.googleId || socialData.appleId,
       );
 
-    const facebookId = userRegistered.facebookId;
-    const googleId = userRegistered.googleId;
-    const appleId = userRegistered.appleId;
+      if (checkExists)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe(
+            socialType === SocialTypeEnum.FACEBOOK
+              ? 'auth.FACEBOOK_ACCOUNT_HAS_ALREADY_BEEN_USED'
+              : socialType === SocialTypeEnum.APPLE
+                ? 'auth.APPLE_ACCOUNT_HAS_ALREADY_BEEN_USED'
+                : 'auth.GOOGLE_ACCOUNT_HAS_ALREADY_BEEN_USED',
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
 
-    if (
-      (socialType === SocialTypeEnum.FACEBOOK && facebookId) ||
-      (socialType === SocialTypeEnum.GOOGLE && googleId) ||
-      (socialType === SocialTypeEnum.APPLE && appleId)
-    )
-      throw new HttpException(
-        this.utilsService.getMessagesTypeSafe('status-code.400'),
-        HttpStatus.BAD_REQUEST,
-      );
+      const userRegistered = await this.memberModel.findById(decoded.userId);
+      if (!userRegistered)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
+          HttpStatus.BAD_REQUEST,
+        );
 
-    switch (socialType) {
-      case SocialTypeEnum.FACEBOOK:
-        await this.memberModel.createFacebookId(
-          decoded.userId,
-          socialData.facebookId,
+      const facebookId = userRegistered.facebookId;
+      const googleId = userRegistered.googleId;
+      const appleId = userRegistered.appleId;
+
+      if (
+        (socialType === SocialTypeEnum.FACEBOOK && facebookId) ||
+        (socialType === SocialTypeEnum.GOOGLE && googleId) ||
+        (socialType === SocialTypeEnum.APPLE && appleId)
+      )
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('status-code.400'),
+          HttpStatus.BAD_REQUEST,
         );
-        break;
-      case SocialTypeEnum.GOOGLE:
-        await this.memberModel.createGoogleId(
-          decoded.userId,
-          socialData.googleId,
-        );
-        break;
-      case SocialTypeEnum.APPLE:
-        await this.memberModel.createAppleId(
-          decoded.userId,
-          socialData.appleId,
-        );
-        break;
-      default:
-        break;
+
+      switch (socialType) {
+        case SocialTypeEnum.FACEBOOK:
+          await this.memberModel.createFacebookId(
+            decoded.userId,
+            socialData.facebookId,
+          );
+          break;
+        case SocialTypeEnum.GOOGLE:
+          await this.memberModel.createGoogleId(
+            decoded.userId,
+            socialData.googleId,
+          );
+          break;
+        case SocialTypeEnum.APPLE:
+          await this.memberModel.createAppleId(
+            decoded.userId,
+            socialData.appleId,
+          );
+          break;
+        default:
+          break;
+      }
+      return null;
+    } catch (error) {
+      this.handleException(error);
     }
-    return null;
   }
 
   async removeSocialAccount(
     socialType: SocialTypeEnum,
     decoded: JwtPayloadType,
   ): Promise<NullableType<unknown>> {
-    const userRegistered = await this.memberModel.findById(decoded.userId);
-    if (!userRegistered)
-      throw new HttpException(
-        this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
-        HttpStatus.BAD_REQUEST,
-      );
+    try {
+      const userRegistered = await this.memberModel.findById(decoded.userId);
+      if (!userRegistered)
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('auth.USER_NOT_REGISTERED'),
+          HttpStatus.BAD_REQUEST,
+        );
 
-    const email = userRegistered.email;
-    const phoneNo = userRegistered.phoneNo;
-    const facebookId = userRegistered.facebookId;
-    const googleId = userRegistered.googleId;
-    const appleId = userRegistered.appleId;
+      const email = userRegistered.email;
+      const phoneNo = userRegistered.phoneNo;
+      const facebookId = userRegistered.facebookId;
+      const googleId = userRegistered.googleId;
+      const appleId = userRegistered.appleId;
 
-    if (
-      (socialType === SocialTypeEnum.FACEBOOK && !facebookId) ||
-      (socialType === SocialTypeEnum.GOOGLE && !googleId) ||
-      (socialType === SocialTypeEnum.APPLE && !appleId)
-    )
-      throw new HttpException(
-        this.utilsService.getMessagesTypeSafe('status-code.400'),
-        HttpStatus.BAD_REQUEST,
-      );
+      if (
+        (socialType === SocialTypeEnum.FACEBOOK && !facebookId) ||
+        (socialType === SocialTypeEnum.GOOGLE && !googleId) ||
+        (socialType === SocialTypeEnum.APPLE && !appleId)
+      )
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('status-code.400'),
+          HttpStatus.BAD_REQUEST,
+        );
 
-    if (
-      (email === null &&
-        phoneNo === null &&
-        facebookId === null &&
-        googleId === null &&
-        socialType === SocialTypeEnum.APPLE) ||
-      (email === null &&
-        phoneNo === null &&
-        facebookId === null &&
-        appleId === null &&
-        socialType === SocialTypeEnum.GOOGLE) ||
-      (email === null &&
-        phoneNo === null &&
-        googleId === null &&
-        appleId === null &&
-        socialType === SocialTypeEnum.FACEBOOK)
-    )
-      throw new HttpException(
-        this.utilsService.getMessagesTypeSafe('status-code.400'),
-        HttpStatus.BAD_REQUEST,
-      );
+      if (
+        (email === null &&
+          phoneNo === null &&
+          facebookId === null &&
+          googleId === null &&
+          socialType === SocialTypeEnum.APPLE) ||
+        (email === null &&
+          phoneNo === null &&
+          facebookId === null &&
+          appleId === null &&
+          socialType === SocialTypeEnum.GOOGLE) ||
+        (email === null &&
+          phoneNo === null &&
+          googleId === null &&
+          appleId === null &&
+          socialType === SocialTypeEnum.FACEBOOK)
+      )
+        throw new HttpException(
+          this.utilsService.getMessagesTypeSafe('status-code.400'),
+          HttpStatus.BAD_REQUEST,
+        );
 
-    switch (socialType) {
-      case SocialTypeEnum.FACEBOOK:
-        await this.memberModel.removeFacebookId(decoded.userId);
-        break;
-      case SocialTypeEnum.GOOGLE:
-        await this.memberModel.removeGoogleId(decoded.userId);
-        break;
-      case SocialTypeEnum.APPLE:
-        await this.memberModel.removeAppleId(decoded.userId);
-        break;
-      default:
-        break;
+      switch (socialType) {
+        case SocialTypeEnum.FACEBOOK:
+          await this.memberModel.removeFacebookId(decoded.userId);
+          break;
+        case SocialTypeEnum.GOOGLE:
+          await this.memberModel.removeGoogleId(decoded.userId);
+          break;
+        case SocialTypeEnum.APPLE:
+          await this.memberModel.removeAppleId(decoded.userId);
+          break;
+        default:
+          break;
+      }
+      return null;
+    } catch (error) {
+      this.handleException(error);
     }
-    return null;
   }
 
   async resetPassword(input: ResetPasswordDto): Promise<NullableType<unknown>> {

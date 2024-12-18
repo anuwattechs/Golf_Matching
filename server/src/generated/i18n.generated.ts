@@ -65,6 +65,9 @@ export type I18nTranslations = {
         "CONTACT_CHANGED_SUCCESSFULLY": string;
         "PASSWORD_CREATED_SUCCESSFULLY": string;
         "PASSWORD_HAS_BEEN_GENERATED": string;
+        "FACEBOOK_ACCOUNT_HAS_ALREADY_BEEN_USED": string;
+        "GOOGLE_ACCOUNT_HAS_ALREADY_BEEN_USED": string;
+        "APPLE_ACCOUNT_HAS_ALREADY_BEEN_USED": string;
         "PLEASE_ADD_EMAIL_OR_PHONE": string;
     };
     "common": {
